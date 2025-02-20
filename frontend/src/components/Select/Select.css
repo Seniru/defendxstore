@@ -1,0 +1,23 @@
+select {
+  background-color: #eee;
+  color: var(--text-color);
+  border-radius: 6px;
+  padding: 6px 60px 6px 20px;
+  font-weight: 300;
+  font-style: normal;
+  outline: none;
+  border: 2px solid transparent;
+  margin: 4px;
+  box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("../../assets/images/angle-down-solid.svg");
+  background-repeat: no-repeat;
+  background-position: 95% center;
+  transition-duration: 0.4s;
+  transition-timing-function: ease-in-out;
+}
+
+select:active {
+  background-image: url("../../assets/images/angle-up-solid.svg");
+}

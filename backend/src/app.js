@@ -7,7 +7,6 @@ const cors = require("cors")
 const mongoose = require("mongoose")
 const morgan = require("morgan")
 
-
 const logger = require("./utils/logger")
 const { StatusCodes } = require("http-status-codes")
 const createResponse = require("./utils/createResponse")
