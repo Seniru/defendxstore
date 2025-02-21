@@ -8,7 +8,6 @@ export default function Pager({ color, page, pageCount }) {
   useEffect(() => {
     let elements = []
     for (let i = 0; i < pageCount; i++) {
-      console.log(i, page)
       elements.push(
         <div
           className="pager"
