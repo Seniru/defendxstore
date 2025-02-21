@@ -1,0 +1,18 @@
+.book {
+  width: 100%;
+  display: block;
+  height: 6px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  background-color: #eee;
+  position: relative;
+  border-radius: 6px;
+
+  .pager {
+    position: relative;
+    top: -7px;
+    height: 6px;
+    display: inline-block;
+    border-radius: 3px;
+  }
+}

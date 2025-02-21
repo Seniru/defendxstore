@@ -6,6 +6,8 @@ export default function Input({
   value,
   placeholder,
   onChange,
+  width,
+  style,
   ...props
 }) {
   let [displayPlaceholder, setDisplayPlaceholder] = useState(false)
@@ -25,6 +27,10 @@ export default function Input({
         onChange={onChange}
         onFocus={() => setDisplayPlaceholder(true)}
         onBlur={() => setDisplayPlaceholder(false)}
+        style={{
+          ...style,
+          width,
+        }}
         {...props}
       />
     </div>
