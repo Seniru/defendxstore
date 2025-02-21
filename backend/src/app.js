@@ -10,6 +10,7 @@ const morgan = require("morgan")
 const logger = require("./utils/logger")
 const { StatusCodes } = require("http-status-codes")
 const createResponse = require("./utils/createResponse")
+const usersRoute = require("./routes/users")
 
 // middlewares
 app.use(cors())
@@ -21,6 +22,7 @@ app.use(
 )
 
 // routes
+app.use("/users", usersRoute)
 
 app.use((err, req, res, next) => {
     logger.error(err.stack)

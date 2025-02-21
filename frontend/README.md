@@ -1,6 +1,27 @@
-# Getting Started with Create React App
+# Frontend
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Setting up
+
+First, run the commands below in your terminal. This will install all the dependencies required.
+
+```bash
+# navigate to the backend directory
+cd frontend
+
+# install dependencies
+npm ci --include=dev
+```
+
+Then create the `.env` file in this directory with the following content
+
+```bash
+REACT_APP_API_URL=http://localhost:5000
+```
+
+- `REACT_APP_API_URL`: API backend's URL. Use the given value if you are using the default configuration values in the backend.
+
 
 ## Available Scripts
 
@@ -18,6 +39,10 @@ You may also see any lint errors in the console.
 
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run prettify`
+
+Prettify code using prettier
 
 ### `npm run build`
 
