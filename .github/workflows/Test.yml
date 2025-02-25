@@ -16,7 +16,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: backend
 
     steps:
     - uses: actions/checkout@v4
@@ -25,6 +25,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+        cache-dependency-path: '**/package-lock.json'
+
 
     - name: Start MongoDB
       uses: supercharge/mongodb-github-action@1.12.0
