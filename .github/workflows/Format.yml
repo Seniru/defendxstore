@@ -1,0 +1,45 @@
+name: Format
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: "Frontend: Install dependencies"
+        run: npm install
+        working-directory: frontend
+
+      - name: "Frontend: Run Prettier"
+        run: npm run prettify
+        working-directory: frontend
+
+      - name: "Backend: Install dependencies"
+        run: npm install
+        working-directory: backend
+
+      - name: "Backend: Run Prettier"
+        run: npm run prettify
+        working-directory: backend
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "ci: format code"
