@@ -14,6 +14,10 @@ jobs:
       matrix:
         node-version: [18.x, 20.x, 22.x]
 
+    defaults:
+      run:
+        working-directory: ./backend
+
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
@@ -28,9 +32,7 @@ jobs:
         mongodb-version: '8.0'
 
     - name: Install dependencies
-      run: |
-        cd backend
-        npm ci
+      run: npm ci
 
     - name: Set environment variables
       run: |
@@ -40,6 +42,4 @@ jobs:
         echo "ENVIRONMENT=test" >> $GITHUB_ENV
 
     - name: Run tests
-      run: |
-        cd backend
-        npm test
+      run: npm test
