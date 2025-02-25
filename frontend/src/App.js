@@ -4,21 +4,24 @@ import Layout from "./components/Layout"
 import Components from "./pages/Components"
 import Login from "./pages/Login"
 import Signup from "./pages/Signup"
+import { AuthProvider } from "./contexts/AuthProvider"
 
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route path="components" element={<Components />} />
-          </Route>
-          <Route path="/auth">
-            <Route path="login" element={<Login />} />
-            <Route path="signup" element={<Signup />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route path="components" element={<Components />} />
+            </Route>
+            <Route path="/auth">
+              <Route path="login" element={<Login />} />
+              <Route path="signup" element={<Signup />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </div>
   )
 }
