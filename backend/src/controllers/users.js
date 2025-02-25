@@ -27,6 +27,8 @@ const createUser = async (req, res, next) => {
         if (error instanceof mongoose.Error.ValidationError) {
             let errMsg = error.errors[Object.keys(error.errors)[0]].message
             return createResponse(res, StatusCodes.BAD_REQUEST, errMsg)
+        } else if (error.message == "User already exist with this email") {
+            return createResponse(res, StatusCodes.CONFLICT, error.message)
         }
         next(error)
     }

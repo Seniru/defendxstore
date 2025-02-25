@@ -7,10 +7,10 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --exit",
     "start": "node src/app.js",
-    "prettify": "npx prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,html}\"",
-    "check": "npx prettier --check \"src/**/*.{js,jsx,ts,tsx,css,scss,html}\"",
+    "prettify": "npx prettier --write \"{src,test}/**/*.{js,jsx,ts,tsx,css,scss,html}\"",
+    "check": "npx prettier --check \"{src,test}/**/*.{js,jsx,ts,tsx,css,scss,html}\"",
     "populate": "node src/extras/populate.js"
   },
   "dependencies": {
@@ -22,9 +22,12 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.3",
     "morgan": "^1.10.0",
+    "supertest": "^7.0.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "mocha": "^11.1.0",
+    "mongodb-memory-server": "^10.1.4",
     "prettier": "3.4.2"
   }
 }
