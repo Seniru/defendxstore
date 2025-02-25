@@ -23,13 +23,14 @@ const UserSchema = new mongoose.Schema({
         minLength: 10,
     },
     contactNumber: {
-        type: Array[String],
+        type: [String],
     },
     profileImage: {
         type: String,
     },
     role: {
         type: Number,
+        default: 1,
     },
 })
 

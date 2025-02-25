@@ -1,0 +1,31 @@
+form.login-form {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-content: center;
+
+  .login-form-inputs {
+    display: grid;
+    align-content: center;
+    justify-items: stretch;
+    margin: auto;
+
+    div {
+      display: grid;
+    }
+
+    .login-form-actions {
+      margin-top: 30px;
+      margin-bottom: 30px;
+
+      button {
+        font-weight: bold;
+      }
+    }
+  }
+
+  img {
+    width: 50%;
+    border-radius: 6px;
+  }
+}
