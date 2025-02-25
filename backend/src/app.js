@@ -33,12 +33,17 @@ app.use((err, req, res, next) => {
 })
 
 const start = async () => {
-    const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost/test"
+    const MONGO_URI =
+        process.env.ENVIRONMENT == "test"
+            ? "mongodb://localhost/defendx_test"
+            : process.env.MONGO_URI || "mongodb://localhost/test"
     const SERVER_PORT = process.env.SERVER_PORT || 8888
 
     logger.info("Connecting to MongoDB...")
     await mongoose.connect(MONGO_URI)
     logger.info("Connected to MongoDB!")
+
+    if (process.env.ENVIRONMENT == "test") return
 
     logger.info("Starting server...")
     app.listen(SERVER_PORT, () => {
@@ -51,3 +56,5 @@ const start = async () => {
 }
 
 start()
+
+module.exports = app
