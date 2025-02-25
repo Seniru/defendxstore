@@ -5,6 +5,7 @@ import Components from "./pages/Components"
 import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import { AuthProvider } from "./contexts/AuthProvider"
+import PrivateRoute from "./components/PrivateRoute"
 
 function App() {
   return (
@@ -19,6 +20,14 @@ function App() {
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<Signup />} />
             </Route>
+            <Route element={<PrivateRoute />}></Route>
+            <Route
+              element={<PrivateRoute requiredRole="SUPPORT_AGENT" />}
+            ></Route>
+            <Route
+              element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}
+            ></Route>
+            <Route element={<PrivateRoute requiredRole="ADMIN" />}></Route>
           </Routes>
         </BrowserRouter>
       </AuthProvider>
