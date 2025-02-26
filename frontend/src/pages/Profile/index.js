@@ -14,6 +14,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 
 import "./Profile.css"
+import TabMenu from "../../components/TabMenu"
+import TabItem from "../../components/TabMenu/TabItem"
 
 export default function Profile() {
   const { user } = useAuth()
@@ -64,7 +66,12 @@ export default function Profile() {
           </Button>
         </div>
       </aside>
-      <div className="profile-content">stuff</div>
+      <div className="profile-content">
+        <TabMenu>
+          <TabItem name="Orders" />
+          <TabItem name="Reviews" />
+        </TabMenu>
+      </div>
     </div>
   )
 }

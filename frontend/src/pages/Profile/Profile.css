@@ -37,6 +37,7 @@
 
   .profile-content {
     margin-left: 224px;
+    width: -webkit-fill-available;
   }
 }
 

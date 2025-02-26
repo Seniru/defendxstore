@@ -7,6 +7,7 @@ import Signup from "./pages/Signup"
 import { AuthProvider } from "./contexts/AuthProvider"
 import PrivateRoute from "./components/PrivateRoute"
 import Profile from "./pages/Profile"
+import Admin from "./pages/Admin"
 
 function App() {
   return (
@@ -25,7 +26,9 @@ function App() {
               <Route
                 element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}
               ></Route>
-              <Route element={<PrivateRoute requiredRole="ADMIN" />}></Route>
+              <Route element={<PrivateRoute requiredRole="ADMIN" />}>
+                <Route path="admin" element={<Admin />} />
+              </Route>
             </Route>
             <Route path="/auth">
               <Route path="login" element={<Login />} />
