@@ -10,6 +10,7 @@ import SearchBar from "../SearchBar"
 import Button from "../Button"
 import "./Header.css"
 import { useAuth } from "../../contexts/AuthProvider"
+import ProfileImage from "../ProfileImage"
 
 export default function Header() {
   const { user, logoutAction } = useAuth()
@@ -47,9 +48,7 @@ export default function Header() {
           >
             Logout
           </Button>
-          <span className="header-profile-image">
-            {user.username.charAt(0).toUpperCase()}
-          </span>
+          <ProfileImage username={user.username} size={30} />
           <FontAwesomeIcon icon={faChevronRight} />
         </div>
       ) : (

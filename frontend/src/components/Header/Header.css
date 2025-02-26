@@ -43,16 +43,6 @@ header {
       margin-left: 25px;
       margin-right: 8px;
     }
-
-    .header-profile-image {
-      width: 30px;
-      height: 30px;
-      border-radius: 30px;
-      border: 2px solid white;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
   }
 
   .header-user-sign {
