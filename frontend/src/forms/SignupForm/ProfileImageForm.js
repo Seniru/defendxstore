@@ -1,15 +1,10 @@
 import { useNavigate } from "react-router-dom"
-import Button from "../../components/Button"
-import Input from "../../components/Input"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons"
 
-function UploadedImage({ image }) {
-  if (image) {
-  } else {
-    return <div className="profile-image-placeholder">S</div>
-  }
-}
+import Button from "../../components/Button"
+import Input from "../../components/Input"
+import ProfileImage from "../../components/ProfileImage"
 
 export default function ProfileImageForm() {
   const navigate = useNavigate()
@@ -33,7 +28,14 @@ export default function ProfileImageForm() {
       </p>
       <Input type="file" />
 
-      <UploadedImage />
+      <ProfileImage
+        username="Seniru"
+        size={250}
+        style={{
+          marginTop: 20,
+          marginBottom: 20,
+        }}
+      />
       <Button kind="primary" type="submit">
         Submit
       </Button>

@@ -6,6 +6,7 @@ import Login from "./pages/Login"
 import Signup from "./pages/Signup"
 import { AuthProvider } from "./contexts/AuthProvider"
 import PrivateRoute from "./components/PrivateRoute"
+import Profile from "./pages/Profile"
 
 function App() {
   return (
@@ -15,19 +16,21 @@ function App() {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route path="components" element={<Components />} />
+              <Route element={<PrivateRoute />}>
+                <Route path="profile" element={<Profile />} />
+              </Route>
+              <Route
+                element={<PrivateRoute requiredRole="SUPPORT_AGENT" />}
+              ></Route>
+              <Route
+                element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}
+              ></Route>
+              <Route element={<PrivateRoute requiredRole="ADMIN" />}></Route>
             </Route>
             <Route path="/auth">
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<Signup />} />
             </Route>
-            <Route element={<PrivateRoute />}></Route>
-            <Route
-              element={<PrivateRoute requiredRole="SUPPORT_AGENT" />}
-            ></Route>
-            <Route
-              element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}
-            ></Route>
-            <Route element={<PrivateRoute requiredRole="ADMIN" />}></Route>
           </Routes>
         </BrowserRouter>
       </AuthProvider>

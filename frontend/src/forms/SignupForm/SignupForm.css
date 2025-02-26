@@ -50,19 +50,3 @@
     }
   }
 }
-
-.profile-image-placeholder {
-  width: 250px;
-  height: 250px;
-  border-radius: 300px;
-  color: white;
-  display: grid;
-  align-items: center;
-  justify-items: center;
-  font-size: xxx-large;
-  font-weight: bold;
-  background-color: #2f2f2f;
-  margin: auto;
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
