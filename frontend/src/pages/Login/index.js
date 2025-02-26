@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom"
-import LoginForm from "../forms/LoginForm"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons"
 
-import "./styles/Login.css"
+import LoginForm from "../../forms/LoginForm"
+import "./Login.css"
 
 export default function Login() {
   return (

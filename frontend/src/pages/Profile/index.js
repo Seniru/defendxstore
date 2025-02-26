@@ -1,10 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-import Button from "../components/Button"
-import ProfileImage from "../components/ProfileImage"
-import { useAuth } from "../contexts/AuthProvider"
+import Button from "../../components/Button"
+import ProfileImage from "../../components/ProfileImage"
+import { useAuth } from "../../contexts/AuthProvider"
 
-import "./styles/Profile.css"
 import {
   faAddressCard,
   faAt,
@@ -13,6 +12,8 @@ import {
   faPhone,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons"
+
+import "./Profile.css"
 
 export default function Profile() {
   const { user } = useAuth()
