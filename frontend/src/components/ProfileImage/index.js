@@ -9,7 +9,7 @@ export default function ProfileImage({ image, username, size, style }) {
         style={{
           width: size,
           height: size,
-          fontSize: size,
+          fontSize: size - 10 < 5 ? size : size - 10,
           ...style,
         }}
       >
