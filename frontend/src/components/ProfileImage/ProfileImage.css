@@ -1,5 +1,5 @@
 .profile-image {
-  border-radius: 300px;
+  border-radius: 300px !important;
   color: white;
   display: grid;
   align-items: center;
@@ -9,4 +9,19 @@
   background-color: #2f2f2f;
   margin: auto;
   border: 2px solid white;
+}
+
+.image-upload-options {
+  display: grid;
+  justify-items: start;
+
+  .image-upload-options-separator {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .image-upload-option {
+    display: flex;
+    align-items: center;
+  }
 }
