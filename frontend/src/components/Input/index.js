@@ -4,16 +4,18 @@ import "./Input.css"
 export default function Input({
   type = "text",
   value,
+  error,
   placeholder,
   onChange,
   width,
-  style,
+  style = {},
   ...props
 }) {
   let [displayPlaceholder, setDisplayPlaceholder] = useState(false)
+  if (error) style.border = "2px solid var(--error-color)"
 
   return (
-    <div className="input">
+    <div className="input" style={{ width }}>
       <span
         className="placeholder-label"
         style={{ display: displayPlaceholder ? "block" : "none" }}
@@ -29,10 +31,10 @@ export default function Input({
         onBlur={() => setDisplayPlaceholder(false)}
         style={{
           ...style,
-          width,
         }}
         {...props}
       />
+      <span className="input-error">{error}</span>
     </div>
   )
 }

@@ -3,6 +3,7 @@
   --secondary-color: #2c2c2c;
   --primary-text-color: #000000;
   --secondary-text-color: #666666;
+  --error-color: #e53935;
 }
 
 body {

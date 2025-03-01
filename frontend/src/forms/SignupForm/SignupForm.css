@@ -50,3 +50,11 @@
     }
   }
 }
+
+.signup-back {
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

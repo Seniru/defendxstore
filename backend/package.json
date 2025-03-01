@@ -7,9 +7,9 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --exit",
+    "test": "export NODE_ENV=test && mocha --exit",
     "coverage": "nyc --reporter=lcov --reporter=text --reporter=text-summary npm test",
-    "start": "node src/app.js",
+    "start": "export NODE_ENV=dev && node src/app.js",
     "prettify": "npx prettier --write \"{src,test}/**/*.{js,jsx,ts,tsx,css,scss,html}\"",
     "check": "npx prettier --check \"{src,test}/**/*.{js,jsx,ts,tsx,css,scss,html}\"",
     "populate": "node src/extras/populate.js"

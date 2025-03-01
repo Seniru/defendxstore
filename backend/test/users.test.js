@@ -54,7 +54,9 @@ describe("Users", () => {
                 .send(userData)
                 .expect(400)
                 .then((res) => {
-                    assert.strictEqual(res.body.body, "Please enter a valid email address")
+                    assert.deepEqual(res.body.body, [
+                        { field: "email", message: "Please enter a valid email address" },
+                    ])
                     done()
                 })
                 .catch(done)
@@ -72,7 +74,9 @@ describe("Users", () => {
                 .send(userData)
                 .expect(400)
                 .then((res) => {
-                    assert.strictEqual(res.body.body, "Path `email` is required.")
+                    assert.deepEqual(res.body.body, [
+                        { field: "email", message: "Path `email` is required." },
+                    ])
                     done()
                 })
                 .catch(done)
@@ -113,7 +117,33 @@ describe("Users", () => {
                 .send(userData)
                 .expect(409)
                 .then((res) => {
-                    assert.strictEqual(res.body.body, "User already exist with this email")
+                    assert.deepEqual(res.body.body, [
+                        { field: "email", message: "User already exist with this email" },
+                    ])
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 400 if image size is greater than 2MB", (done) => {
+            const userData = {
+                username: "testuser",
+                password: "testpassword",
+                email: "testuser4@gmail.com",
+                profileImage: "a".repeat(2 * 1024 * 1024 + 1), // 2MB + 1 byte
+            }
+
+            request
+                .post("/api/users/")
+                .send(userData)
+                .expect(400)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, [
+                        {
+                            field: "profileImage",
+                            message: "Image should be less than 2 MB in size",
+                        },
+                    ])
                     done()
                 })
                 .catch(done)

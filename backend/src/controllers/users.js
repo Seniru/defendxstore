@@ -8,7 +8,7 @@ const User = require("../models/User")
 
 const createUser = async (req, res, next) => {
     try {
-        const { username, email, password, deliveryAddress, contactNumber } = req.body
+        const { username, email, password, deliveryAddress, contactNumber, profileImage } = req.body
         if (!password)
             return createResponse(res, StatusCodes.BAD_REQUEST, "You must provide a password")
         const salt = await bcrypt.genSalt(10)
@@ -19,16 +19,28 @@ const createUser = async (req, res, next) => {
             password: hashedPassword,
             deliveryAddress,
             contactNumber,
+            profileImage,
         })
         await user.save()
         const token = createToken(user)
         return createResponse(res, StatusCodes.CREATED, { token })
     } catch (error) {
         if (error instanceof mongoose.Error.ValidationError) {
-            let errMsg = error.errors[Object.keys(error.errors)[0]].message
-            return createResponse(res, StatusCodes.BAD_REQUEST, errMsg)
+            return createResponse(
+                res,
+                StatusCodes.BAD_REQUEST,
+                Object.keys(error.errors).map((key) => ({
+                    field: key,
+                    message: error.errors[key].message,
+                })),
+            )
         } else if (error.message == "User already exist with this email") {
-            return createResponse(res, StatusCodes.CONFLICT, error.message)
+            return createResponse(res, StatusCodes.CONFLICT, [
+                {
+                    field: "email",
+                    message: error.message,
+                },
+            ])
         }
         next(error)
     }

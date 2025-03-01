@@ -15,7 +15,7 @@ const authRoute = require("./routes/auth")
 
 // middlewares
 app.use(cors())
-app.use(express.json())
+app.use(express.json({ limit: "4mb" }))
 app.use(
     morgan("dev", {
         stream: { write: (message) => logger.info(message.trim()) },
@@ -34,16 +34,16 @@ app.use((err, req, res, next) => {
 
 const start = async () => {
     const MONGO_URI =
-        process.env.ENVIRONMENT == "test"
+        process.env.NODE_ENV == "test"
             ? "mongodb://localhost/defendx_test"
             : process.env.MONGO_URI || "mongodb://localhost/test"
     const SERVER_PORT = process.env.SERVER_PORT || 8888
-
+    logger.debug(`Using MongoDB URI: ${MONGO_URI}`)
     logger.info("Connecting to MongoDB...")
     await mongoose.connect(MONGO_URI)
     logger.info("Connected to MongoDB!")
 
-    if (process.env.ENVIRONMENT == "test") return
+    if (process.env.NODE_ENV == "test") return
 
     logger.info("Starting server...")
     app.listen(SERVER_PORT, () => {
