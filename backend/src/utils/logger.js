@@ -14,14 +14,14 @@ const customFormat = winston.format.printf(({ level, message, timestamp }) => {
 })
 
 const logger = winston.createLogger({
-    level: process.env.ENVIRONMENT == "production" ? "debug" : "info",
+    level: "info",
     transports: [
         new winston.transports.File({
             filename: "logs/error.log",
             level: "error",
         }),
         new winston.transports.Console({
-            level: "info",
+            level: { production: "info", dev: "debug", test: "error" }[process.env.NODE_ENV],
             format: winston.format.combine(winston.format.timestamp(), customFormat),
         }),
     ],
