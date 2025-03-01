@@ -48,7 +48,7 @@ export default function ProfileImageForm({ data, setData, errors, setErrors }) {
       email: data.email,
       password: data.password,
     }
-    if (data.imageUrl) request.profileImage = data.imageUrl
+    if (imageUrl) request.profileImage = imageUrl
     if (data.tel) request.contactNumber = data.tel
     if (data.houseNo)
       request.deliveryAddress = `${data.houseNo}, ${data.street}\n${data.postalCode}, ${data.city}`
