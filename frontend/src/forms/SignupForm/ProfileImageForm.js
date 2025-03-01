@@ -43,7 +43,17 @@ export default function ProfileImageForm({ data, setData, errors, setErrors }) {
     }
 
     // submit the data
-    let response = await api.post("/api/users", data)
+    let request = {
+      username: data.username,
+      email: data.email,
+      password: data.password,
+    }
+    if (data.imageUrl) request.profileImage = data.imageUrl
+    if (data.tel) request.contactNumber = data.tel
+    if (data.houseNo)
+      request.deliveryAddress = `${data.houseNo}, ${data.street}\n${data.postalCode}, ${data.city}`
+
+    let response = await api.post("/api/users", request)
     let result = await response.json()
 
     if (response.ok) {

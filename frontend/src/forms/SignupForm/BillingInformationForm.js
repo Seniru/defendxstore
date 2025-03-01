@@ -8,13 +8,11 @@ import {
   faCircleInfo,
   faHouse,
   faLocation,
-  faMap,
   faMapSigns,
   faPhone,
   faRoad,
   faChevronLeft,
 } from "@fortawesome/free-solid-svg-icons"
-import Select from "../../components/Select"
 import { usePagination } from "../../contexts/PaginationProvider"
 
 export default function BillingInformationForm({
@@ -25,8 +23,6 @@ export default function BillingInformationForm({
 }) {
   const navigate = useNavigate()
   const { gotoNextPage, gotoPreviousPage } = usePagination()
-
-  const districtRef = useRef()
 
   const cityRef = useRef()
   const [cityError, setCityError] = useState(null)
@@ -70,7 +66,6 @@ export default function BillingInformationForm({
     ) {
       setData({
         ...data,
-        district: districtRef.current.value,
         city: cityRef.current.value,
         postalCode: postalCodeRef.current.value,
         street: streetRef.current.value,
@@ -96,26 +91,6 @@ export default function BillingInformationForm({
               these details later.
             </p>
             <hr />
-          </div>
-          <div className="inputs">
-            <label>
-              <FontAwesomeIcon icon={faMap} /> District
-            </label>
-            <Select
-              items={[
-                "Colombo",
-                "Gampaha",
-                "Kaluthara",
-                "Nuwara Eliya",
-                "Kandy",
-                "Mathale",
-                "Jaffna",
-                "Galle",
-                "Hambanthota",
-              ]}
-              ref={districtRef}
-              defaultValue={data.district}
-            />
           </div>
           <div className="inputs">
             <label>
