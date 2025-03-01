@@ -52,7 +52,9 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - name: Coveralls
+      - name: Run coverage test
+        run: npm run coverage
+      - name: Upload to Coveralls
         uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
