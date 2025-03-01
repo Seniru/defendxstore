@@ -8,6 +8,7 @@
   "main": "index.js",
   "scripts": {
     "test": "export NODE_ENV=test && mocha --exit",
+    "coverage": "nyc --reporter=lcov --reporter=text --reporter=text-summary npm test",
     "start": "export NODE_ENV=dev && node src/app.js",
     "prettify": "npx prettier --write \"{src,test}/**/*.{js,jsx,ts,tsx,css,scss,html}\"",
     "check": "npx prettier --check \"{src,test}/**/*.{js,jsx,ts,tsx,css,scss,html}\"",
@@ -28,6 +29,7 @@
   "devDependencies": {
     "mocha": "^11.1.0",
     "mongodb-memory-server": "^10.1.4",
+    "nyc": "^17.1.0",
     "prettier": "3.4.2"
   }
 }

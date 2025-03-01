@@ -1,5 +1,7 @@
 # Defendxstore
 
+![Coveralls](https://img.shields.io/coverallsCoverage/github/Seniru/defendxstore?label=API%20coverage)
+
 > E-commerce platform for DefendX clothing store. This project was implemented as per requirements of SLIIT Software Engineering degree.
 
 This app is created using the **MERN** stack.

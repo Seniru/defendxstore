@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Test and coverage
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     strategy:
@@ -45,3 +45,12 @@ jobs:
 
     - name: Run tests
       run: npm test
+
+    - name: Run coverage test
+      run: npm run coverage
+
+    - name: Upload to Coveralls
+      uses: coverallsapp/github-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        base-path: backend
