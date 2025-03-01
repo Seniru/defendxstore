@@ -1,5 +1,7 @@
 # Backend
 
+![Coveralls](https://img.shields.io/coverallsCoverage/github/Seniru/defendxstore?label=API%20coverage)
+
 ## Table of Contents
 
 - [Setting up](#setting-up)
