@@ -23,7 +23,7 @@ describe("Users", () => {
                 username: "testuser",
                 password: "testpassword",
                 email: "testuser@example.com",
-                profileImage: "testimageurl",
+                profileImage: "data:image/png;base64,abc",
                 deliveryAddress: "Test Address",
                 contactNumber: ["123456789"],
             }
@@ -39,12 +39,31 @@ describe("Users", () => {
                 .catch(done)
         })
 
+        it("should return 400 for no password", (done) => {
+            const userData = {
+                username: "testuser",
+                email: "testuser@example.com",
+            }
+
+            request
+                .post("/api/users/")
+                .send(userData)
+                .expect(400)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, [
+                        { field: "password", message: "You must provide a password" },
+                    ])
+                    done()
+                })
+                .catch(done)
+        })
+
         it("should return 400 for invalid email format", (done) => {
             const userData = {
                 username: "testuser",
                 password: "validpassword",
                 email: "invalidemail",
-                profileImage: "imageurl",
+                profileImage: "data:image/png;base64,abc",
                 deliveryAddress: "Some address",
                 contactNumbers: ["123456789"],
             }
@@ -87,7 +106,6 @@ describe("Users", () => {
                 username: "testuser2",
                 password: "validpassword",
                 email: "testuser3@example.com",
-                profileImage: "imageurl",
                 // Optional fields are omitted (e.g., deliveryAddress, contactNumbers)
             }
 
@@ -127,7 +145,7 @@ describe("Users", () => {
                 username: "duplicateuser",
                 password: "validpassword",
                 email: "testuser@example.com", // This email is already taken from the setup
-                profileImage: "imageurl",
+                profileImage: "data:image/png;base64,abc",
                 deliveryAddress: "Some address",
                 contactNumbers: ["123456789"],
             }
@@ -150,7 +168,7 @@ describe("Users", () => {
                 username: "testuser",
                 password: "testpassword",
                 email: "testuser4@gmail.com",
-                profileImage: "a".repeat(2 * 1024 * 1024 + 1), // 2MB + 1 byte
+                profileImage: "data:image/png;base64,abc" + "a".repeat(2 * 1024 * 1024 + 1), // 2MB + 1 byte
             }
 
             request
@@ -164,6 +182,60 @@ describe("Users", () => {
                             message: "Image should be less than 2 MB in size",
                         },
                     ])
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 400 if image format is invalid", (done) => {
+            const userData = {
+                username: "invalidimageuser",
+                password: "testpassword",
+                email: "invalidimageuser@example.com",
+                profileImage: "invalidimage",
+            }
+
+            request
+                .post("/api/users/")
+                .send(userData)
+                .expect(400)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, [
+                        { field: "profileImage", message: "Invalid profile image format" },
+                    ])
+                    done()
+                })
+                .catch(done)
+        })
+    })
+
+    describe("GET /api/users/:username/profileImage", () => {
+        it("should return the profile image of the user", (done) => {
+            request
+                .get("/api/users/testuser/profileImage")
+                .expect(200)
+                .then((res) => {
+                    assert.ok(res.body)
+                    done()
+                })
+                .catch(done)
+        })
+        it("should return 404 if the user does not exist", (done) => {
+            request
+                .get("/api/users/nonexistentuser/profileImage")
+                .expect(404)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "User not found")
+                    done()
+                })
+                .catch(done)
+        })
+        it("should return 404 if the user does not have a profile image", (done) => {
+            request
+                .get("/api/users/testuser2/profileImage")
+                .expect(404)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "No profile image found")
                     done()
                 })
                 .catch(done)
