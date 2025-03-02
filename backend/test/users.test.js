@@ -102,6 +102,26 @@ describe("Users", () => {
                 .catch(done)
         })
 
+        it("should return 409 if the username is already taken", (done) => {
+            const userData = {
+                username: "testuser",
+                password: "validpassword",
+                email: "valid@example.com",
+            }
+
+            request
+                .post("/api/users/")
+                .send(userData)
+                .expect(409)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, [
+                        { field: "username", message: "Username taken" },
+                    ])
+                    done()
+                })
+                .catch(done)
+        })
+
         it("should return 409 if the email is already taken", (done) => {
             const userData = {
                 username: "duplicateuser",

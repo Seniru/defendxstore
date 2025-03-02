@@ -41,6 +41,13 @@ const createUser = async (req, res, next) => {
                     message: error.message,
                 },
             ])
+        } else if (error.message == "Username taken") {
+            return createResponse(res, StatusCodes.CONFLICT, [
+                {
+                    field: "username",
+                    message: error.message,
+                },
+            ])
         }
         next(error)
     }
