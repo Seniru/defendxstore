@@ -1,9 +1,10 @@
 const express = require("express")
 const router = express.Router()
 
-const { createUser, getUserProfileImage } = require("../controllers/users")
+const { requireRole, roles } = require("../middlewares/auth")
+const { getAllUsers, createUser, getUserProfileImage } = require("../controllers/users")
 
-router.get("/", (req, res) => res.send("Test"))
+router.get("/", requireRole(roles.ADMIN), getAllUsers)
 router.post("/", createUser)
 router.get("/:username/profileImage", getUserProfileImage)
 

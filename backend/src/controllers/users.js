@@ -6,6 +6,48 @@ const createResponse = require("../utils/createResponse")
 const createToken = require("../utils/createToken")
 const User = require("../models/User")
 
+const getAllUsers = async (req, res, next) => {
+    try {
+        const search = req.query.search || ""
+        const type = req.query.type
+
+        if (type && !["USER", "SUPPORT_AGENT", "DELIVERY_AGENT", "ADMIN"].includes(type))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid type")
+
+        let users = await User.find(
+            { username: { $regex: search, $options: "i" } },
+            {
+                username: 1,
+                email: 1,
+                deliveryAddress: 1,
+                contactNumber: 1,
+                role: 1,
+                profileImage: {
+                    $cond: {
+                        if: { $ifNull: ["$profileImage", false] },
+                        then: {
+                            $concat: [
+                                `${req.protocol}://${req.get("host")}/api/users/`,
+                                "$username",
+                                "/profileImage",
+                            ],
+                        },
+                        else: null,
+                    },
+                },
+            },
+        ).exec()
+
+        users = users.map((user) => user.applyDerivations())
+        // apply filters
+        if (type) users = users.filter((user) => user.role.includes(type))
+
+        return createResponse(res, StatusCodes.OK, { users })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const createUser = async (req, res, next) => {
     try {
         const { username, email, password, deliveryAddress, contactNumber, profileImage } = req.body
@@ -90,4 +132,4 @@ const getUserProfileImage = async (req, res, next) => {
     }
 }
 
-module.exports = { createUser, getUserProfileImage }
+module.exports = { getAllUsers, createUser, getUserProfileImage }

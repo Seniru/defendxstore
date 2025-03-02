@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const getRoles = require("../utils/getRoles")
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -38,6 +39,13 @@ const UserSchema = new mongoose.Schema({
         default: 1,
     },
 })
+
+UserSchema.methods.applyDerivations = function () {
+    let user = this.toObject()
+    user.role = getRoles(this.role)
+    if (this.profileImage) user.profileImage = encodeURI(this.profileImage)
+    return user
+}
 
 const User = mongoose.model("User", UserSchema)
 
