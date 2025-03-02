@@ -8,6 +8,7 @@ import { AuthProvider } from "./contexts/AuthProvider"
 import PrivateRoute from "./components/PrivateRoute"
 import Profile from "./pages/Profile"
 import Admin from "./pages/Admin"
+import NotFound from "./pages/errors/NotFound"
 
 function App() {
   return (
@@ -19,15 +20,17 @@ function App() {
               <Route path="components" element={<Components />} />
               <Route element={<PrivateRoute />}>
                 <Route path="profile" element={<Profile />} />
+                <Route path="*" element={<NotFound />} />
               </Route>
-              <Route
-                element={<PrivateRoute requiredRole="SUPPORT_AGENT" />}
-              ></Route>
-              <Route
-                element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}
-              ></Route>
+              <Route element={<PrivateRoute requiredRole="SUPPORT_AGENT" />}>
+                <Route path="*" element={<NotFound />} />
+              </Route>
+              <Route element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}>
+                <Route path="*" element={<NotFound />} />
+              </Route>
               <Route element={<PrivateRoute requiredRole="ADMIN" />}>
                 <Route path="admin" element={<Admin />} />
+                <Route path="*" element={<NotFound />} />
               </Route>
             </Route>
             <Route path="/auth">
