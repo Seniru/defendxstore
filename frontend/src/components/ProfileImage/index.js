@@ -6,6 +6,7 @@ export default function ProfileImage({ image, username, size, style }) {
       <img
         src={image}
         className="profile-image"
+        alt="profile-image"
         style={{
           width: size,
           height: size,

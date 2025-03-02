@@ -1,0 +1,115 @@
+.content {
+  display: grid;
+  justify-items: center;
+}
+
+.oops {
+  color: var(--secondary-color);
+  font-style: italic;
+}
+
+.goback {
+  font-weight: bold;
+}
+
+svg#freepik_stories-404-error-with-person-looking-for {
+  width: 100%;
+  height: 50vh;
+}
+
+svg#freepik_stories-404-error-with-person-looking-for:not(.animated) .animable {
+  opacity: 0;
+}
+svg#freepik_stories-404-error-with-person-looking-for.animated
+  #freepik--background-complete--inject-125 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) slideRight;
+  animation-delay: 0s;
+}
+svg#freepik_stories-404-error-with-person-looking-for.animated
+  #freepik--Floor--inject-125 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) slideLeft;
+  animation-delay: 0s;
+}
+svg#freepik_stories-404-error-with-person-looking-for.animated
+  #freepik--Piping--inject-125 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) slideRight;
+  animation-delay: 0s;
+}
+svg#freepik_stories-404-error-with-person-looking-for.animated
+  #freepik--Bricks--inject-125 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) fadeIn;
+  animation-delay: 0s;
+}
+svg#freepik_stories-404-error-with-person-looking-for.animated
+  #freepik--Plant--inject-125 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) fadeIn;
+  animation-delay: 0s;
+}
+svg#freepik_stories-404-error-with-person-looking-for.animated
+  #freepik--Hole--inject-125 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) zoomIn;
+  animation-delay: 0s;
+}
+svg#freepik_stories-404-error-with-person-looking-for.animated
+  #freepik--Grille--inject-125 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) fadeIn;
+  animation-delay: 0s;
+}
+svg#freepik_stories-404-error-with-person-looking-for.animated
+  #freepik--Character--inject-125 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) slideLeft;
+  animation-delay: 0s;
+}
+svg#freepik_stories-404-error-with-person-looking-for.animated
+  #freepik--Text--inject-125 {
+  animation: 1s 1 forwards cubic-bezier(0.36, -0.01, 0.5, 1.38) slideDown;
+  animation-delay: 0s;
+}
+@keyframes slideRight {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes slideLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes zoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
