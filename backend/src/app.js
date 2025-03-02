@@ -32,6 +32,8 @@ app.use((err, req, res, next) => {
     next()
 })
 
+app.use((req, res) => createResponse(res, StatusCodes.NOT_FOUND, "Requested route not found"))
+
 const start = async () => {
     const MONGO_URI =
         process.env.NODE_ENV == "test"
