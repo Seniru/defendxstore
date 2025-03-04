@@ -7,7 +7,7 @@ import { faShoppingCart } from "@fortawesome/free-solid-svg-icons"
 
 export default function NotFound() {
   return (
-    <div className="content">
+    <div className="not-found content">
       <h1>
         <span className="oops">Oops!</span> Your style sense is flawless, but
         this page is missing.
