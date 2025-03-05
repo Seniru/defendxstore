@@ -5,6 +5,7 @@ const { StatusCodes } = require("http-status-codes")
 const createResponse = require("../utils/createResponse")
 const createToken = require("../utils/createToken")
 const User = require("../models/User")
+const logger = require("../utils/logger")
 
 const getAllUsers = async (req, res, next) => {
     try {
@@ -43,29 +44,6 @@ const getAllUsers = async (req, res, next) => {
         if (type) users = users.filter((user) => user.role.includes(type))
 
         return createResponse(res, StatusCodes.OK, { users })
-    } catch (error) {
-        next(error)
-    }
-}
-
-const getUser = async (req, res, next) => {
-    try {
-        const { username } = req.params
-        let user = await User.findOne({ username }, "-password").exec()
-        if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
-        user = user.applyDerivations()
-        if (
-            !req.user.roles.includes("ADMIN") &&
-            req.user.username !== username &&
-            !user.role.includes("DELIVERY_AGENT")
-        )
-            return createResponse(
-                res,
-                StatusCodes.FORBIDDEN,
-                "You are not authorized to view this user",
-            )
-
-        return createResponse(res, StatusCodes.OK, { user })
     } catch (error) {
         next(error)
     }
@@ -132,6 +110,43 @@ const createUser = async (req, res, next) => {
     }
 }
 
+const deleteUser = async (req, res, next) => {
+    try {
+        const { username } = req.params
+        if (!req.user.roles.includes("ADMIN") && username !== req.user.username)
+            return createResponse(res, StatusCodes.FORBIDDEN, "You cannot delete this user")
+
+        const user = await User.findOneAndDelete({ username }).exec()
+        if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+        return createResponse(res, StatusCodes.OK, "User deleted")
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getUser = async (req, res, next) => {
+    try {
+        const { username } = req.params
+        let user = await User.findOne({ username }, "-password").exec()
+        if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+        user = user.applyDerivations()
+        if (
+            !req.user.roles.includes("ADMIN") &&
+            req.user.username !== username &&
+            !user.role.includes("DELIVERY_AGENT")
+        )
+            return createResponse(
+                res,
+                StatusCodes.FORBIDDEN,
+                "You are not authorized to view this user",
+            )
+
+        return createResponse(res, StatusCodes.OK, { user })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const getUserProfileImage = async (req, res, next) => {
     try {
         const { username } = req.params
@@ -155,4 +170,4 @@ const getUserProfileImage = async (req, res, next) => {
     }
 }
 
-module.exports = { getAllUsers, getUser, createUser, getUserProfileImage }
+module.exports = { getAllUsers, createUser, deleteUser, getUser, getUserProfileImage }

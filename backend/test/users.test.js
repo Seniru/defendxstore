@@ -452,17 +452,13 @@ describe("Users", () => {
     })
 
     describe("POST /api/users/:username", () => {
-        let user3Token, user4Token, adminToken
+        let user3Token, adminToken
 
         before(async () => {
             await prepareData()
             // log in as a user3
             const loginUser3Response = await request.post("/api/auth/login").send({
                 email: "user3@example.com",
-                password: "testpassword",
-            })
-            const loginUser4Response = await request.post("/api/auth/login").send({
-                email: "user4@example.com",
                 password: "testpassword",
             })
             // log in as administrator to view details
@@ -472,7 +468,6 @@ describe("Users", () => {
             })
             adminToken = adminLoginResponse.body.body.token
             user3Token = loginUser3Response.body.body.token
-            user4Token = loginUser4Response.body.body.token
         })
 
         after(async () => {
@@ -537,6 +532,92 @@ describe("Users", () => {
             request
                 .get("/api/users/nonexistentuser")
                 .set("Authorization", `Bearer ${user3Token}`)
+                .expect(404)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "User not found")
+                    done()
+                })
+                .catch(done)
+        })
+    })
+
+    describe("DELETE /api/users/:username", () => {
+        let user3Token, user4Token, adminToken
+
+        before(async () => {
+            await prepareData()
+            const loginUser3Response = await request.post("/api/auth/login").send({
+                email: "user3@example.com",
+                password: "testpassword",
+            })
+            const loginUser4Response = await request.post("/api/auth/login").send({
+                email: "user4@example.com",
+                password: "testpassword",
+            })
+            // log in as administrator to view details
+            const adminLoginResponse = await request.post("/api/auth/login").send({
+                email: "admin@example.com",
+                password: "adminpassword",
+            })
+            adminToken = adminLoginResponse.body.body.token
+            user3Token = loginUser3Response.body.body.token
+            user4Token = loginUser4Response.body.body.token
+        })
+
+        after(async () => {
+            await User.deleteMany({})
+        })
+
+        it("should successfully delete the user", (done) => {
+            request
+                .delete("/api/users/user4")
+                .set("Authorization", `Bearer ${user4Token}`)
+                .expect(200)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "User deleted")
+                    // check if the user is deleted
+                    return User.findOne({ username: "user4" })
+                })
+                .then((user) => {
+                    assert.ok(!user)
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 403 forbidden for unauthorized users", (done) => {
+            request
+                .delete("/api/users/user1")
+                .set("Authorization", `Bearer ${user3Token}`)
+                .expect(403)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "You cannot delete this user")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should allow administrators to delete any user", (done) => {
+            request
+                .delete("/api/users/user3")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(200)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "User deleted")
+                    // check if the user is deleted
+                    return User.findOne({ username: "user3" })
+                })
+                .then((user) => {
+                    assert.ok(!user)
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 404 for non-existent users", (done) => {
+            request
+                .delete("/api/users/nonexistentuser")
+                .set("Authorization", `Bearer ${adminToken}`)
                 .expect(404)
                 .then((res) => {
                     assert.deepEqual(res.body.body, "User not found")

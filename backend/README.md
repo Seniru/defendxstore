@@ -20,6 +20,8 @@
 	- [Users](#users)
 		- [`GET` `/users` Get all users](#get-users-get-all-users)
 		- [`POST` `/users` Create user](#post-users-create-user)
+		- [`DELETE` `/users/:username` Delete user](#delete-usersusername-delete-user)
+		- [`PUT` `/users/:username/password` Change password](#put-usersusernamepassword-change-password)
 		- [`GET` `/users/:username` Get user](#get-usersusername-get-user)
 		- [`GET` `/users/:username/reviews` Get reviews and ratings (delivery agent)](#get-usersusernamereviews-get-reviews-and-ratings-delivery-agent)
 		- [`GET` `/users/:username/profileImage` Get profile image of user](#get-usersusernameprofileimage-get-profile-image-of-user)
