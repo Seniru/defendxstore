@@ -147,6 +147,28 @@ const getUser = async (req, res, next) => {
     }
 }
 
+const changePassword = async (req, res, next) => {
+    try {
+        const { username } = req.params
+        const { password } = req.body
+        if (!req.user.roles.includes("ADMIN") && username !== req.user.username)
+            return createResponse(res, StatusCodes.FORBIDDEN, "You cannot edit this user")
+
+        if (!password || password.toString() === "")
+            return createResponse(res, StatusCodes.BAD_REQUEST, "You must provide the password")
+
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password, salt)
+
+        const user = await User.findOneAndUpdate({ username }, { password: hashedPassword }).exec()
+        if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+
+        return createResponse(res, StatusCodes.OK, "Password changed")
+    } catch (error) {
+        next(error)
+    }
+}
+
 const getUserProfileImage = async (req, res, next) => {
     try {
         const { username } = req.params
@@ -170,4 +192,11 @@ const getUserProfileImage = async (req, res, next) => {
     }
 }
 
-module.exports = { getAllUsers, createUser, deleteUser, getUser, getUserProfileImage }
+module.exports = {
+    getAllUsers,
+    createUser,
+    deleteUser,
+    getUser,
+    changePassword,
+    getUserProfileImage,
+}

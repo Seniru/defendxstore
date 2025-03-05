@@ -627,6 +627,96 @@ describe("Users", () => {
         })
     })
 
+    describe("PUT /api/users/:username/password", () => {
+        let user3Token, user4Token, adminToken
+
+        before(async () => {
+            await prepareData()
+            const loginUser3Response = await request.post("/api/auth/login").send({
+                email: "user3@example.com",
+                password: "testpassword",
+            })
+            const loginUser4Response = await request.post("/api/auth/login").send({
+                email: "user4@example.com",
+                password: "testpassword",
+            })
+            // log in as administrator to view details
+            const adminLoginResponse = await request.post("/api/auth/login").send({
+                email: "admin@example.com",
+                password: "adminpassword",
+            })
+            adminToken = adminLoginResponse.body.body.token
+            user3Token = loginUser3Response.body.body.token
+            user4Token = loginUser4Response.body.body.token
+        })
+
+        after(async () => {
+            await User.deleteMany({})
+        })
+
+        it("should successfully change the password", (done) => {
+            request
+                .put("/api/users/user4/password")
+                .send({ password: "newpassword" })
+                .set("Authorization", `Bearer ${user4Token}`)
+                .expect(200)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "Password changed")
+                    // check if the password is changed
+                    return User.findOne({ username: "user4" }, "+password")
+                })
+                .then((user) => {
+                    assert.ok(bcrypt.compareSync("newpassword", user.password))
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 403 forbidden for unauthorized users", (done) => {
+            request
+                .put("/api/users/user1/password")
+                .send({ password: "newpassword" })
+                .set("Authorization", `Bearer ${user3Token}`)
+                .expect(403)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "You cannot edit this user")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should allow administrators to change passwords of any user", (done) => {
+            request
+                .put("/api/users/user3/password")
+                .send({ password: "newpassword" })
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(200)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "Password changed")
+                    // check if the password is changed
+                    return User.findOne({ username: "user3" }, "+password")
+                })
+                .then((user) => {
+                    assert.ok(bcrypt.compareSync("newpassword", user.password))
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 404 for non-existent users", (done) => {
+            request
+                .put("/api/users/nonexistentuser/password")
+                .send({ password: "newpassword" })
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(404)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "User not found")
+                    done()
+                })
+                .catch(done)
+        })
+    })
+
     describe("GET /api/users/:username/profileImage", () => {
         before(async () => {
             await User.deleteMany({})
