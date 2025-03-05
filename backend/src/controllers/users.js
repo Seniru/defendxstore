@@ -48,6 +48,29 @@ const getAllUsers = async (req, res, next) => {
     }
 }
 
+const getUser = async (req, res, next) => {
+    try {
+        const { username } = req.params
+        let user = await User.findOne({ username }, "-password").exec()
+        if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+        user = user.applyDerivations()
+        if (
+            !req.user.roles.includes("ADMIN") &&
+            req.user.username !== username &&
+            !user.role.includes("DELIVERY_AGENT")
+        )
+            return createResponse(
+                res,
+                StatusCodes.FORBIDDEN,
+                "You are not authorized to view this user",
+            )
+
+        return createResponse(res, StatusCodes.OK, { user })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const createUser = async (req, res, next) => {
     try {
         const { username, email, password, deliveryAddress, contactNumber, profileImage } = req.body
@@ -132,4 +155,4 @@ const getUserProfileImage = async (req, res, next) => {
     }
 }
 
-module.exports = { getAllUsers, createUser, getUserProfileImage }
+module.exports = { getAllUsers, getUser, createUser, getUserProfileImage }

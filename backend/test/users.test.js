@@ -10,6 +10,65 @@ const app = require("../src/app")
 const logger = require("../src/utils/logger")
 const request = supertest(app)
 
+const salt = bcrypt.genSaltSync(10)
+
+const adminData = {
+    username: "admin",
+    password: bcrypt.hashSync("adminpassword", salt),
+    email: "admin@example.com",
+    role: 1 << 3,
+}
+
+const profileImageUserData = {
+    username: "userwithimage",
+    password: bcrypt.hashSync("testpassword", salt),
+    email: "imageuser@example.com",
+    role: 1 << 0,
+    profileImage: "data:image/png;base64,abc",
+}
+
+const contactUserData = {
+    username: "userwithcontact",
+    password: bcrypt.hashSync("testpassword", salt),
+    email: "contactuser@example.com",
+    role: 1 << 0,
+    deliveryAddress: "Test Address",
+    contactNumber: ["123456789"],
+}
+
+let users = []
+let supportAgents = []
+let deliveryAgents = []
+for (let i = 0; i < 5; i++) {
+    users.push({
+        username: `user${i}`,
+        password: bcrypt.hashSync("testpassword", salt),
+        email: `user${i}@example.com`,
+        role: 1 << 0,
+    })
+    deliveryAgents.push({
+        username: `delivery${i}`,
+        password: bcrypt.hashSync("testpassword", salt),
+        email: `delivery${i}@example.com`,
+        role: 1 << 1,
+    })
+    supportAgents.push({
+        username: `support${i}`,
+        password: bcrypt.hashSync("testpassword", salt),
+        email: `support${i}@example.com`,
+        role: 1 << 2,
+    })
+}
+
+const prepareData = async () => {
+    await User.deleteMany({})
+    await User.create(adminData)
+    await User.create(profileImageUserData)
+    await User.create(contactUserData)
+    for (let user of users) await User.create(user)
+    for (let deliveryAgent of deliveryAgents) await User.create(deliveryAgent)
+    for (let supportAgent of supportAgents) await User.create(supportAgent)
+}
 describe("Users", () => {
     before(async () => {
         await User.deleteMany({})
@@ -21,62 +80,9 @@ describe("Users", () => {
 
     describe("GET /api/users", () => {
         let userToken, adminToken
-        const salt = bcrypt.genSaltSync(10)
 
         before(async () => {
-            await User.deleteMany({})
-            // create admin user
-            await User.create({
-                username: "admin",
-                password: bcrypt.hashSync("adminpassword", salt),
-                email: "admin@example.com",
-                role: 1 << 3,
-            })
-            // create 1 user with profile image
-            await User.create({
-                username: "userwithimage",
-                password: bcrypt.hashSync("testpassword", salt),
-                email: "imageuser@example.com",
-                role: 1 << 0,
-                profileImage: "data:image/png;base64,abc",
-            })
-            // create 1 user with contactNumber and deliveryAddress
-            await User.create({
-                username: "userwithcontact",
-                password: bcrypt.hashSync("testpassword", salt),
-                email: "contactuser@example.com",
-                role: 1 << 0,
-                deliveryAddress: "Test Address",
-                contactNumber: ["123456789"],
-            })
-            // create 5 users
-            for (let i = 0; i < 5; i++) {
-                await User.create({
-                    username: `user${i}`,
-                    password: bcrypt.hashSync("testpassword", salt),
-                    email: `user${i}@example.com`,
-                    role: 1 << 0,
-                })
-            }
-            // create 5 delivery agents
-            for (let i = 0; i < 5; i++) {
-                await User.create({
-                    username: `delivery${i}`,
-                    password: bcrypt.hashSync("testpassword", salt),
-                    email: `delivery${i}@example.com`,
-                    role: 1 << 1,
-                })
-            }
-            // create 5 support agents
-            for (let i = 0; i < 5; i++) {
-                await User.create({
-                    username: `support${i}`,
-                    password: bcrypt.hashSync("testpassword", salt),
-                    email: `support${i}@example.com`,
-                    role: 1 << 2,
-                })
-            }
-
+            await prepareData()
             // log in as a user
             const loginResponse = await request.post("/api/auth/login").send({
                 email: "user3@example.com",
@@ -439,6 +445,101 @@ describe("Users", () => {
                     assert.deepEqual(res.body.body, [
                         { field: "profileImage", message: "Invalid profile image format" },
                     ])
+                    done()
+                })
+                .catch(done)
+        })
+    })
+
+    describe("POST /api/users/:username", () => {
+        let user3Token, user4Token, adminToken
+
+        before(async () => {
+            await prepareData()
+            // log in as a user3
+            const loginUser3Response = await request.post("/api/auth/login").send({
+                email: "user3@example.com",
+                password: "testpassword",
+            })
+            const loginUser4Response = await request.post("/api/auth/login").send({
+                email: "user4@example.com",
+                password: "testpassword",
+            })
+            // log in as administrator to view details
+            const adminLoginResponse = await request.post("/api/auth/login").send({
+                email: "admin@example.com",
+                password: "adminpassword",
+            })
+            adminToken = adminLoginResponse.body.body.token
+            user3Token = loginUser3Response.body.body.token
+            user4Token = loginUser4Response.body.body.token
+        })
+
+        after(async () => {
+            await User.deleteMany({})
+        })
+
+        it("should return profile data for the user", (done) => {
+            request
+                .get("/api/users/user3")
+                .set("Authorization", `Bearer ${user3Token}`)
+                .expect(200)
+                .then((res) => {
+                    assert.strictEqual(res.body.body.user.username, "user3")
+                    assert.strictEqual(res.body.body.user.email, "user3@example.com")
+                    assert.deepEqual(res.body.body.user.role, ["USER"])
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 403 forbidden for unauthorized users", (done) => {
+            request
+                .get("/api/users/user4")
+                .set("Authorization", `Bearer ${user3Token}`)
+                .expect(403)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "You are not authorized to view this user")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should allow administrators to view any user", (done) => {
+            request
+                .get("/api/users/user3")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(200)
+                .then((res) => {
+                    assert.strictEqual(res.body.body.user.username, "user3")
+                    assert.strictEqual(res.body.body.user.email, "user3@example.com")
+                    assert.deepEqual(res.body.body.user.role, ["USER"])
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should allow users to view delivery agents", (done) => {
+            request
+                .get("/api/users/delivery0")
+                .set("Authorization", `Bearer ${user3Token}`)
+                .expect(200)
+                .then((res) => {
+                    assert.strictEqual(res.body.body.user.username, "delivery0")
+                    assert.strictEqual(res.body.body.user.email, "delivery0@example.com")
+                    assert.deepEqual(res.body.body.user.role, ["DELIVERY_AGENT"])
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 404 for non-existent users", (done) => {
+            request
+                .get("/api/users/nonexistentuser")
+                .set("Authorization", `Bearer ${user3Token}`)
+                .expect(404)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "User not found")
                     done()
                 })
                 .catch(done)
