@@ -49,3 +49,26 @@
 .profile-title {
   font-weight: lighter;
 }
+
+.review-container {
+  display: flex;
+  margin-bottom: 20px;
+
+  .review-stars {
+    width: 20%;
+    display: grid;
+
+  }
+
+  .review-content {
+    align-items: center;
+    display: grid
+;
+
+  }
+
+  .review-profile {
+    width: 20%;
+  }
+
+}

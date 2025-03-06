@@ -16,6 +16,7 @@ import {
 import "./Profile.css"
 import TabMenu from "../../components/TabMenu"
 import TabItem from "../../components/TabMenu/TabItem"
+import Reviews from "./Reviews"
 
 export default function Profile() {
   const { user } = useAuth()
@@ -69,9 +70,13 @@ export default function Profile() {
       <div className="profile-content">
         <TabMenu>
           <TabItem name="Orders" />
-          <TabItem name="Reviews" />
+          <TabItem name="Reviews" element={<Reviews />} />
         </TabMenu>
       </div>
     </div>
+
+
   )
+
+  
 }
