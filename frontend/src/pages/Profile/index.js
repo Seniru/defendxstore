@@ -74,9 +74,5 @@ export default function Profile() {
         </TabMenu>
       </div>
     </div>
-
-
   )
-
-  
 }
