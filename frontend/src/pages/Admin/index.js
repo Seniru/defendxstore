@@ -6,7 +6,7 @@ import InventoryManagement from "./InventoryManagement"
 export default function Admin() {
   return (
     <TabMenu>
-      <TabItem name="Inventory" element={<InventoryManagement/>} />
+      <TabItem name="Inventory" element={<InventoryManagement />} />
       <TabItem name="User management" element={<UserManagement />} />
       <TabItem name="Supply management" element={<></>} />
       <TabItem name="Sales management" element={<></>} />
