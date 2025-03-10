@@ -1,15 +1,15 @@
-import React from "react";
-import "./InventoryManagement.css";
-import Select from "../../components/Select";
-import SearchBar from "../../components/SearchBar";
-import Button from "../../components/Button";
-import Table from "../../components/Table";
-import pic1 from "../../assets/images/pic1.jpg";
-import pic2 from "../../assets/images/pic2.jpg";
-import pic3 from "../../assets/images/pic3.jpg";
-import pic4 from "../../assets/images/pic4.jpg";
-import pic5 from "../../assets/images/pic5.jpg";
-import { text } from "@fortawesome/fontawesome-svg-core";
+import React from "react"
+import "./InventoryManagement.css"
+import Select from "../../components/Select"
+import SearchBar from "../../components/SearchBar"
+import Button from "../../components/Button"
+import Table from "../../components/Table"
+import pic1 from "../../assets/images/pic1.jpg"
+import pic2 from "../../assets/images/pic2.jpg"
+import pic3 from "../../assets/images/pic3.jpg"
+import pic4 from "../../assets/images/pic4.jpg"
+import pic5 from "../../assets/images/pic5.jpg"
+import { text } from "@fortawesome/fontawesome-svg-core"
 
 const productData = [
   {
@@ -19,7 +19,7 @@ const productData = [
     colors: ["white", "black", "blue"],
     price: "LKR3200",
     size: "M,L,XL",
-    quantity:120,
+    quantity: 120,
     stock: "In Stock",
     promoCode: "10OFF",
   },
@@ -30,7 +30,7 @@ const productData = [
     colors: ["white", "blue"],
     price: "LKR3500",
     size: "M,XL,XXL",
-    quantity:100,
+    quantity: 100,
     stock: "In Stock",
     promoCode: "",
   },
@@ -41,7 +41,7 @@ const productData = [
     colors: ["black", "blue"],
     price: "LKR3200",
     size: "S,M",
-    quantity:20,
+    quantity: 20,
     stock: "Running Low",
     promoCode: "FFX",
   },
@@ -52,7 +52,7 @@ const productData = [
     colors: ["white", "black", "blue"],
     price: "LKR3200",
     size: "M,L,XL",
-    quantity:0,
+    quantity: 0,
     stock: "Out of Stock",
     promoCode: "1FF",
   },
@@ -63,31 +63,61 @@ const productData = [
     colors: ["white", "black", "blue"],
     price: "LKR3100",
     size: "M",
-    quantity:0,
+    quantity: 0,
     stock: "Out of Stock",
     promoCode: "12D",
   },
-];
+]
 
 //function to return stock status
 const StockStatus = ({ stock }) => {
-  let style;
+  let style
   switch (stock) {
     case "In Stock":
-      style = { width:"90px",backgroundColor: "#ffffff", color: "#09db65", padding: "5px", borderRadius: "20px",textAlign:"center",border:"3px , solid ,#09db65" };
-      break;
+      style = {
+        width: "90px",
+        backgroundColor: "#ffffff",
+        color: "#09db65",
+        padding: "5px",
+        borderRadius: "20px",
+        textAlign: "center",
+        border: "3px , solid ,#09db65",
+      }
+      break
     case "Running Low":
-      style = { width:"90px",backgroundColor: "white", color: "orange", padding: "5px", borderRadius: "20px" ,textAlign:"center",border:"3px , solid ,orange"};
-      break;
+      style = {
+        width: "90px",
+        backgroundColor: "white",
+        color: "orange",
+        padding: "5px",
+        borderRadius: "20px",
+        textAlign: "center",
+        border: "3px , solid ,orange",
+      }
+      break
     case "Out of Stock":
-      style = { width:"90px",backgroundColor: "white", color: "red", padding: "5px", borderRadius: "20px",textAlign:"center",border:"3px , solid ,red" };
-      break;
+      style = {
+        width: "90px",
+        backgroundColor: "white",
+        color: "red",
+        padding: "5px",
+        borderRadius: "20px",
+        textAlign: "center",
+        border: "3px , solid ,red",
+      }
+      break
     default:
-      style = { backgroundColor: "gray", color: "white", padding: "5px", borderRadius: "20px",textAlign:"center" }; 
+      style = {
+        backgroundColor: "gray",
+        color: "white",
+        padding: "5px",
+        borderRadius: "20px",
+        textAlign: "center",
+      }
   }
 
-  return <div style={style}>{stock}</div>;
-};
+  return <div style={style}>{stock}</div>
+}
 
 const InventoryManagement = () => {
   return (
@@ -95,15 +125,28 @@ const InventoryManagement = () => {
       <h1 className="title">Inventory Management</h1>
       <div className="container">
         <SearchBar placeholder={"search items..."} />
-       <Select items={["All", "In Stock", "Out of Stock" ]} />
+        <Select items={["All", "In Stock", "Out of Stock"]} />
         <div className="addporduct">
           <button>Add Product</button>
         </div>
       </div>
-      <div className="secondary-text" style={{ margin: "20px" }}>Showing 999 products...</div>
+      <div className="secondary-text" style={{ margin: "20px" }}>
+        Showing 999 products...
+      </div>
       <div className="table-container">
         <Table
-          headers={["Product", "Item Name", "Description", "Colors", "Price", "Size", "Quantity","Stock", "Promo_Code", "Action"]}
+          headers={[
+            "Product",
+            "Item Name",
+            "Description",
+            "Colors",
+            "Price",
+            "Size",
+            "Quantity",
+            "Stock",
+            "Promo_Code",
+            "Action",
+          ]}
           rows={productData.map((product) => [
             <img
               src={product.image}
@@ -117,10 +160,9 @@ const InventoryManagement = () => {
             product.price,
             product.size,
             product.quantity,
-            <StockStatus stock={product.stock} />, 
+            <StockStatus stock={product.stock} />,
             product.promoCode,
             <div className="action-buttons">
-
               <Button kind="primary">Edit</Button>
               <Button kind="danger">Delete</Button>
             </div>,
@@ -128,7 +170,7 @@ const InventoryManagement = () => {
         />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default InventoryManagement;
+export default InventoryManagement
