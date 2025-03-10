@@ -3,6 +3,7 @@
   margin-top: 20px;
   border-collapse: collapse;
   padding: 5px;
+  border-radius: 10px;
 }
 
 .custom-table > thead {
