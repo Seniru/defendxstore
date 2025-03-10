@@ -9,7 +9,6 @@ import pic2 from "../../assets/images/pic2.jpg"
 import pic3 from "../../assets/images/pic3.jpg"
 import pic4 from "../../assets/images/pic4.jpg"
 import pic5 from "../../assets/images/pic5.jpg"
-import { text } from "@fortawesome/fontawesome-svg-core"
 
 const productData = [
   {
@@ -121,18 +120,15 @@ const StockStatus = ({ stock }) => {
 
 const InventoryManagement = () => {
   return (
-    <div>
-      <h1 className="title">Inventory Management</h1>
-      <div className="container">
-        <SearchBar placeholder={"search items..."} />
-        <Select items={["All", "In Stock", "Out of Stock"]} />
-        <div className="addporduct">
-          <button>Add Product</button>
-        </div>
+    <div className="content">
+      <div className="inventory-management-actions">
+        <SearchBar placeholder={"Search items..."} />
+        <span>
+          <Select items={["All", "In Stock", "Out of Stock"]} />
+          <Button>Add Product</Button>
+        </span>
       </div>
-      <div className="secondary-text" style={{ margin: "20px" }}>
-        Showing 999 products...
-      </div>
+      <div className="secondary-text">Showing 999 products...</div>
       <div className="table-container">
         <Table
           headers={[
