@@ -1,6 +1,8 @@
 import React from "react";
 import "./InventoryManagement.css";
+import Select from "../../components/Select";
 import SearchBar from "../../components/SearchBar";
+import Button from "../../components/Button";
 import Table from "../../components/Table";
 import pic1 from "../../assets/images/pic1.jpg";
 import pic2 from "../../assets/images/pic2.jpg";
@@ -92,12 +94,8 @@ const InventoryManagement = () => {
     <div>
       <h1 className="title">Inventory Management</h1>
       <div className="container">
-        <SearchBar />
-        <select>
-          <option value="All">All</option>
-          <option value="In Stock">In Stock</option>
-          <option value="Out of Stock">Out of Stock</option>
-        </select>
+        <SearchBar placeholder={"search items..."} />
+       <Select items={["All", "In Stock", "Out of Stock" ]} />
         <div className="addporduct">
           <button>Add Product</button>
         </div>
@@ -122,8 +120,9 @@ const InventoryManagement = () => {
             <StockStatus stock={product.stock} />, 
             product.promoCode,
             <div className="action-buttons">
-              <button className="edit-button">Edit</button>
-              <button className="delete-button">Delete</button>
+
+              <Button kind="primary">Edit</Button>
+              <Button kind="danger">Delete</Button>
             </div>,
           ])}
         />

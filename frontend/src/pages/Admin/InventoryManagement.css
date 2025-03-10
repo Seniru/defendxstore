@@ -15,31 +15,6 @@
 }
 
 .table-container{
-    
     border-radius: 10px;
     margin:20px;
-}
-
-.edit-button{
-    background-color: #000000;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    display: inline-block;
-    font-size: 12px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.delete-button{
-    background-color: red;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    display: inline-block;
-    font-size: 12px;
-    border-radius: 5px;
-    cursor: pointer;
 }
