@@ -6,7 +6,7 @@ import { Link } from "react-router-dom"
 
 export default function Forbidden() {
   return (
-    <div class="content">
+    <div class="forbidden content">
       <h1>
         <span className="oops">Oops!</span> This wardrobe is off-limits. Got the
         VIP pass?
