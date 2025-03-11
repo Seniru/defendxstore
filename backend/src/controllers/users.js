@@ -236,6 +236,23 @@ const addRole = async (req, res, next) => {
     }
 }
 
+const removeRole = async (req, res, next) => {
+    try {
+        const { username, role } = req.params
+        if (!["USER", "DELIVERY_AGENT", "SUPPORT_AGENT", "ADMIN"].includes(role))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid role")
+
+        const user = await User.findOne({ username }).exec()
+        if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+        console.log(2 ** Object.keys(permissions).length - 1, ~permissions[role])
+        user.role &= (2 ** Object.keys(permissions).length - 1) & ~permissions[role]
+        await user.save()
+        return createResponse(res, StatusCodes.OK, "Role removed")
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllUsers,
     createUser,
@@ -245,4 +262,5 @@ module.exports = {
     getUserProfileImage,
     changeProfileImage,
     addRole,
+    removeRole,
 }
