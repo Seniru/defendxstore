@@ -1,0 +1,8 @@
+.table-container {
+  border-radius: 10px;
+}
+
+.inventory-management-actions {
+  display: flex;
+  justify-content: space-between;
+}
