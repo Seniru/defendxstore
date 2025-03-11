@@ -244,11 +244,41 @@ const removeRole = async (req, res, next) => {
 
         const user = await User.findOne({ username }).exec()
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
-        console.log(2 ** Object.keys(permissions).length - 1, ~permissions[role])
+
         user.role &= (2 ** Object.keys(permissions).length - 1) & ~permissions[role]
         await user.save()
         return createResponse(res, StatusCodes.OK, "Role removed")
     } catch (error) {
+        next(error)
+    }
+}
+
+const editUser = async (req, res, next) => {
+    try {
+        const { username } = req.params
+        const { deliveryAddress, contactNumber } = req.body
+
+        if (!req.user.roles.includes("ADMIN") && username !== req.user.username)
+            return createResponse(res, StatusCodes.FORBIDDEN, "You cannot edit this user")
+
+        let update = { deliveryAddress }
+        if (contactNumber) update.contactNumber = [contactNumber]
+
+        const user = await User.findOneAndUpdate({ username }, update)
+
+        if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+        return createResponse(res, StatusCodes.OK, "Editted")
+    } catch (error) {
+        if (error instanceof mongoose.Error.ValidationError) {
+            return createResponse(
+                res,
+                StatusCodes.BAD_REQUEST,
+                Object.keys(error.errors).map((key) => ({
+                    field: key,
+                    message: error.errors[key].message,
+                })),
+            )
+        }
         next(error)
     }
 }
@@ -263,4 +293,5 @@ module.exports = {
     changeProfileImage,
     addRole,
     removeRole,
+    editUser,
 }
