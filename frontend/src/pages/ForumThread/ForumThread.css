@@ -1,0 +1,20 @@
+.forum-thread-main-content {
+  display: flex;
+
+  .forum-thread-main-information {
+    display: grid;
+    margin-right: 20px;
+    margin-top: 20px;
+  }
+}
+
+.thread-reply-container {
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+  div {
+    margin-right: 20px;
+    margin-top: 10px;
+  }
+}
