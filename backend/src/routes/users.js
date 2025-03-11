@@ -9,6 +9,7 @@ const {
     deleteUser,
     changePassword,
     getUserProfileImage,
+    changeProfileImage,
 } = require("../controllers/users")
 
 router.get("/", requireRole(roles.ADMIN), getAllUsers)
@@ -17,5 +18,6 @@ router.get("/:username", requireRole(roles.USER), getUser)
 router.delete("/:username", requireRole(roles.USER), deleteUser)
 router.put("/:username/password", requireRole(roles.USER), changePassword)
 router.get("/:username/profileImage", getUserProfileImage)
+router.put("/:username/profileImage", requireRole(roles.USER), changeProfileImage)
 
 module.exports = router

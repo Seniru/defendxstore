@@ -192,6 +192,25 @@ const getUserProfileImage = async (req, res, next) => {
     }
 }
 
+const changeProfileImage = async (req, res, next) => {
+    try {
+        const { username } = req.params
+        const { image } = req.body
+
+        if (!req.user.roles.includes("ADMIN") && username !== req.user.username)
+            return createResponse(res, StatusCodes.FORBIDDEN, "You cannot edit this user")
+
+        if (!image || !image.match(/^data:(.+);base64,(.*)$/))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid profile image format")
+
+        const user = await User.findOneAndUpdate({ username }, { profileImage: image }).exec()
+        if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+        return createResponse(res, StatusCodes.OK, "Image updated successfully")
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllUsers,
     createUser,
@@ -199,4 +218,5 @@ module.exports = {
     getUser,
     changePassword,
     getUserProfileImage,
+    changeProfileImage,
 }
