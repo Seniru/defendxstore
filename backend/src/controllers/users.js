@@ -7,6 +7,13 @@ const createToken = require("../utils/createToken")
 const User = require("../models/User")
 const logger = require("../utils/logger")
 
+const permissions = {
+    USER: 1 << 0,
+    DELIVERY_AGENT: 1 << 1,
+    SUPPORT_AGENT: 1 << 2,
+    ADMIN: 1 << 3,
+}
+
 const getAllUsers = async (req, res, next) => {
     try {
         const search = req.query.search || ""
@@ -211,6 +218,24 @@ const changeProfileImage = async (req, res, next) => {
     }
 }
 
+const addRole = async (req, res, next) => {
+    try {
+        const { username } = req.params
+        const { role } = req.body
+        if (!role || !["USER", "DELIVERY_AGENT", "SUPPORT_AGENT", "ADMIN"].includes(role))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid role")
+
+        const user = await User.findOne({ username })
+        if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+
+        user.role |= permissions[role]
+        await user.save()
+        return createResponse(res, StatusCodes.OK, "Role added")
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getAllUsers,
     createUser,
@@ -219,4 +244,5 @@ module.exports = {
     changePassword,
     getUserProfileImage,
     changeProfileImage,
+    addRole,
 }
