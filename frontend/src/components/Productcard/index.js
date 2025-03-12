@@ -1,7 +1,7 @@
 import React from "react"
 import "./Productcard.css"
 import Button from "../Button"
-import pic1 from "../../assets/images/pic1.jpg"
+import item1 from "../../assets/images/item1.jpg"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faHeart } from "@fortawesome/free-regular-svg-icons"
 
@@ -9,7 +9,7 @@ const Productcard = () => {
   return (
     <div className="product-card">
       <div className="product-image">
-        <img src={pic1} alt="product" />
+        <img src={item1} alt="product" />
       </div>
       <div className="product-details">
         <h3 className="product-title">Over-SIZED Tee</h3>
