@@ -20,8 +20,11 @@
 	- [Users](#users)
 		- [`GET` `/users` Get all users](#get-users-get-all-users)
 		- [`POST` `/users` Create user](#post-users-create-user)
+		- [`DELETE` `/users/:username` Delete user](#delete-usersusername-delete-user)
+		- [`PUT` `/users/:username/password` Change password](#put-usersusernamepassword-change-password)
 		- [`GET` `/users/:username` Get user](#get-usersusername-get-user)
 		- [`GET` `/users/:username/reviews` Get reviews and ratings (delivery agent)](#get-usersusernamereviews-get-reviews-and-ratings-delivery-agent)
+		- [`GET` `/users/:username/profileImage` Get profile image of user](#get-usersusernameprofileimage-get-profile-image-of-user)
 		- [`PUT` `/users/:username/profileImage` Change profile image](#put-usersusernameprofileimage-change-profile-image)
 		- [`POST` `/users/:username/role` Add role to user](#post-usersusernamerole-add-role-to-user)
 		- [`DELETE` `/users/:username/role/:role` Remove role from user](#delete-usersusernamerolerole-remove-role-from-user)
@@ -258,6 +261,13 @@ These schemas take a common shape and will be mentioned in request/response bodi
 - `400 Bad request`: Invalid inputs for the request
 - `401 Unauthorized`: Not logged in
 - `403 Forbidden`: User trying to change another users' password
+- `404 Not found`: User not found
+
+##### `GET` `/users/:username/profileImage` Get profile image of user
+
+**Responses**
+
+- `200 OK`: Image
 - `404 Not found`: User not found
 
 #### `PUT` `/users/:username/profileImage` Change profile image

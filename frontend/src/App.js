@@ -10,6 +10,8 @@ import Profile from "./pages/Profile"
 import Admin from "./pages/Admin"
 import NotFound from "./pages/errors/NotFound"
 import Home from "./pages/Home"
+import Forum from "./pages/Forum"
+import ForumThread from "./pages/ForumThread"
 
 function App() {
   return (
@@ -20,6 +22,10 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route path="components" element={<Components />} />
               <Route path="home" element={<Home />} />
+              <Route path="forum">
+                <Route index element={<Forum />} />
+                <Route path="thread" element={<ForumThread />} />
+              </Route>
               <Route element={<PrivateRoute />}>
                 <Route path="profile" element={<Profile />} />
                 <Route path="*" element={<NotFound />} />
@@ -30,7 +36,7 @@ function App() {
               <Route element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}>
                 <Route path="*" element={<NotFound />} />
               </Route>
-              <Route element={<PrivateRoute requiredRole="ADMIN" />}>
+              <Route element={<PrivateRoute requiredRole="USER" />}>
                 <Route path="admin" element={<Admin />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
