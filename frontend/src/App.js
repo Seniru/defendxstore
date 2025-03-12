@@ -9,6 +9,7 @@ import PrivateRoute from "./components/PrivateRoute"
 import Profile from "./pages/Profile"
 import Admin from "./pages/Admin"
 import NotFound from "./pages/errors/NotFound"
+import Home from "./pages/Home"
 import Forum from "./pages/Forum"
 import ForumThread from "./pages/ForumThread"
 
@@ -20,6 +21,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route path="components" element={<Components />} />
+              <Route path="home" element={<Home />} />
               <Route path="forum">
                 <Route index element={<Forum />} />
                 <Route path="thread" element={<ForumThread />} />
