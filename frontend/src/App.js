@@ -20,8 +20,8 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
               <Route path="components" element={<Components />} />
-              <Route path="home" element={<Home />} />
               <Route path="forum">
                 <Route index element={<Forum />} />
                 <Route path="thread" element={<ForumThread />} />
@@ -36,7 +36,7 @@ function App() {
               <Route element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}>
                 <Route path="*" element={<NotFound />} />
               </Route>
-              <Route element={<PrivateRoute requiredRole="USER" />}>
+              <Route element={<PrivateRoute requiredRole="ADMIN" />}>
                 <Route path="admin" element={<Admin />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
