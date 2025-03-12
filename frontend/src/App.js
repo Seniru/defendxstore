@@ -10,6 +10,7 @@ import Profile from "./pages/Profile"
 import Admin from "./pages/Admin"
 import NotFound from "./pages/errors/NotFound"
 import Home from "./pages/Home"
+import Product from "./pages/Product"
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route path="components" element={<Components />} />
               <Route path="home" element={<Home />} />
+              <Route path="product" element={< Product/>} />
               <Route element={<PrivateRoute />}>
                 <Route path="profile" element={<Profile />} />
                 <Route path="*" element={<NotFound />} />
