@@ -3,6 +3,7 @@ import Input from "../components/Input"
 import SearchBar from "../components/SearchBar"
 import Select from "../components/Select"
 import Table from "../components/Table"
+import Productcard from "../components/Productcard"
 
 export default function Components() {
   return (
@@ -41,6 +42,7 @@ export default function Components() {
           ["Data 1", "Data 2", "Data 3", "Data 4"],
         ]}
       />
+      <Productcard />
     </div>
   )
 }

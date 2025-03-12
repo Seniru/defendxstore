@@ -9,6 +9,7 @@ import PrivateRoute from "./components/PrivateRoute"
 import Profile from "./pages/Profile"
 import Admin from "./pages/Admin"
 import NotFound from "./pages/errors/NotFound"
+import Home from "./pages/Home"
 import Forum from "./pages/Forum"
 import ForumThread from "./pages/ForumThread"
 
@@ -19,6 +20,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
               <Route path="components" element={<Components />} />
               <Route path="forum">
                 <Route index element={<Forum />} />
