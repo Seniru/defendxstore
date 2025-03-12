@@ -7,9 +7,9 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "export NODE_ENV=test && mocha --exit",
+    "test": "node -e \"process.env.NODE_ENV='test'; require('child_process').execSync('mocha --exit', { stdio: 'inherit' });\"",
     "coverage": "nyc --reporter=lcov --reporter=text --reporter=text-summary npm test",
-    "start": "export NODE_ENV=dev && node src/app.js",
+    "start": "node -e \"process.env.NODE_ENV='dev'; require('child_process').execSync('node src/app.js', { stdio: 'inherit' });\"",
     "prettify": "npx prettier --write \"{src,test}/**/*.{js,jsx,ts,tsx,css,scss,html}\"",
     "check": "npx prettier --check \"{src,test}/**/*.{js,jsx,ts,tsx,css,scss,html}\"",
     "populate": "node src/extras/populate.js"
