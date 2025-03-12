@@ -26,7 +26,6 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route path="components" element={<Components />} />
               <Route path="home" element={<Home />} />
-<<<<<<< HEAD
               <Route path="product" element={< Product/>} />
 =======
               <Route path="forum">
