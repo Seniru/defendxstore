@@ -10,7 +10,7 @@ export default function Admin() {
       <TabItem name="Inventory" element={<></>} />
       <TabItem name="User management" element={<UserManagement />} />
       <TabItem name="Supply management" element={<SupplyManagement />} />
-      <TabItem name="Sales management" element={<SalesManagement/>} />
+      <TabItem name="Sales management" element={<SalesManagement />} />
     </TabMenu>
   )
 }
