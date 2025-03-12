@@ -4,16 +4,17 @@ import Select from "../../components/Select"
 import SearchBar from "../../components/SearchBar"
 import Button from "../../components/Button"
 import Table from "../../components/Table"
-import item1 from "../../assets/images/item1.jpg"
-import item2 from "../../assets/images/item2.jpg"
-import item3 from "../../assets/images/item3.jpg"
-import item4 from "../../assets/images/item4.jpg"
-import item5 from "../../assets/images/item5.jpg"
-import { text } from "@fortawesome/fontawesome-svg-core"
+
+
+import pic1 from "../../assets/images/pic1.jpg"
+import pic2 from "../../assets/images/pic2.jpg"
+import pic3 from "../../assets/images/pic3.jpg"
+import pic4 from "../../assets/images/pic4.jpg"
+import pic5 from "../../assets/images/pic5.jpg"
 
 const productData = [
   {
-    image: item1,
+    image: pic1,
     name: "Oversized White",
     description: "Premium quality oversized for teenagers",
     colors: ["white", "black", "blue"],
@@ -24,7 +25,7 @@ const productData = [
     promoCode: "10OFF",
   },
   {
-    image: item2,
+    image: pic2,
     name: "Oversized Black",
     description: "Premium quality oversized for teenagers",
     colors: ["white", "blue"],
@@ -35,7 +36,7 @@ const productData = [
     promoCode: "",
   },
   {
-    image: item3,
+    image: pic3,
     name: "Premium Jogger Pant",
     description: "Premium quality jogger for individuals",
     colors: ["black", "blue"],
@@ -46,7 +47,7 @@ const productData = [
     promoCode: "FFX",
   },
   {
-    image: item4,
+    image: pic4,
     name: "Karma Limited Edition",
     description: "Premium quality oversized for teenagers",
     colors: ["white", "black", "blue"],
@@ -57,7 +58,7 @@ const productData = [
     promoCode: "1FF",
   },
   {
-    image: item5,
+    image: pic5,
     name: "Ladies Top",
     description: "Comfy top for ladies",
     colors: ["white", "black", "blue"],
@@ -121,18 +122,15 @@ const StockStatus = ({ stock }) => {
 
 const InventoryManagement = () => {
   return (
-    <div>
-      <h1 className="title">Inventory Management</h1>
-      <div className="container">
-        <SearchBar placeholder={"search items..."} />
-        <Select items={["All", "In Stock", "Out of Stock"]} />
-        <div className="addporduct">
-          <button>Add Product</button>
-        </div>
+    <div className="content">
+      <div className="inventory-management-actions">
+        <SearchBar placeholder={"Search items..."} />
+        <span>
+          <Select items={["All", "In Stock", "Out of Stock"]} />
+          <Button>Add Product</Button>
+        </span>
       </div>
-      <div className="secondary-text" style={{ margin: "20px" }}>
-        Showing 999 products...
-      </div>
+      <div className="secondary-text">Showing 999 products...</div>
       <div className="table-container">
         <Table
           headers={[

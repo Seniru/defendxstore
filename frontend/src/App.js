@@ -10,7 +10,12 @@ import Profile from "./pages/Profile"
 import Admin from "./pages/Admin"
 import NotFound from "./pages/errors/NotFound"
 import Home from "./pages/Home"
+<<<<<<< HEAD
 import Product from "./pages/Product"
+=======
+import Forum from "./pages/Forum"
+import ForumThread from "./pages/ForumThread"
+>>>>>>> 11e9aacba88885ffb71e2309cd7ed57c5d57a65b
 
 function App() {
   return (
@@ -21,7 +26,14 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route path="components" element={<Components />} />
               <Route path="home" element={<Home />} />
+<<<<<<< HEAD
               <Route path="product" element={< Product/>} />
+=======
+              <Route path="forum">
+                <Route index element={<Forum />} />
+                <Route path="thread" element={<ForumThread />} />
+              </Route>
+>>>>>>> 11e9aacba88885ffb71e2309cd7ed57c5d57a65b
               <Route element={<PrivateRoute />}>
                 <Route path="profile" element={<Profile />} />
                 <Route path="*" element={<NotFound />} />
@@ -32,7 +44,7 @@ function App() {
               <Route element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}>
                 <Route path="*" element={<NotFound />} />
               </Route>
-              <Route element={<PrivateRoute requiredRole="ADMIN" />}>
+              <Route element={<PrivateRoute requiredRole="USER" />}>
                 <Route path="admin" element={<Admin />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
