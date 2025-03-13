@@ -1,14 +1,13 @@
-import React from "react";
-import "./checkout.css";
-import product1 from "../../assets/images/item2.jpg";
-import Select from "../../components/Select";
-import Input from "../../components/Input";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import React from "react"
+import "./Product.css"
+import product1 from "../../assets/images/item2.jpg"
+import Select from "../../components/Select"
+import Input from "../../components/Input"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons"
 
-
-const Checkout = () => {
-  const availableColors = ["black", "white", "grey", "maroon"]; // Example colors
+const Product = () => {
+  const availableColors = ["black", "white", "grey", "maroon"] // Example colors
 
   return (
     <div className="product-checkout">
@@ -42,8 +41,12 @@ const Checkout = () => {
           <div className="size-and-guide">
             <Select items={["S", "M", "L", "XL", "XXL"]} />
 
-            <a href="https://static.vecteezy.com/system/resources/previews/011/188/583/non_2x/short-sleeve-shirt-size-chart-template-infographic-table-of-size-guide-men-shirt-with-collar-and-button-vector.jpg" target="_blank" rel="noopener noreferrer">
-            <FontAwesomeIcon icon={faCircleInfo} />
+            <a
+              href="https://static.vecteezy.com/system/resources/previews/011/188/583/non_2x/short-sleeve-shirt-size-chart-template-infographic-table-of-size-guide-men-shirt-with-collar-and-button-vector.jpg"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FontAwesomeIcon icon={faCircleInfo} />
               <h4>Size Guide</h4>
             </a>
           </div>
@@ -64,7 +67,7 @@ const Checkout = () => {
         <button className="add-to-cart">Add to Cart</button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Checkout;
+export default Product
