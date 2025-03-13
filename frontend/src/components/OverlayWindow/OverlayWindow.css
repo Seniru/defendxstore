@@ -1,0 +1,26 @@
+.overlay-window {
+  position: fixed;
+  z-index: 9999;
+  box-shadow: 0px 0px 0px 1000000px rgba(0, 0, 0, 0.6);
+  overflow: scroll;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  margin: auto;
+  width: max-content;
+  height: max-content;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.overlay-window-close-button {
+  display: block;
+  position: absolute;
+  right: 5px;
+  margin: 10px;
+}
