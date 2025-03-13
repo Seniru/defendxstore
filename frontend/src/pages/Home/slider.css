@@ -14,12 +14,12 @@
 }
 
 .swiper {
-  width: 1690px;
+  width: calc(100vw - 15px);
   height: auto;
 }
 
 .swiper-slide img {
-  width: 1690px;
+  width: calc(100vw - 15px);
   height: auto;
   display: block;
   margin: 0;

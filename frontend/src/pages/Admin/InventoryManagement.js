@@ -5,7 +5,6 @@ import SearchBar from "../../components/SearchBar"
 import Button from "../../components/Button"
 import Table from "../../components/Table"
 
-
 import pic1 from "../../assets/images/pic1.jpg"
 import pic2 from "../../assets/images/pic2.jpg"
 import pic3 from "../../assets/images/pic3.jpg"
