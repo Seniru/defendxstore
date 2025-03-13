@@ -11,7 +11,7 @@ const Productcard = () => {
       <div className="product-photo">
         <img src={item1} alt="product" />
       </div>
-      <div className="product-details">
+      <div className="product-data">
         <h3 className="product-title">Over-SIZED Tee</h3>
         <div className="product-meta">
           <p className="price">LKR 3,200.00</p>
