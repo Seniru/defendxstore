@@ -13,12 +13,12 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-.product-image {
+.product-photo {
   height: 200px;
   width: 100%;
 }
 
-.product-image img {
+.product-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;

@@ -8,7 +8,7 @@ import { faHeart } from "@fortawesome/free-regular-svg-icons"
 const Productcard = () => {
   return (
     <div className="product-card">
-      <div className="product-image">
+      <div className="product-photo">
         <img src={item1} alt="product" />
       </div>
       <div className="product-details">
