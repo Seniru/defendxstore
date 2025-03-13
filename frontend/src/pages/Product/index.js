@@ -42,12 +42,13 @@ const Product = () => {
             <Select items={["S", "M", "L", "XL", "XXL"]} />
 
             <a
-              href="https://static.vecteezy.com/system/resources/previews/011/188/583/non_2x/short-sleeve-shirt-size-chart-template-infographic-table-of-size-guide-men-shirt-with-collar-and-button-vector.jpg"
+              href="https://i.etsystatic.com/36489670/r/il/b0d388/4051942364/il_1588xN.4051942364_gfvj.jpg"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <FontAwesomeIcon icon={faCircleInfo} />
-              <h4>Size Guide</h4>
+              <h4>
+                Size Guide <FontAwesomeIcon icon={faCircleInfo} />
+              </h4>
             </a>
           </div>
         </div>
@@ -55,13 +56,6 @@ const Product = () => {
         <div className="quantity">
           <h3>Quantity</h3>
           <Input type="number" placeholder="1" />
-        </div>
-
-        <div className="promocode">
-          <h3>
-            Promo Code<span style={{ color: "red" }}>*</span>
-          </h3>
-          <Input type="text" placeholder="Enter promo code" />
         </div>
 
         <button className="add-to-cart">Add to Cart</button>
