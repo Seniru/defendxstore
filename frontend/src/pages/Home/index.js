@@ -45,7 +45,7 @@ const Home = () => {
       fontSize: "20px",
     }}
   >
-    Get 20% for your First Order by Using #DEFEND1 PROMO CODE🔥 &nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;  
+    Get 20% OFF for your First Order by Using #DEFEND1 PROMO CODE🔥 &nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;  
     FREE Delivery available for the Orders above 5000LKR up to 20th of April. &nbsp;&nbsp;&nbsp;  &nbsp;
   </div>
 </div>
