@@ -34,6 +34,31 @@ const Home = () => {
 
   return (
     <div className="main-container">
+      <div style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
+  <div
+    style={{
+      display: "inline-block",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      fontWeight: "bold",
+      animation: "marquee 20s linear infinite",
+      fontSize: "20px",
+    }}
+  >
+    Get 20% for your First Order by Using #DEFEND1 PROMO CODE🔥 &nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;  
+    FREE Delivery available for the Orders above 5000LKR up to 20th of April. &nbsp;&nbsp;&nbsp;  &nbsp;
+  </div>
+</div>
+
+<style>
+  {`
+    @keyframes marquee {
+      from { transform: translateX(100%); }
+      to { transform: translateX(-100%); }
+    }
+  `}
+</style>
+
       <section className="carousel-section">
         <div className="swiper mySwiper">
           <div className="swiper-wrapper">
