@@ -1,0 +1,23 @@
+.message-box {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  padding: 10px 20px 10px 10px;
+  border-radius: 6px;
+  color: white;
+}
+.message-box.error-box {
+  background-color: #f44336;
+}
+
+.message-box.info-box {
+  background-color: #67a30a;
+}
+
+.message-box-close-button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  cursor: pointer;
+}
