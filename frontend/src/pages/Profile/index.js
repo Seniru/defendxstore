@@ -25,11 +25,13 @@ import MessageBox from "../../components/MessageBox"
 import DeleteAccountForm from "../../forms/DeleteAccountForm"
 import ChangeBillingInformationForm from "../../forms/ChangeBillingInformationForm"
 import useFetch from "../../hooks/useFetch"
+import { useNavigate } from "react-router-dom"
 
 const { REACT_APP_API_URL } = process.env
 
 export default function Profile() {
-  const { user, token } = useAuth()
+  const navigate = useNavigate()
+  const { user, token, logoutAction } = useAuth()
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState(null)
   const [isPassswordFormOpen, setIsPasswordFormOpen] = useState(false)
@@ -84,6 +86,10 @@ export default function Profile() {
           setIsOpen={setIsDeleteAccountFormOpen}
           setIsError={setIsError}
           setMessage={setMessage}
+          onSuccess={() => {
+            navigate("/")
+            logoutAction()
+          }}
         />
       </OverlayWindow>
       <OverlayWindow

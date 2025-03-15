@@ -2,23 +2,27 @@ import { faWarning } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import Button from "../../components/Button"
 import api from "../../utils/api"
-import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../contexts/AuthProvider"
 
 export default function DeleteAccountForm({
+  username,
   setIsOpen,
   setIsError,
   setMessage,
+  onSuccess,
 }) {
-  const { user, token, logoutAction } = useAuth()
-  const navigate = useNavigate()
+  const { user, token } = useAuth()
 
   const deleteAccount = async () => {
-    const response = await api.delete(`/api/users/${user.username}`, {}, token)
+    const response = await api.delete(
+      `/api/users/${username || user.username}`,
+      {},
+      token,
+    )
     const result = await response.json()
     if (response.ok) {
-      navigate("/")
-      logoutAction()
+      onSuccess()
+      setIsOpen(false)
     } else {
       setIsError(true)
       setMessage(result.body)
@@ -29,7 +33,7 @@ export default function DeleteAccountForm({
     <>
       <h3>Delete account</h3>
       <p className="secondary-text">
-        <FontAwesomeIcon icon={faWarning} /> Are you sure to delete your
+        <FontAwesomeIcon icon={faWarning} /> Are you sure to delete this
         account? This action is irreversible!
       </p>
       <div
