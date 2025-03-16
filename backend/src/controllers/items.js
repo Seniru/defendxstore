@@ -48,7 +48,7 @@ const updateItem = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(404).json({ message: "No item with that id" })
         }
-        const updatedItem = await Item.findByIdAndUpdate(id,{ new: true })
+        const updatedItem = await Item.findByIdAndUpdate(id, { new: true })
         if (!updatedItem) {
             return res.status(404).json({ message: "Item not found" })
         }
