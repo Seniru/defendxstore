@@ -21,7 +21,6 @@ const productData = [
     size: "M,L,XL",
     quantity: 120,
     stock: "In Stock",
-    promoCode: "10OFF",
   },
   {
     image: pic2,
@@ -32,7 +31,6 @@ const productData = [
     size: "M,XL,XXL",
     quantity: 100,
     stock: "In Stock",
-    promoCode: "",
   },
   {
     image: pic3,
@@ -43,7 +41,6 @@ const productData = [
     size: "S,M",
     quantity: 20,
     stock: "Running Low",
-    promoCode: "FFX",
   },
   {
     image: pic4,
@@ -54,7 +51,6 @@ const productData = [
     size: "M,L,XL",
     quantity: 0,
     stock: "Out of Stock",
-    promoCode: "1FF",
   },
   {
     image: pic5,
@@ -65,7 +61,6 @@ const productData = [
     size: "M",
     quantity: 0,
     stock: "Out of Stock",
-    promoCode: "12D",
   },
 ]
 
@@ -141,7 +136,6 @@ const InventoryManagement = () => {
             "Size",
             "Quantity",
             "Stock",
-            "Promo_Code",
             "Action",
           ]}
           rows={productData.map((product) => [
@@ -158,7 +152,6 @@ const InventoryManagement = () => {
             product.size,
             product.quantity,
             <StockStatus stock={product.stock} />,
-            product.promoCode,
             <div className="action-buttons">
               <Button kind="primary">Edit</Button>
               <Button kind="danger">Delete</Button>
