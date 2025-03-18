@@ -1,4 +1,4 @@
-const StockStatus = ({ stock }) => {
+export const StockStatus = ({ stock }) => {
     let style;
     switch (stock) {
       case "In Stock":
@@ -50,3 +50,5 @@ const StockStatus = ({ stock }) => {
       </div>
     );
   };
+
+  export default StockStatus;

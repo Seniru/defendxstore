@@ -4,15 +4,13 @@ import Select from "../../components/Select";
 import SearchBar from "../../components/SearchBar";
 import Button from "../../components/Button";
 import Table from "../../components/Table";
-import StockStatus from "../../components/StockStatus"; // Import StockStatus
-import axios from "axios";
-
-const API_URL = "http://localhost:5000/api/items"; // Backend API URL
+import StockStatus from "../../components/StockStatus";
+import api from "../../utils/api";
 
 const InventoryManagement = () => {
   const [productData, setProductData] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [formMode, setFormMode] = useState("add"); // "add", "restock", or "edit"
+  const [formMode, setFormMode] = useState("add");
   const [newProduct, setNewProduct] = useState({
     image: null,
     name: "",
@@ -26,54 +24,72 @@ const InventoryManagement = () => {
   });
   const [selectedProductIndex, setSelectedProductIndex] = useState(null);
 
-  // Fetch all items from the backend
   const fetchItems = async () => {
     try {
-      const response = await axios.get(API_URL);
-      setProductData(response.data);
+      
+      const response = await api.get("/items");
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log("Fetched data:", data);
+      setProductData(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching items:", error);
+      setProductData([]);
     }
   };
 
-  // Create a new item
   const createItem = async (item) => {
     try {
-      const response = await axios.post(API_URL, item);
-      return response.data;
+      const response = await api.post("/items", item);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("Created item response:", data);
+      return {
+        ...data,
+        colors: Array.isArray(data.colors) ? data.colors : [],
+      };
     } catch (error) {
       console.error("Error creating item:", error);
       throw error;
     }
   };
 
-  // Update an item
   const updateItem = async (id, item) => {
     try {
-      const response = await axios.put(`${API_URL}/${id}`, item);
-      return response.data;
+      const response = await api.put(`/items/${id}`, item);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return await response.json();
     } catch (error) {
       console.error("Error updating item:", error);
       throw error;
     }
   };
 
-  // Delete an item
   const deleteItem = async (id) => {
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      const response = await api.delete(`/items/${id}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return true;
     } catch (error) {
       console.error("Error deleting item:", error);
       throw error;
     }
   };
 
-  // Fetch items on component mount
   useEffect(() => {
     fetchItems();
   }, []);
 
-  // Handle image change
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -82,7 +98,6 @@ const InventoryManagement = () => {
     }
   };
 
-  // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === "colors") {
@@ -97,7 +112,6 @@ const InventoryManagement = () => {
     }
   };
 
-  // Add product
   const handleAddProductClick = () => {
     setFormMode("add");
     setNewProduct({
@@ -114,28 +128,28 @@ const InventoryManagement = () => {
     setIsFormOpen(true);
   };
 
-  // Restock product
   const handleRestockClick = (index) => {
     setFormMode("restock");
     const product = productData[index];
-    setNewProduct({ ...product, colors: product.colors.join(", ") });
-    setSelectedProductIndex(index);
-    setIsFormOpen(true);
-  };
-
-  // Edit product
-  const handleEditProduct = (index) => {
-    setFormMode("edit");
-    const product = productData[index];
-    setNewProduct({
-      ...product,
-      colors: product.colors.join(", "),
+    setNewProduct({ 
+      ...product, 
+      colors: Array.isArray(product.colors) ? product.colors : []
     });
     setSelectedProductIndex(index);
     setIsFormOpen(true);
   };
 
-  // Form close with default values
+  const handleEditProduct = (index) => {
+    setFormMode("edit");
+    const product = productData[index];
+    setNewProduct({
+      ...product,
+      colors: Array.isArray(product.colors) ? product.colors : [],
+    });
+    setSelectedProductIndex(index);
+    setIsFormOpen(true);
+  };
+
   const handleFormClose = () => {
     setIsFormOpen(false);
     setNewProduct({
@@ -152,15 +166,19 @@ const InventoryManagement = () => {
     setSelectedProductIndex(null);
   };
 
-  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (formMode === "add") {
-        const createdItem = await createItem(newProduct);
+        const itemToCreate = {
+          ...newProduct,
+          colors: Array.isArray(newProduct.colors) ? newProduct.colors : [],
+        };
+        const createdItem = await createItem(itemToCreate);
         setProductData([...productData, createdItem]);
       } else if (formMode === "restock") {
-        const updatedItem = await updateItem(selectedProductIndex, {
+        const selectedProduct = productData[selectedProductIndex];
+        const updatedItem = await updateItem(selectedProduct._id, {
           ...newProduct,
           quantity: newProduct.quantity,
         });
@@ -169,7 +187,8 @@ const InventoryManagement = () => {
         );
         setProductData(updatedProducts);
       } else if (formMode === "edit") {
-        const updatedItem = await updateItem(selectedProductIndex, newProduct);
+        const selectedProduct = productData[selectedProductIndex];
+        const updatedItem = await updateItem(selectedProduct._id, newProduct);
         const updatedProducts = productData.map((item) =>
           item._id === updatedItem._id ? updatedItem : item
         );
@@ -181,7 +200,6 @@ const InventoryManagement = () => {
     }
   };
 
-  // Delete product
   const handleDeleteProduct = async (index) => {
     try {
       await deleteItem(productData[index]._id);
@@ -230,11 +248,11 @@ const InventoryManagement = () => {
             product.name,
             product.category,
             product.description,
-            product.colors.join(", "),
+            Array.isArray(product.colors) ? product.colors.join(", ") : "",
             product.price,
             product.size,
             product.quantity,
-            <StockStatus stock={product.stock} />, // Use the imported StockStatus component
+            <StockStatus stock={product.stock} />,
             <div className="action-buttons">
               <Button
                 kind="secondary"
@@ -253,7 +271,6 @@ const InventoryManagement = () => {
         />
       </div>
 
-      {/* Product Form Modal */}
       {isFormOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -315,7 +332,7 @@ const InventoryManagement = () => {
                     <input
                       type="text"
                       name="colors"
-                      value={newProduct.colors.join(", ")}
+                      value={Array.isArray(newProduct.colors) ? newProduct.colors.join(", ") : ""}
                       onChange={handleInputChange}
                       required
                     />
