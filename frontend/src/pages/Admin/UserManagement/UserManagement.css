@@ -32,3 +32,20 @@
     }
   }
 }
+
+.role > span {
+  margin-right: 8px;
+}
+
+.user-profile-image {
+  .camera {
+    position: relative;
+    top: -20px;
+    left: 60%;
+    background-color: var(--primary-color);
+    border: 2px solid white;
+    border-radius: 50px;
+    display: inline;
+    padding: 3px;
+  }
+}
