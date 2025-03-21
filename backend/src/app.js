@@ -12,6 +12,7 @@ const { StatusCodes } = require("http-status-codes")
 const createResponse = require("./utils/createResponse")
 const usersRoute = require("./routes/users")
 const authRoute = require("./routes/auth")
+const itemRoute = require("./routes/items")
 
 // middlewares
 app.use(cors())
@@ -25,6 +26,7 @@ app.use(
 // routes
 app.use("/api/auth", authRoute)
 app.use("/api/users", usersRoute)
+app.use("/api/items", itemRoute)
 
 app.use((err, req, res, next) => {
     logger.error(err.stack)
