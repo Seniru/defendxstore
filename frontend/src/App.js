@@ -14,6 +14,7 @@ import Forum from "./pages/Forum"
 import ForumThread from "./pages/ForumThread"
 import CheckOut from "./pages/CheckOut"
 import Shoppinginfor from "./pages/Shoppinginfor"
+import CheckOutInvoice from "./pages/CheckOutInvoice"
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="components" element={<Components />} />
               <Route path="checkout" element={<CheckOut />} />
               <Route path="shopping" element={<Shoppinginfor />} />
+              <Route path="CheckOutInvoice" element={<CheckOutInvoice />} />
               <Route path="forum">
                 <Route index element={<Forum />} />
                 <Route path="thread" element={<ForumThread />} />

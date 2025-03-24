@@ -17,7 +17,7 @@ export default function ShoppingInfo() {
         <form action="" className="ShoppingInfo">
           <div className="ShoppingInfo">
             <label htmlFor="fname">Full name:</label>
-            <Input type="text" id="fname" name="fname" />
+            <Input type="text" id="fname" name="fname" required/>
 
             <br />
             <label htmlFor="Cname">City:</label>
@@ -25,16 +25,16 @@ export default function ShoppingInfo() {
             <Input type="text" id="Cname" name="Cname" />
 
             <label htmlFor="Pname">street address:</label>
-            <Input type="text" id="lname" name="lname" />
+            <Input type="text" id="lname" name="lname"required />
 
             <div className="checkout-row">
               <label htmlFor="State">State/province</label>
             </div>
-            <Input type="text" id="Sname" name="Sname" />
+            <Input type="text" id="Sname" name="Sname" required />
 
             <label htmlFor="Cname">Country:</label>
 
-            <Input type="text" id="county" name="county" />
+            <Input type="text" id="county" name="county" required/>
 
             <br />
             <br />
@@ -59,7 +59,7 @@ export default function ShoppingInfo() {
             />
             <div>
               <b>Oversized Black rose</b>
-              <div className="secondary-text">300</div>
+              <div className="secondary-text">Qty:2</div>
             </div>
 
             <span>RS 3900</span>
@@ -75,7 +75,7 @@ export default function ShoppingInfo() {
             />
             <div>
               <b>Oversized Black rose</b>
-              <div className="secondary-text">300</div>
+              <div className="secondary-text">Qty:2</div>
             </div>
             <span>RS 3900</span>
           </div>
@@ -95,7 +95,7 @@ export default function ShoppingInfo() {
         <div className="checkout-row">
           <h5>Promo Code</h5>
           <span>
-            <Input type="text" id="Proname" name="Proname" />
+            <Input type="text" id="Proname" name="Proname" maxlength="4"/>
           </span>
         </div>
         <div className="checkout-row">

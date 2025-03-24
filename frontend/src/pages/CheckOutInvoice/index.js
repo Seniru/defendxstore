@@ -4,35 +4,35 @@ import pic2 from "../../assets/images/pic2.jpg"
 import pic3 from "../../assets/images/pic3.jpg"
 import pic4 from "../../assets/images/pic4.jpg"
 
-import "./Checkout.css"
-import Button from "../../components/Button"
-import {
-  faCartShopping,
-  faShirt,
-  faTruck,
-  faTruckFast,
-} from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+export default function CheckOutInvoice() {
 
-export default function CheckOut() {
-  return (
-    <div className="content">
+    return (
+        <div className="container">
 
-     
-      <h1>
-        <FontAwesomeIcon icon={faCartShopping} />
-        MY Cart
-      </h1>
 
-      <div className="checkOut">
+        <div class="header">
+
+      <h1> DefendX Pvt Ltd Invoice</h1>
+      <p>Order Number #123456789</p>
+      <p>Date: March 24 2025</p>
+    </div>
+    <div class="section">
+      <div class="section-title">
+        <h2>Customer Information</h2></div>
+      <p><strong>Name:</strong> jonny perera</p>
+      <p><strong>Email:</strong> sinsjonny@example.com</p>
+      <p><strong>Shipping Address:</strong> 202, Malabe, Srilanka</p>
+    </div>
+        
+    <div className="checkOutInvoice">
         <Table
           headers={["", "Product ", "Color ", "Price", "Quantity", "Subtotal"]}
           rows={[
             [
               <img
                 style={{
-                  width: "100px",
-                  height: "100px",
+                  width: "50px",
+                  height: "50px",
                   borderRadius: "10px",
                 }}
                 src={pic1}
@@ -47,8 +47,8 @@ export default function CheckOut() {
             [
               <img
                 style={{
-                  width: "100px",
-                  height: "100px",
+                  width: "50px",
+                  height: "50px",
                   borderRadius: "10px",
                 }}
                 src={pic2}
@@ -62,8 +62,8 @@ export default function CheckOut() {
             [
               <img
                 style={{
-                  width: "100px",
-                  height: "100px",
+                  width: "50px",
+                  height: "50px",
                   borderRadius: "10px",
                 }}
                 src={pic3}
@@ -77,8 +77,8 @@ export default function CheckOut() {
             [
               <img
                 style={{
-                  width: "100px",
-                  height: "100px",
+                  width: "50px",
+                  height: "50px",
                   borderRadius: "10px",
                 }}
                 src={pic4}
@@ -91,34 +91,12 @@ export default function CheckOut() {
             ],
           ]}
         />
-        <div className="container order-container">
-          <h2> Order Summary </h2>
-          <div className="checkout-row">
-            <h5>
-              <FontAwesomeIcon icon={faShirt} /> Items(2){" "}
-            </h5>
-
-            <span>RS 3900</span>
-          </div>
-          <div className="checkout-row">
-            <h5>
-              <FontAwesomeIcon icon={faTruckFast} /> Shipping
-            </h5>
-            <span>RS 200</span>
-          </div>
-          <hr />
-          <div className="checkout-row">
-            <h2>Total</h2>
-            <span>RS 7800</span>
-          </div>
-          <div className="checkOutButton">
-            <Button kind="primary" className={"CheckOutButton"}>
-              {" "}
-              Proceed to CheckOut
-            </Button>
-          </div>
-        </div>
-      </div>
+        <hr/>
+        <p> Total</p>
+        
     </div>
-  )
+    </div>
+  
+
+    )
 }
