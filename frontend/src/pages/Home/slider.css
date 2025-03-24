@@ -1,0 +1,35 @@
+.main-container {
+  width: 100%;
+  height: auto;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  margin-top: -1px;
+}
+
+.carousel-section {
+  max-width: 100%;
+  height: auto;
+  align-items: center;
+}
+
+.swiper {
+  width: calc(100vw - 15px);
+  height: auto;
+}
+
+.swiper-slide img {
+  width: calc(100vw - 15px);
+  height: auto;
+  display: block;
+  margin: 0;
+}
+
+.swiper-pagination {
+  bottom: 20px;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: #585858;
+}
