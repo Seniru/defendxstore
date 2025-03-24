@@ -70,7 +70,7 @@ export default function Profile() {
       </aside>
       <div className="profile-content">
         <TabMenu>
-          <TabItem name="Orders" element={<OrderMenu/>}/>
+          <TabItem name="Orders" element={<OrderMenu />} />
           <TabItem name="Reviews" element={<Reviews />} />
         </TabMenu>
       </div>

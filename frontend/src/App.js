@@ -12,6 +12,8 @@ import NotFound from "./pages/errors/NotFound"
 import Home from "./pages/Home"
 import Forum from "./pages/Forum"
 import ForumThread from "./pages/ForumThread"
+import CheckOut from "./pages/CheckOut"
+import Shoppinginfor from "./pages/Shoppinginfor"
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="components" element={<Components />} />
+              <Route path="checkout" element={<CheckOut />} />
+              <Route path="shopping" element={<Shoppinginfor />} />
               <Route path="forum">
                 <Route index element={<Forum />} />
                 <Route path="thread" element={<ForumThread />} />
