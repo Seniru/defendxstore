@@ -8,13 +8,21 @@ import pic2 from "../../assets/images/pic2.jpg"
 import pic3 from "../../assets/images/pic3.jpg"
 import pic4 from "../../assets/images/pic4.jpg"
 import Table from "../../components/Table"
+import { useNavigate } from "react-router-dom"
 
 export default function Checkout() {
+  const navigate = useNavigate()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    navigate("/invoice")
+  }
+
   return (
     <div className="content shopping-container">
       <div className="container">
         <h2>Delivery Information</h2>
-        <form action="" className="ShoppingInfo">
+        <form className="ShoppingInfo" onSubmit={handleSubmit}>
           <div className="ShoppingInfo">
             <label htmlFor="fname">Full name:</label>
             <Input type="text" id="fname" name="fname" required />

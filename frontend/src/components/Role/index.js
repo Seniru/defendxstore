@@ -1,11 +1,14 @@
 import { faX } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import api from "../../../utils/api"
-import { useAuth } from "../../../contexts/AuthProvider"
+import api from "../../utils/api"
+import { useAuth } from "../../contexts/AuthProvider"
+
+import "./Role.css"
 
 export default function Role({
   username,
   role,
+  includeOptions,
   setIsError,
   setMessage,
   refreshFlag,
@@ -45,13 +48,16 @@ export default function Role({
   return (
     <div className="role" style={style}>
       <span>{cleanRoleName}</span>
-      <FontAwesomeIcon
-        icon={faX}
-        color={"red"}
-        size="xs"
-        cursor="pointer"
-        onClick={removeRole}
-      />
+      {includeOptions === false ||
+        (includeOptions === undefined && (
+          <FontAwesomeIcon
+            icon={faX}
+            color={"red"}
+            size="xs"
+            cursor="pointer"
+            onClick={removeRole}
+          />
+        ))}
     </div>
   )
 }

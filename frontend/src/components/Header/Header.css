@@ -49,3 +49,57 @@ header {
     display: flex;
   }
 }
+
+.profile-dropdown {
+  position: fixed;
+  right: 0px;
+  margin: 0px;
+  background-color: white;
+  max-width: 400px;
+  z-index: 9999;
+
+  .links {
+    list-style-type: none;
+    padding: 0px;
+    text-decoration: underline;
+  }
+
+  .profile-image {
+    margin-right: 15px;
+  }
+
+  .profile-information {
+    display: flex;
+  }
+}
+
+.main-dropdown {
+  position: fixed;
+  right: 0px;
+  margin: 0px;
+  background-color: white;
+  width: 100%;
+  z-index: 9999;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(-10);
+  display: none;
+  transition: opacity 1s ease-out;
+
+  ul {
+    list-style-type: none;
+    padding: 0px;
+    margin-right: 100px;
+
+    li {
+      margin-top: 15px;
+    }
+  }
+}
+
+.main-dropdown.open {
+  transform: translateY;
+  height: max-content;
+  opacity: 1;
+  display: flex;
+}

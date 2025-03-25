@@ -13,6 +13,7 @@ import {
   faTruckFast,
 } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { Link } from "react-router-dom"
 
 export default function Cart() {
   return (
@@ -92,28 +93,32 @@ export default function Cart() {
         <div className="container order-container">
           <h2> Order Summary </h2>
           <div className="checkout-row">
-            <h5>
-              <FontAwesomeIcon icon={faShirt} /> Items(4){" "}
-            </h5>
+            <b>
+              <FontAwesomeIcon icon={faShirt} /> Items (4){" "}
+            </b>
 
             <span>RS 20000</span>
           </div>
+          <br />
           <div className="checkout-row">
-            <h5>
+            <b>
               <FontAwesomeIcon icon={faTruckFast} /> Shipping
-            </h5>
+            </b>
             <span>RS 200</span>
           </div>
+          <br />
           <hr />
           <div className="checkout-row">
             <h2>Total</h2>
             <span>RS 20200</span>
           </div>
           <div className="checkOutButton">
-            <Button kind="primary" className={"CheckOutButton"}>
-              {" "}
-              Proceed to CheckOut
-            </Button>
+            <Link to="/checkout">
+              <Button kind="primary" className={"CheckOutButton"}>
+                {" "}
+                Proceed to CheckOut
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
