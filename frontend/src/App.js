@@ -11,6 +11,7 @@ import Admin from "./pages/Admin"
 import NotFound from "./pages/errors/NotFound"
 import Forum from "./pages/Forum"
 import ForumThread from "./pages/ForumThread"
+import PromoCodes from "./pages/Admin/promocodes"
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route path="components" element={<Components />} />
+              <Route path="test" element={<PromoCodes />} />
               <Route path="forum">
                 <Route index element={<Forum />} />
                 <Route path="thread" element={<ForumThread />} />
