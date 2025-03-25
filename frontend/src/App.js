@@ -11,6 +11,8 @@ import Admin from "./pages/Admin"
 import NotFound from "./pages/errors/NotFound"
 import Forum from "./pages/Forum"
 import ForumThread from "./pages/ForumThread"
+import Ticket from "./pages/Ticket"
+import Support from "./pages/Support"
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
               </Route>
               <Route element={<PrivateRoute />}>
                 <Route path="profile" element={<Profile />} />
+                <Route path="ticket" element={<Ticket />} />
+                <Route path="support" element={<Support />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
               <Route element={<PrivateRoute requiredRole="SUPPORT_AGENT" />}>
