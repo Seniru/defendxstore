@@ -451,7 +451,7 @@ describe("Users", () => {
         })
     })
 
-    describe("POST /api/users/:username", () => {
+    describe("GET /api/users/:username", () => {
         let user3Token, adminToken
 
         before(async () => {
@@ -765,6 +765,404 @@ describe("Users", () => {
                 .expect(404)
                 .then((res) => {
                     assert.deepEqual(res.body.body, "No profile image found")
+                    done()
+                })
+                .catch(done)
+        })
+    })
+
+    describe("PUT /api/users/:username/profileImage", () => {
+        before(async () => {
+            await prepareData()
+            const loginUser3Response = await request.post("/api/auth/login").send({
+                email: "user3@example.com",
+                password: "testpassword",
+            })
+            const loginUser4Response = await request.post("/api/auth/login").send({
+                email: "user4@example.com",
+                password: "testpassword",
+            })
+            // log in as administrator to view details
+            const adminLoginResponse = await request.post("/api/auth/login").send({
+                email: "admin@example.com",
+                password: "adminpassword",
+            })
+            adminToken = adminLoginResponse.body.body.token
+            user3Token = loginUser3Response.body.body.token
+            user4Token = loginUser4Response.body.body.token
+        })
+
+        after(async () => {
+            await User.deleteMany({})
+        })
+
+        it("should successfully change the profile image", (done) => {
+            request
+                .put("/api/users/user4/profileImage")
+                .send({ image: "data:image/png;base64,def" })
+                .set("Authorization", `Bearer ${user4Token}`)
+                .expect(200)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "Image updated successfully")
+                    // check if the profile image is changed
+                    return User.findOne({ username: "user4" }, "+profileImage")
+                })
+                .then((user) => {
+                    assert.strictEqual(user.profileImage, "data:image/png;base64,def")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 403 forbidden for unauthorized users", (done) => {
+            request
+                .put("/api/users/user1/profileImage")
+                .send({ image: "data:image/png;base64,def" })
+                .set("Authorization", `Bearer ${user3Token}`)
+                .expect(403)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "You cannot edit this user")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should allow administrators to change profile images of any user", (done) => {
+            request
+                .put("/api/users/user3/profileImage")
+                .send({ image: "data:image/png;base64,def" })
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(200)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "Image updated successfully")
+                    // check if the profile image is changed
+                    return User.findOne({ username: "user3" }, "+profileImage")
+                })
+                .then((user) => {
+                    assert.strictEqual(user.profileImage, "data:image/png;base64,def")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 404 for non-existent users", (done) => {
+            request
+                .put("/api/users/nonexistentuser/profileImage")
+                .send({ image: "data:image/png;base64,def" })
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(404)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "User not found")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 400 for invalid image format", (done) => {
+            request
+                .put("/api/users/user4/profileImage")
+                .send({ image: "invalidimage" })
+                .set("Authorization", `Bearer ${user4Token}`)
+                .expect(400)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "Invalid profile image format")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 400 for image size greater than 2MB", (done) => {
+            request
+                .put("/api/users/user4/profileImage")
+                .send({ image: "data:image/png;base64,abc" + "a".repeat(2 * 1024 * 1024 + 1) })
+                .set("Authorization", `Bearer ${user4Token}`)
+                .expect(400)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, [
+                        {
+                            field: "profileImage",
+                            message: "Image should be less than 2 MB in size",
+                        },
+                    ])
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 400 for missing image field", (done) => {
+            request
+                .put("/api/users/user4/profileImage")
+                .set("Authorization", `Bearer ${user4Token}`)
+                .expect(400)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "Invalid profile image format")
+                    done()
+                })
+                .catch(done)
+        })
+    })
+
+    describe("POST /api/users/:username/role", () => {
+        let user3Token, user4Token, adminToken
+
+        before(async () => {
+            await prepareData()
+            const loginUser3Response = await request.post("/api/auth/login").send({
+                email: "user3@example.com",
+                password: "testpassword",
+            })
+            const loginUser4Response = await request.post("/api/auth/login").send({
+                email: "user4@example.com",
+                password: "testpassword",
+            })
+            // log in as administrator to view details
+            const adminLoginResponse = await request.post("/api/auth/login").send({
+                email: "admin@example.com",
+                password: "adminpassword",
+            })
+            adminToken = adminLoginResponse.body.body.token
+            user3Token = loginUser3Response.body.body.token
+            user4Token = loginUser4Response.body.body.token
+        })
+
+        after(async () => {
+            await User.deleteMany({})
+        })
+
+        it("should successfully add a role to the user", (done) => {
+            request
+                .post("/api/users/user4/role")
+                .send({ role: "DELIVERY_AGENT" })
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(200)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "Role added")
+                    // check if the role is added
+                    return User.findOne({ username: "user4" }, "+role")
+                })
+                .then((user) => {
+                    assert.strictEqual(user.role, 3)
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 403 forbidden for unauthorized users", (done) => {
+            request
+                .post("/api/users/user1/role")
+                .send({ role: "DELIVERY_AGENT" })
+                .set("Authorization", `Bearer ${user3Token}`)
+                .expect(403)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "Forbidden")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 400 for invalid role", (done) => {
+            request
+                .post("/api/users/user4/role")
+                .send({ role: "INVALID" })
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(400)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "Invalid role")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 404 for non-existent users", (done) => {
+            request
+                .post("/api/users/nonexistentuser/role")
+                .send({ role: "DELIVERY_AGENT" })
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(404)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "User not found")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should be able to add any role", async () => {
+            const roles = ["ADMIN", "SUPPORT_AGENT", "USER", "DELIVERY_AGENT"]
+            for (const role of roles) {
+                await request
+                    .post("/api/users/user4/role")
+                    .send({ role })
+                    .set("Authorization", `Bearer ${adminToken}`)
+                    .expect(200)
+                    .then((res) => {
+                        assert.deepEqual(res.body.body, "Role added")
+                    })
+            }
+
+            // Check if the roles are added
+            const user = await User.findOne({ username: "user4" }).exec()
+            assert.ok(user.role === 15)
+        })
+    })
+
+    describe("DELETE /api/users/:username/role/:role", () => {
+        let user3Token, adminToken
+
+        before(async () => {
+            await prepareData()
+            const loginUser3Response = await request.post("/api/auth/login").send({
+                email: "user3@example.com",
+                password: "testpassword",
+            })
+            // log in as administrator to view details
+            const adminLoginResponse = await request.post("/api/auth/login").send({
+                email: "admin@example.com",
+                password: "adminpassword",
+            })
+            adminToken = adminLoginResponse.body.body.token
+            user3Token = loginUser3Response.body.body.token
+        })
+
+        after(async () => {
+            await User.deleteMany({})
+        })
+
+        it("should successfully remove a role from the user", async () => {
+            await User.updateOne({ username: "user4" }, { role: 15 })
+
+            await request
+                .delete("/api/users/user4/role/ADMIN")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(200)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "Role removed")
+                })
+
+            // Check if the role is removed
+            const user = await User.findOne({ username: "user4" }).exec()
+            assert.equal(user.role, 7)
+
+            // Remove all roles from user4
+            await User.updateOne({ username: "user4" }, { role: 1 })
+        })
+
+        it("should return 403 forbidden for unauthorized users", (done) => {
+            request
+                .delete("/api/users/user4/role/ADMIN")
+                .set("Authorization", `Bearer ${user3Token}`)
+                .expect(403)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "Forbidden")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 400 for invalid role", (done) => {
+            request
+                .delete("/api/users/user4/role/INVALID")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(400)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "Invalid role")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 404 for non-existent users", (done) => {
+            request
+                .delete("/api/users/nonexistentuser/role/ADMIN")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(404)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "User not found")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should remove all roles from the user", async () => {
+            const roles = ["ADMIN", "SUPPORT_AGENT", "DELIVERY_AGENT"]
+            for (const role of roles) {
+                await request
+                    .delete(`/api/users/user4/role/${role}`)
+                    .set("Authorization", `Bearer ${adminToken}`)
+                    .expect(200)
+                    .then((res) => {
+                        assert.deepEqual(res.body.body, "Role removed")
+                    })
+            }
+
+            // Check if the roles are added
+            const user = await User.findOne({ username: "user4" }).exec()
+            assert.equal(user.role, 1)
+        })
+    })
+
+    describe("PATCH /api/users/:username", () => {
+        let user3Token, user4Token, adminToken
+
+        before(async () => {
+            await prepareData()
+            const loginUser3Response = await request.post("/api/auth/login").send({
+                email: "user3@example.com",
+                password: "testpassword",
+            })
+            const loginUser4Response = await request.post("/api/auth/login").send({
+                email: "user4@example.com",
+                password: "testpassword",
+            })
+            // log in as administrator to view details
+            const adminLoginResponse = await request.post("/api/auth/login").send({
+                email: "admin@example.com",
+                password: "adminpassword",
+            })
+            adminToken = adminLoginResponse.body.body.token
+            user3Token = loginUser3Response.body.body.token
+            user4Token = loginUser4Response.body.body.token
+        })
+
+        after(async () => {
+            await User.deleteMany({})
+        })
+
+        it("should successfully update the user", async () => {
+            await request
+                .patch("/api/users/user4/profile")
+                .send({ deliveryAddress: "New Address", contactNumber: "987654321" })
+                .set("Authorization", `Bearer ${user4Token}`)
+                .expect(200)
+                .then(async (res) => {
+                    assert.deepEqual(res.body.body, "Editted")
+                    // check if the user is updated
+                })
+            const user = await User.findOne({ username: "user4" }).exec()
+            assert.strictEqual(user.deliveryAddress, "New Address")
+            assert.deepEqual(user.contactNumber, ["987654321"])
+        })
+
+        it("should return 403 forbidden for unauthorized users", (done) => {
+            request
+                .patch("/api/users/user4/profile")
+                .send({ deliveryAddress: "New Address", contactNumber: "987654321" })
+                .set("Authorization", `Bearer ${user3Token}`)
+                .expect(403)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "You cannot edit this user")
+                    done()
+                })
+                .catch(done)
+        })
+
+        it("should return 404 for non-existent users", (done) => {
+            request
+                .patch("/api/users/nonexistentuser/profile")
+                .send({ deliveryAddress: "New Address", contactNumber: "987654321" })
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(404)
+                .then((res) => {
+                    assert.deepEqual(res.body.body, "User not found")
                     done()
                 })
                 .catch(done)
