@@ -9,10 +9,12 @@ import PrivateRoute from "./components/PrivateRoute"
 import Profile from "./pages/Profile"
 import Admin from "./pages/Admin"
 import NotFound from "./pages/errors/NotFound"
-import Forum from "./pages/Forum"
-import ForumThread from "./pages/ForumThread"
 import Ticket from "./pages/Ticket"
 import Support from "./pages/Support"
+import Home from "./pages/Home"
+import Product from "./pages/Product"
+import Forum from "./pages/Forum"
+import ForumThread from "./pages/ForumThread"
 
 function App() {
   return (
@@ -21,7 +23,9 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
               <Route path="components" element={<Components />} />
+              <Route path="product" element={<Product />} />
               <Route path="forum">
                 <Route index element={<Forum />} />
                 <Route path="thread" element={<ForumThread />} />
