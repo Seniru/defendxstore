@@ -120,13 +120,15 @@ const InventoryManagement = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0]
-    if (file) {
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      const image = reader.result.split(",")[1]
       setNewProduct({
         ...newProduct,
-        product: file,
-        productPreview: URL.createObjectURL(file),
+        product: `data:${file.type};base64,${image}`,
       })
     }
+    reader.readAsDataURL(file)
   }
 
   const handleInputChange = (e) => {
@@ -166,7 +168,7 @@ const InventoryManagement = () => {
     setNewProduct({
       ...product,
       colors: Array.isArray(product.colors) ? product.colors : [],
-      productPreview: product.product, // Use existing image URL
+      productPreview: product.product, 
     })
     setSelectedProductIndex(index)
     setIsFormOpen(true)

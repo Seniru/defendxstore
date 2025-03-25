@@ -5,7 +5,7 @@ const Item = require("../models/Item")
 const getAllItems = async (req, res) => {
     try {
         const items = await Item.find()
-        res.status(200).json(items)
+        createResponse(res, StatusCodes.OK, items)
     } catch (error) {
         res.status(404).json({ message: error.message })
     }
