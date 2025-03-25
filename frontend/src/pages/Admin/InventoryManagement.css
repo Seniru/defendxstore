@@ -1,4 +1,3 @@
-
 .table-container {
   border-radius: 10px;
 }
@@ -8,13 +7,11 @@
   justify-content: space-between;
 }
 
-
 .print-title {
   display: none !important;
 }
 
 @media print {
-  
   .inventory-management-actions,
   .secondary-text,
   .action-buttons,
@@ -28,7 +25,6 @@
     display: none !important;
   }
 
-  
   .print-title {
     display: block !important;
     text-align: center;
@@ -38,7 +34,6 @@
     page-break-after: avoid;
   }
 
-  
   .table-container {
     display: block !important;
     width: 100%;
@@ -46,7 +41,6 @@
     page-break-inside: auto;
   }
 
-  
   table {
     display: table !important;
     border-collapse: collapse;
@@ -63,13 +57,11 @@
     page-break-inside: avoid;
   }
 
-  
   th:last-child,
   td:last-child {
     display: none !important;
   }
 
- 
   img.product-image {
     display: block !important;
     width: 50px !important;
@@ -78,7 +70,6 @@
     object-fit: contain;
   }
 
-  
   .content {
     display: block !important;
     width: 100%;
@@ -86,12 +77,10 @@
     margin: 0;
   }
 
-  
   tr {
     page-break-inside: avoid;
     page-break-after: auto;
   }
-
 
   .table-container td > div {
     display: block !important;
@@ -104,9 +93,6 @@
     text-align: left !important;
   }
 }
-
-
-
 
 .modal-overlay {
   position: fixed;
@@ -143,7 +129,6 @@
 
 .modal-content input,
 .modal-content select {
-
   padding: 8px;
   margin-top: 5px;
   border: 1px solid #ccc;
