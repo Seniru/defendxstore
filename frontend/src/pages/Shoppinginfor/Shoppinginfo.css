@@ -1,0 +1,40 @@
+.ShoppingInfo {
+  display: grid;
+}
+.shopping-container {
+  display: flex;
+  justify-content: center;
+
+  .container:nth-child(1) {
+    width: -webkit-fill-available;
+  }
+
+  .container:nth-child(2) {
+    width: max-content;
+
+    .product-info {
+      width: max-content;
+
+      .shopping-row {
+        margin-top: 5px;
+        margin-bottom: 5px;
+
+        img,
+        div,
+        span {
+          margin: 5px;
+        }
+      }
+    }
+  }
+}
+
+.shopping-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.container {
+  padding: 28px;
+  margin: 15px;
+}

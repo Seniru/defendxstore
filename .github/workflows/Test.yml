@@ -43,9 +43,6 @@ jobs:
         echo "JWT_SECRET=jwtsecret" >> $GITHUB_ENV
         echo "ENVIRONMENT=test" >> $GITHUB_ENV
 
-    - name: Run tests
-      run: npm test
-
     - name: Run coverage test
       run: npm run coverage
 
