@@ -18,7 +18,7 @@ const item = new Schema({
         required: true,
     },
     colors: {
-        type: String,
+        type: [String],
         required: true,
     },
     price: {
@@ -26,7 +26,7 @@ const item = new Schema({
         required: true,
     },
     size: {
-        type: String,
+        type: [String],
         required: true,
     },
     quantity: {

@@ -16,9 +16,9 @@ const InventoryManagement = () => {
   const [refreshFlag, setRefreshFlag] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [newProduct, setNewProduct] = useState({
-    product: null, // Backend expects 'product' for image
-    productPreview: null, // For displaying preview
-    itemName: "", // Backend expects 'itemName'
+    product: null,
+    productPreview: null,
+    itemName: "",
     category: "",
     description: "",
     colors: [],
@@ -29,9 +29,9 @@ const InventoryManagement = () => {
   })
   const [selectedProductIndex, setSelectedProductIndex] = useState(null)
 
-  const [productData, setProductData] = useFetch(
+  const [productData] = useFetch(
     `${process.env.REACT_APP_API_URL}/api/items`,
-    [],
+    {},
     refreshFlag,
   )
 
@@ -46,20 +46,21 @@ const InventoryManagement = () => {
 
   const createItem = async (item) => {
     try {
-      const formData = new FormData()
-
-      // Append all fields with backend-expected names
-      formData.append("product", item.product)
-      formData.append("itemName", item.itemName)
-      formData.append("category", item.category)
-      formData.append("description", item.description)
-      formData.append("colors", JSON.stringify(item.colors))
-      formData.append("price", item.price)
-      formData.append("size", item.size)
-      formData.append("quantity", item.quantity)
-      formData.append("stock", item.stock)
-
-      const response = await api.post("/api/items", formData, token, true)
+      const response = await api.post(
+        "/api/items",
+        {
+          product: item.product,
+          itemName: item.itemName,
+          category: item.category,
+          description: item.description,
+          colors: item.colors,
+          price: item.price,
+          size: item.size,
+          quantity: item.quantity,
+          stock: item.stock,
+        },
+        token,
+      )
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
@@ -278,36 +279,45 @@ const InventoryManagement = () => {
             "Stock",
             "Action",
           ]}
-          rows={productData.map((product, index) => [
-            <img
-              src={product.product}
-              alt={product.itemName}
-              className="product-image"
-              style={{ width: "100px", height: "100px", borderRadius: "10px" }}
-            />,
-            product.itemName,
-            product.category,
-            product.description,
-            Array.isArray(product.colors) ? product.colors.join(", ") : "",
-            `$${product.price}`,
-            product.size,
-            product.quantity,
-            <StockStatus stock={product.stock} />,
-            <div className="action-buttons">
-              <Button
-                kind="secondary"
-                onClick={() => handleRestockClick(index)}
-              >
-                Restock
-              </Button>
-              <Button kind="primary" onClick={() => handleEditProduct(index)}>
-                Edit
-              </Button>
-              <Button kind="danger" onClick={() => handleDeleteProduct(index)}>
-                Delete
-              </Button>
-            </div>,
-          ])}
+          rows={(productData.body ? productData.body : []).map(
+            (product, index) => [
+              <img
+                src={product.product}
+                alt={product.itemName}
+                className="product-image"
+                style={{
+                  width: "100px",
+                  height: "100px",
+                  borderRadius: "10px",
+                }}
+              />,
+              product.itemName,
+              product.category,
+              product.description,
+              Array.isArray(product.colors) ? product.colors.join(", ") : "",
+              `$${product.price}`,
+              product.size,
+              product.quantity,
+              <StockStatus stock={product.stock} />,
+              <div className="action-buttons">
+                <Button
+                  kind="secondary"
+                  onClick={() => handleRestockClick(index)}
+                >
+                  Restock
+                </Button>
+                <Button kind="primary" onClick={() => handleEditProduct(index)}>
+                  Edit
+                </Button>
+                <Button
+                  kind="danger"
+                  onClick={() => handleDeleteProduct(index)}
+                >
+                  Delete
+                </Button>
+              </div>,
+            ],
+          )}
         />
       </div>
 

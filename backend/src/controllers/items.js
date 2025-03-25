@@ -1,5 +1,7 @@
 const mongoose = require("mongoose")
 const Item = require("../models/Item")
+const createResponse = require("../utils/createResponse")
+const { StatusCodes } = require("http-status-codes")
 
 // Get All Items
 const getAllItems = async (req, res) => {
@@ -7,7 +9,7 @@ const getAllItems = async (req, res) => {
         const items = await Item.find()
         createResponse(res, StatusCodes.OK, items)
     } catch (error) {
-        res.status(404).json({ message: error.message })
+        next(error)
     }
 }
 
@@ -16,15 +18,15 @@ const getItemById = async (req, res) => {
     const { id } = req.params
     try {
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(404).json({ message: "No item with that id" })
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid id for item")
         }
         const item = await Item.findById(id)
         if (!item) {
-            return res.status(404).json({ message: "Item not found" })
+            return createResponse(res, StatusCodes.NOT_FOUND, "Item not found")
         }
-        res.status(200).json(item)
+        return createResponse(res, StatusCodes.OK, item)
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        next(error)
     }
 }
 
@@ -34,9 +36,9 @@ const createItem = async (req, res) => {
     const newItem = new Item(item)
     try {
         await newItem.save()
-        res.status(201).json(newItem)
+        return createResponse(res, StatusCodes.CREATED, newItem)
     } catch (error) {
-        res.status(409).json({ message: error.message })
+        next(error)
     }
 }
 
@@ -46,15 +48,15 @@ const updateItem = async (req, res) => {
     const item = req.body
     try {
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(404).json({ message: "No item with that id" })
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid id for item")
         }
         const updatedItem = await Item.findByIdAndUpdate(id, { new: true })
         if (!updatedItem) {
-            return res.status(404).json({ message: "Item not found" })
+            return createResponse(res, StatusCodes.NOT_FOUND, "Item not found")
         }
         res.status(200).json(updatedItem)
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        next(error)
     }
 }
 
@@ -63,15 +65,15 @@ const deleteItem = async (req, res) => {
     const { id } = req.params
     try {
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(404).json({ message: "No item with that id" })
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid id for item")
         }
         const deletedItem = await Item.findByIdAndDelete(id)
         if (!deletedItem) {
-            return res.status(404).json({ message: "Item not found" })
+            return createResponse(res, StatusCodes.NOT_FOUND, "Item not found")
         }
-        res.status(200).json({ message: "Item deleted successfully" })
+        return createResponse(res, StatusCodes.OK, "Item deleted")
     } catch (error) {
-        res.status(500).json({ message: error.message })
+        next(error)
     }
 }
 
