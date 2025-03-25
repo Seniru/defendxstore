@@ -1,7 +1,7 @@
 require("dotenv").config()
 
 const jwt = require("jsonwebtoken")
-const getRoles = require("./getRoles")
+const { getRoles } = require("./getRoles")
 
 const { JWT_SECRET } = process.env
 

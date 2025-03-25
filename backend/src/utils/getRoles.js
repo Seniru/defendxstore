@@ -6,12 +6,12 @@ const permissions = {
 }
 
 module.exports = {
-    roles: permissions,  // Export the permissions as 'roles'
+    roles: permissions,
     getRoles: (roleBits) => {
         let userRoles = []
         for (let [role, bit] of Object.entries(permissions)) {
             if (roleBits & bit) userRoles.push(role)
         }
         return userRoles
-    }
+    },
 }
