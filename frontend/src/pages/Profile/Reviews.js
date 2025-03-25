@@ -13,7 +13,6 @@ function Review({}) {
           <FontAwesomeIcon icon={faStar} />
           <FontAwesomeIcon icon={faStar} />
           <FontAwesomeIcon icon={faStar} />
-       
         </div>
       </div>
       <div className="review-content">
@@ -23,17 +22,15 @@ function Review({}) {
       </div>
 
       <div className="review-profile">
-     
-          
-              <img
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  borderRadius: "10px",
-                }}
-                src={pro1}
-              />
-              Passan 2024/04/03
+        <img
+          style={{
+            width: "50px",
+            height: "50px",
+            borderRadius: "10px",
+          }}
+          src={pro1}
+        />
+        Passan 2024/04/03
       </div>
     </div>
   )

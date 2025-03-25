@@ -168,7 +168,7 @@ const InventoryManagement = () => {
     setNewProduct({
       ...product,
       colors: Array.isArray(product.colors) ? product.colors : [],
-      productPreview: product.product, 
+      productPreview: product.product,
     })
     setSelectedProductIndex(index)
     setIsFormOpen(true)

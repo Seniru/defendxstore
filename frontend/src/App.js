@@ -15,9 +15,9 @@ import Home from "./pages/Home"
 import Product from "./pages/Product"
 import Forum from "./pages/Forum"
 import ForumThread from "./pages/ForumThread"
-import CheckOut from "./pages/CheckOut"
-import Shoppinginfor from "./pages/Shoppinginfor"
-import CheckOutInvoice from "./pages/CheckOutInvoice"
+import Cart from "./pages/Cart"
+import Checkout from "./pages/Checkout"
+import Invoice from "./pages/Invoice"
 
 function App() {
   return (
@@ -28,9 +28,9 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="components" element={<Components />} />
-              <Route path="checkout" element={<CheckOut />} />
-              <Route path="shopping" element={<Shoppinginfor />} />
-              <Route path="invoice" element={<CheckOutInvoice />} />
+              <Route path="cart" element={<Cart />} />
+              <Route path="checkout" element={<Checkout />} />
+              <Route path="invoice" element={<Invoice />} />
               <Route path="product" element={<Product />} />
               <Route path="forum">
                 <Route index element={<Forum />} />

@@ -4,7 +4,7 @@ import pic2 from "../../assets/images/pic2.jpg"
 import pic3 from "../../assets/images/pic3.jpg"
 import pic4 from "../../assets/images/pic4.jpg"
 
-import "./Checkout.css"
+import "./Cart.css"
 import Button from "../../components/Button"
 import {
   faCartShopping,
@@ -14,12 +14,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-export default function CheckOut() {
+export default function Cart() {
   return (
     <div className="content">
       <h1>
         <FontAwesomeIcon icon={faCartShopping} />
-        MY Cart
+        My Cart
       </h1>
 
       <div className="checkOut">

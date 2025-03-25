@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import Button from "../../components/Button"
 import Input from "../../components/Input"
-import "./Shoppinginfo.css"
+import "./Checkout.css"
 import { faShirt, faTruck } from "@fortawesome/free-solid-svg-icons"
 import pic1 from "../../assets/images/pic1.jpg"
 import pic2 from "../../assets/images/pic2.jpg"
@@ -9,7 +9,7 @@ import pic3 from "../../assets/images/pic3.jpg"
 import pic4 from "../../assets/images/pic4.jpg"
 import Table from "../../components/Table"
 
-export default function ShoppingInfo() {
+export default function Checkout() {
   return (
     <div className="content shopping-container">
       <div className="container">

@@ -4,7 +4,7 @@ import pic2 from "../../assets/images/pic2.jpg"
 import pic3 from "../../assets/images/pic3.jpg"
 import pic4 from "../../assets/images/pic4.jpg"
 
-export default function CheckOutInvoice() {
+export default function Invoice() {
   return (
     <div className="container">
       <div class="header">
