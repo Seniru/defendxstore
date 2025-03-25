@@ -17,8 +17,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 export default function CheckOut() {
   return (
     <div className="content">
-
-     
       <h1>
         <FontAwesomeIcon icon={faCartShopping} />
         MY Cart
@@ -95,10 +93,10 @@ export default function CheckOut() {
           <h2> Order Summary </h2>
           <div className="checkout-row">
             <h5>
-              <FontAwesomeIcon icon={faShirt} /> Items(2){" "}
+              <FontAwesomeIcon icon={faShirt} /> Items(4){" "}
             </h5>
 
-            <span>RS 3900</span>
+            <span>RS 20000</span>
           </div>
           <div className="checkout-row">
             <h5>
@@ -109,7 +107,7 @@ export default function CheckOut() {
           <hr />
           <div className="checkout-row">
             <h2>Total</h2>
-            <span>RS 7800</span>
+            <span>RS 20200</span>
           </div>
           <div className="checkOutButton">
             <Button kind="primary" className={"CheckOutButton"}>

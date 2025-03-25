@@ -7,7 +7,6 @@ import pic2 from "../../assets/images/pic2.jpg"
 import pic3 from "../../assets/images/pic3.jpg"
 import pic4 from "../../assets/images/pic4.jpg"
 
-
 import "./Profile.css"
 import Select from "../../components/Select"
 
@@ -17,25 +16,23 @@ function Order({}) {
       <div className="Order-stars">
         Orders
         <div className="Order-profile">
-        <img
-                style={{
-                  width: "100px",
-                  height: "100px",
-                  borderRadius: "10px",
-                }}
-                src={pic1}
-              />
+          <img
+            style={{
+              width: "100px",
+              height: "100px",
+              borderRadius: "10px",
+            }}
+            src={pic1}
+          />
         </div>
       </div>
-      
-      
-      <div className="Order-content">
-      Order Number: #123456789<br/>
 
-      Date: March 24 2025<br/>
-      Customer:jonny perera
-   
-      202, Malabe, Srilank
+      <div className="Order-content">
+        Order Number: #123456789
+        <br />
+        Date: March 24 2025
+        <br />
+        Customer:jonny perera 202, Malabe, Srilank
       </div>
 
       <div className="Status">PENDING</div>

@@ -4,7 +4,7 @@
 .shopping-container {
   display: flex;
   justify-content: center;
-  
+
   .container:nth-child(1) {
     width: -webkit-fill-available;
   }
@@ -34,7 +34,7 @@
   align-items: flex-start;
   justify-content: space-between;
 }
-.container{
+.container {
   padding: 28px;
-    margin: 15px;
+  margin: 15px;
 }

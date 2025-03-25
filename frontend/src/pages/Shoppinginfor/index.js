@@ -17,7 +17,7 @@ export default function ShoppingInfo() {
         <form action="" className="ShoppingInfo">
           <div className="ShoppingInfo">
             <label htmlFor="fname">Full name:</label>
-            <Input type="text" id="fname" name="fname" required/>
+            <Input type="text" id="fname" name="fname" required />
 
             <br />
             <label htmlFor="Cname">City:</label>
@@ -25,7 +25,7 @@ export default function ShoppingInfo() {
             <Input type="text" id="Cname" name="Cname" />
 
             <label htmlFor="Pname">street address:</label>
-            <Input type="text" id="lname" name="lname"required />
+            <Input type="text" id="lname" name="lname" required />
 
             <div className="checkout-row">
               <label htmlFor="State">State/province</label>
@@ -34,7 +34,7 @@ export default function ShoppingInfo() {
 
             <label htmlFor="Cname">Country:</label>
 
-            <Input type="text" id="county" name="county" required/>
+            <Input type="text" id="county" name="county" required />
 
             <br />
             <br />
@@ -95,7 +95,7 @@ export default function ShoppingInfo() {
         <div className="checkout-row">
           <h5>Promo Code</h5>
           <span>
-            <Input type="text" id="Proname" name="Proname" maxlength="4"/>
+            <Input type="text" id="Proname" name="Proname" maxlength="4" />
           </span>
         </div>
         <div className="checkout-row">

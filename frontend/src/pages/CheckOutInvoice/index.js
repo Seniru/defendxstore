@@ -5,26 +5,29 @@ import pic3 from "../../assets/images/pic3.jpg"
 import pic4 from "../../assets/images/pic4.jpg"
 
 export default function CheckOutInvoice() {
+  return (
+    <div className="container">
+      <div class="header">
+        <h1> DefendX Pvt Ltd Invoice</h1>
+        <p>Order Number #123456789</p>
+        <p>Date: March 24 2025</p>
+      </div>
+      <div class="section">
+        <div class="section-title">
+          <h2>Customer Information</h2>
+        </div>
+        <p>
+          <strong>Name:</strong> Rukshan perera
+        </p>
+        <p>
+          <strong>Email:</strong> Perera@example.com
+        </p>
+        <p>
+          <strong>Shipping Address:</strong> 202, Malabe, Srilanka
+        </p>
+      </div>
 
-    return (
-        <div className="container">
-
-
-        <div class="header">
-
-      <h1> DefendX Pvt Ltd Invoice</h1>
-      <p>Order Number #123456789</p>
-      <p>Date: March 24 2025</p>
-    </div>
-    <div class="section">
-      <div class="section-title">
-        <h2>Customer Information</h2></div>
-      <p><strong>Name:</strong> jonny perera</p>
-      <p><strong>Email:</strong> sinsjonny@example.com</p>
-      <p><strong>Shipping Address:</strong> 202, Malabe, Srilanka</p>
-    </div>
-        
-    <div className="checkOutInvoice">
+      <div className="checkOutInvoice">
         <Table
           headers={["", "Product ", "Color ", "Price", "Quantity", "Subtotal"]}
           rows={[
@@ -89,14 +92,28 @@ export default function CheckOutInvoice() {
               "2",
               "8000",
             ],
+
+            [
+              <>
+                <br />
+                <b>Total</b>
+                <br />
+              </>,
+
+              "",
+              "",
+              "",
+              "",
+
+              <>
+                <br />
+                <b> 8000</b>
+                <br />
+              </>,
+            ],
           ]}
         />
-        <hr/>
-        <p> Total</p>
-        
+      </div>
     </div>
-    </div>
-  
-
-    )
+  )
 }
