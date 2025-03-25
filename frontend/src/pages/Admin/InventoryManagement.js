@@ -80,20 +80,21 @@ const InventoryManagement = () => {
 
   const updateItem = async (id, item) => {
     try {
-      const formData = new FormData()
-
-      // Same field names as createItem
-      if (item.product) formData.append("product", item.product)
-      formData.append("itemName", item.itemName)
-      formData.append("category", item.category)
-      formData.append("description", item.description)
-      formData.append("colors", JSON.stringify(item.colors))
-      formData.append("price", item.price)
-      formData.append("size", item.size)
-      formData.append("quantity", item.quantity)
-      formData.append("stock", item.stock)
-
-      const response = await api.put(`/api/items/${id}`, formData, token, true)
+      const response = await api.put(
+        `/api/items/${id}`,
+        {
+          product: item.product,
+          itemName: item.itemName,
+          category: item.category,
+          description: item.description,
+          colors: item.colors,
+          price: item.price,
+          size: item.size,
+          quantity: item.quantity,
+          stock: item.stock,
+        },
+        token,
+      )
 
       if (!response.ok) throw new Error(`Update failed: ${response.status}`)
 
@@ -165,7 +166,7 @@ const InventoryManagement = () => {
 
   const handleRestockClick = (index) => {
     setFormMode("restock")
-    const product = productData[index]
+    const product = productData.body[index]
     setNewProduct({
       ...product,
       colors: Array.isArray(product.colors) ? product.colors : [],
@@ -177,7 +178,7 @@ const InventoryManagement = () => {
 
   const handleEditProduct = (index) => {
     setFormMode("edit")
-    const product = productData[index]
+    const product = productData.body[index]
     setNewProduct({
       ...product,
       colors: Array.isArray(product.colors) ? product.colors : [],
@@ -220,12 +221,12 @@ const InventoryManagement = () => {
       if (formMode === "add") {
         await createItem(newProduct)
       } else if (formMode === "restock") {
-        const selectedProduct = productData[selectedProductIndex]
+        const selectedProduct = productData.body[selectedProductIndex]
         await updateItem(selectedProduct._id, {
           quantity: newProduct.quantity,
         })
       } else if (formMode === "edit") {
-        const selectedProduct = productData[selectedProductIndex]
+        const selectedProduct = productData.body[selectedProductIndex]
         await updateItem(selectedProduct._id, newProduct)
       }
 
@@ -241,7 +242,7 @@ const InventoryManagement = () => {
   const handleDeleteProduct = async (index) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        await deleteItem(productData[index]._id)
+        await deleteItem(productData.body[index]._id)
       } catch (error) {
         console.error("Error deleting product:", error)
         alert("Failed to delete product")
@@ -263,7 +264,7 @@ const InventoryManagement = () => {
         </span>
       </div>
       <div className="secondary-text">
-        Showing {productData.length} products...
+        Showing {productData.body?.length} products...
       </div>
       <div className="table-container" id="inventory-table">
         <Table
