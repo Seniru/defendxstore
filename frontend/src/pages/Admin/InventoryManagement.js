@@ -8,10 +8,14 @@ import StockStatus from "../../components/StockStatus"
 import api from "../../utils/api"
 import { useAuth } from "../../contexts/AuthProvider"
 import useFetch from "../../hooks/useFetch"
+import OverlayWindow from "../../components/OverlayWindow"
+import PromoCodes from "./promocodes"
+import Input from "../../components/Input"
 
 const InventoryManagement = () => {
   const { token } = useAuth()
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isPromocodeWindowOpen, setIsPromocodeWindowOpen] = useState(false)
   const [formMode, setFormMode] = useState("add")
   const [refreshFlag, setRefreshFlag] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -251,229 +255,246 @@ const InventoryManagement = () => {
   }
 
   return (
-    <div className="content">
-      <div className="print-title">Inventory Report</div>
-      <div className="inventory-management-actions">
-        <SearchBar placeholder={"Search items..."} />
-        <span>
-          <Button kind="secondary" onClick={() => window.print()}>
-            Generate Report
-          </Button>
-          <Select items={["All", "In Stock", "Out of Stock"]} />
-          <Button onClick={handleAddProductClick}>Add Product</Button>
-        </span>
-      </div>
-      <div className="secondary-text">
-        Showing {productData.body?.length} products...
-      </div>
-      <div className="table-container" id="inventory-table">
-        <Table
-          headers={[
-            "Product",
-            "Item Name",
-            "Category",
-            "Description",
-            "Colors",
-            "Price",
-            "Size",
-            "Quantity",
-            "Stock",
-            "Action",
-          ]}
-          rows={(productData.body ? productData.body : []).map(
-            (product, index) => [
-              <img
-                src={product.product}
-                alt={product.itemName}
-                className="product-image"
-                style={{
-                  width: "100px",
-                  height: "100px",
-                  borderRadius: "10px",
-                }}
-              />,
-              product.itemName,
-              product.category,
-              product.description,
-              Array.isArray(product.colors) ? product.colors.join(", ") : "",
-              `$${product.price}`,
-              product.size,
-              product.quantity,
-              <StockStatus stock={product.stock} />,
-              <div className="action-buttons">
-                <Button
-                  kind="secondary"
-                  onClick={() => handleRestockClick(index)}
-                >
-                  Restock
-                </Button>
-                <Button kind="primary" onClick={() => handleEditProduct(index)}>
-                  Edit
-                </Button>
-                <Button
-                  kind="danger"
-                  onClick={() => handleDeleteProduct(index)}
-                >
-                  Delete
-                </Button>
-              </div>,
-            ],
-          )}
-        />
-      </div>
+    <>
+      <OverlayWindow
+        isOpen={isPromocodeWindowOpen}
+        setIsOpen={setIsPromocodeWindowOpen}
+      >
+        <PromoCodes />
+      </OverlayWindow>
+      <div className="content">
+        <div className="print-title">Inventory Report</div>
+        <div className="inventory-management-actions">
+          <SearchBar placeholder={"Search items..."} />
+          <span>
+            <Button
+              kind="secondary"
+              onClick={() => setIsPromocodeWindowOpen(true)}
+            >
+              Check promotion codes
+            </Button>
+            <Button kind="secondary" onClick={() => window.print()}>
+              Generate Report
+            </Button>
+            <Select items={["All", "In Stock", "Out of Stock"]} />
+            <Button onClick={handleAddProductClick}>Add Product</Button>
+          </span>
+        </div>
+        <div className="secondary-text">
+          Showing {productData.body?.length} products...
+        </div>
+        <div className="table-container" id="inventory-table">
+          <Table
+            headers={[
+              "Product",
+              "Item Name",
+              "Category",
+              "Description",
+              "Colors",
+              "Price",
+              "Size",
+              "Quantity",
+              "Stock",
+              "Action",
+            ]}
+            rows={(productData.body ? productData.body : []).map(
+              (product, index) => [
+                <img
+                  src={product.product}
+                  alt={product.itemName}
+                  className="product-image"
+                  style={{
+                    width: "100px",
+                    height: "100px",
+                    borderRadius: "10px",
+                  }}
+                />,
+                product.itemName,
+                product.category,
+                product.description,
+                Array.isArray(product.colors) ? product.colors.join(", ") : "",
+                `$${product.price}`,
+                product.size,
+                product.quantity,
+                <StockStatus stock={product.stock} />,
+                <div className="action-buttons">
+                  <Button
+                    kind="secondary"
+                    onClick={() => handleRestockClick(index)}
+                  >
+                    Restock
+                  </Button>
+                  <Button
+                    kind="primary"
+                    onClick={() => handleEditProduct(index)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    kind="danger"
+                    onClick={() => handleDeleteProduct(index)}
+                  >
+                    Delete
+                  </Button>
+                </div>,
+              ],
+            )}
+          />
+        </div>
 
-      {isFormOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>
-              {formMode === "add"
-                ? "Add New Product"
-                : formMode === "restock"
-                  ? "Restock Product"
-                  : "Edit Product"}
-            </h2>
-            <form onSubmit={handleSubmit}>
-              {(formMode === "add" || formMode === "edit") && (
-                <>
-                  <label>
-                    Image:*
-                    <input
-                      type="file"
-                      name="product"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      required={formMode === "add"}
-                    />
-                    {newProduct.productPreview && (
-                      <img
-                        src={newProduct.productPreview}
-                        alt="Preview"
-                        style={{ maxWidth: "100px", marginTop: "10px" }}
+        {isFormOpen && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h2>
+                {formMode === "add"
+                  ? "Add New Product"
+                  : formMode === "restock"
+                    ? "Restock Product"
+                    : "Edit Product"}
+              </h2>
+              <form onSubmit={handleSubmit}>
+                {(formMode === "add" || formMode === "edit") && (
+                  <>
+                    <label>
+                      Image:*
+                      <Input
+                        type="file"
+                        name="product"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        required={formMode === "add"}
                       />
-                    )}
-                  </label>
+                      {newProduct.productPreview && (
+                        <img
+                          src={newProduct.productPreview}
+                          alt="Preview"
+                          style={{ maxWidth: "100px", marginTop: "10px" }}
+                        />
+                      )}
+                    </label>
+                    <label>
+                      Product Name:*
+                      <Input
+                        type="text"
+                        name="itemName"
+                        value={newProduct.itemName}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </label>
+                    <label>
+                      Category:*
+                      <select
+                        name="category"
+                        value={newProduct.category}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        <option value="">Select Category</option>
+                        <option value="Mens">Mens</option>
+                        <option value="Womens">Womens</option>
+                        <option value="Unisex">Unisex</option>
+                        <option value="Accessories">Accessories</option>
+                      </select>
+                    </label>
+                    <label>
+                      Description:*
+                      <Input
+                        type="text"
+                        name="description"
+                        value={newProduct.description}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </label>
+                    <label>
+                      Colors (comma-separated):*
+                      <Input
+                        type="text"
+                        name="colors"
+                        value={
+                          Array.isArray(newProduct.colors)
+                            ? newProduct.colors.join(", ")
+                            : ""
+                        }
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </label>
+                    <label>
+                      Price:*
+                      <Input
+                        type="number"
+                        name="price"
+                        value={newProduct.price}
+                        onChange={handleInputChange}
+                        min="0"
+                        step="0.01"
+                        required
+                      />
+                    </label>
+                    <label>
+                      Size (comma-separated):*
+                      <Input
+                        type="text"
+                        name="size"
+                        value={newProduct.size}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </label>
+                  </>
+                )}
+                <label>
+                  Quantity:*
+                  <Input
+                    type="number"
+                    name="quantity"
+                    value={newProduct.quantity}
+                    onChange={handleInputChange}
+                    min="0"
+                    required
+                  />
+                </label>
+                {(formMode === "add" || formMode === "edit") && (
                   <label>
-                    Product Name:*
-                    <input
-                      type="text"
-                      name="itemName"
-                      value={newProduct.itemName}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </label>
-                  <label>
-                    Category:*
+                    Stock Status:*
                     <select
-                      name="category"
-                      value={newProduct.category}
+                      name="stock"
+                      value={newProduct.stock}
                       onChange={handleInputChange}
                       required
                     >
-                      <option value="">Select Category</option>
-                      <option value="Mens">Mens</option>
-                      <option value="Womens">Womens</option>
-                      <option value="Unisex">Unisex</option>
-                      <option value="Accessories">Accessories</option>
+                      <option value="In Stock">In Stock</option>
+                      <option value="Running Low">Running Low</option>
+                      <option value="Out of Stock">Out of Stock</option>
                     </select>
                   </label>
-                  <label>
-                    Description:*
-                    <input
-                      type="text"
-                      name="description"
-                      value={newProduct.description}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </label>
-                  <label>
-                    Colors (comma-separated):*
-                    <input
-                      type="text"
-                      name="colors"
-                      value={
-                        Array.isArray(newProduct.colors)
-                          ? newProduct.colors.join(", ")
-                          : ""
-                      }
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </label>
-                  <label>
-                    Price:*
-                    <input
-                      type="number"
-                      name="price"
-                      value={newProduct.price}
-                      onChange={handleInputChange}
-                      min="0"
-                      step="0.01"
-                      required
-                    />
-                  </label>
-                  <label>
-                    Size (comma-separated):*
-                    <input
-                      type="text"
-                      name="size"
-                      value={newProduct.size}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </label>
-                </>
-              )}
-              <label>
-                Quantity:*
-                <input
-                  type="number"
-                  name="quantity"
-                  value={newProduct.quantity}
-                  onChange={handleInputChange}
-                  min="0"
-                  required
-                />
-              </label>
-              {(formMode === "add" || formMode === "edit") && (
-                <label>
-                  Stock Status:*
-                  <select
-                    name="stock"
-                    value={newProduct.stock}
-                    onChange={handleInputChange}
-                    required
+                )}
+                <div className="form-actions">
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting
+                      ? "Processing..."
+                      : formMode === "add"
+                        ? "Add Product"
+                        : formMode === "restock"
+                          ? "Update Quantity"
+                          : "Save Changes"}
+                  </Button>
+                  <Button
+                    kind="danger"
+                    onClick={handleFormClose}
+                    disabled={isSubmitting}
                   >
-                    <option value="In Stock">In Stock</option>
-                    <option value="Running Low">Running Low</option>
-                    <option value="Out of Stock">Out of Stock</option>
-                  </select>
-                </label>
-              )}
-              <div className="form-actions">
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting
-                    ? "Processing..."
-                    : formMode === "add"
-                      ? "Add Product"
-                      : formMode === "restock"
-                        ? "Update Quantity"
-                        : "Save Changes"}
-                </Button>
-                <Button
-                  kind="danger"
-                  onClick={handleFormClose}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </form>
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   )
 }
 
