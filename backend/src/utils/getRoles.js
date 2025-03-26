@@ -5,10 +5,13 @@ const permissions = {
     ADMIN: 1 << 3,
 }
 
-module.exports = (roleBits) => {
-    let userRoles = []
-    for (let [role, bit] of Object.entries(permissions)) {
-        if (roleBits & bit) userRoles.push(role)
-    }
-    return userRoles
+module.exports = {
+    roles: permissions,
+    getRoles: (roleBits) => {
+        let userRoles = []
+        for (let [role, bit] of Object.entries(permissions)) {
+            if (roleBits & bit) userRoles.push(role)
+        }
+        return userRoles
+    },
 }

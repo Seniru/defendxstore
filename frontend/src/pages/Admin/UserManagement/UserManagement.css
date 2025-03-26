@@ -21,14 +21,19 @@
         font-size: large;
         margin-right: 10px;
       }
-
-      .role {
-        padding: 2px 10px;
-        border-radius: 100px;
-        display: inline-block;
-        margin-left: 3px;
-        margin-right: 3px;
-      }
     }
+  }
+}
+
+.user-profile-image {
+  .camera {
+    position: relative;
+    top: -20px;
+    left: 60%;
+    background-color: var(--primary-color);
+    border: 2px solid white;
+    border-radius: 50px;
+    display: inline;
+    padding: 3px;
   }
 }

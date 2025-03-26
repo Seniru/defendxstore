@@ -26,7 +26,7 @@ export default function ForumThread() {
   return (
     <div className="content">
       <h1>Title</h1>
-      <div className="forum-thread-main-content">
+      <div className="forum-thread-main-content container">
         <div className="forum-thread-main-information">
           <div>
             <ProfileImage username="User" size={50} />
@@ -68,6 +68,7 @@ export default function ForumThread() {
           pretium dictum. Duis feugiat vehicula massa et interdum.
         </p>
       </div>
+      <br />
       <hr />
       <h3>Replies</h3>
       {data.map((reply) => (

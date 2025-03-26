@@ -52,7 +52,8 @@
 
 .review-container {
   display: flex;
-  margin-bottom: 20px;
+  margin: 20px 30px;
+  padding: 25px;
 
   .review-stars {
     width: 20%;
@@ -66,5 +67,35 @@
 
   .review-profile {
     width: 20%;
+    display: grid;
+    justify-content: flex-end;
+
+    .review-profile-details {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+.Order-container {
+  display: flex;
+  margin-bottom: 20px;
+  justify-content: space-between;
+
+  .Order-stars {
+    width: 20%;
+    display: grid;
+  }
+
+  .Order-content {
+    align-items: center;
+    display: grid;
+  }
+
+  .Order-profile {
+    width: 20%;
+  }
+  .Order-status {
+    align-items: end;
   }
 }
