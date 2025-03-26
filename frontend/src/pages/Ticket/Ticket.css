@@ -1,5 +1,5 @@
 .ticket-view-container {
-  display: FLEX;
+  display: flex;
   padding: 30px;
 }
 
