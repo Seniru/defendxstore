@@ -5,7 +5,7 @@ const TicketSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 1,
-        maxlengt: 30,
+        maxlength: 30,
     },
 
     date: {
