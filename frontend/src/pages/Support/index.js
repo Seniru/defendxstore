@@ -7,26 +7,29 @@ import ProfileImage from "../../components/ProfileImage"
 
 import "./Support.css"
 
-function TicketRow({ username, id, title, type, status, date}) {
+function TicketRow({ username, id, title, type, status, date }) {
   return (
     <div className="container ticket-container">
       <div style={{ display: "flex" }}>
         <div className="box2">
           <div className="userprofile">
-            <ProfileImage username={username} size={30} />{" "}
-            {username}
+            <ProfileImage username={username} size={30} /> {username}
           </div>
           <b>Ticket #{id}</b>
         </div>
         <h2>{title}</h2>
       </div>
-      <div  style={{ display: "grid", justifyItems: "end" }}>
+      <div style={{ display: "grid", justifyItems: "end" }}>
         <div>
           <span className="tickettype">{type}</span>
-          <span className={status}>{status}</span> <FontAwesomeIcon icon={faPen} />{" "}
+          <span className={status}>{status}</span>{" "}
+          <FontAwesomeIcon icon={faPen} />{" "}
           <FontAwesomeIcon icon={faTrash} color="red" />
         </div>
-        <span className="secondary-text"><br />{date}</span>
+        <span className="secondary-text">
+          <br />
+          {date}
+        </span>
       </div>
     </div>
   )
@@ -51,16 +54,59 @@ export default function Support() {
       <div>
         <h2>Open</h2>
 
-        <TicketRow id={1} username={"User"} date={"2022-01-01"} status={"Open"} title={"Ticket title"} type={"Ticket type"} />
-        <TicketRow id={1} username={"User"} date={"2022-01-01"} status={"Open"} title={"Ticket title"} type={"Ticket type"} />
-        <TicketRow id={1} username={"User"} date={"2022-01-01"} status={"Open"} title={"Ticket title"} type={"Ticket type"} />
+        <TicketRow
+          id={1}
+          username={"User"}
+          date={"2022-01-01"}
+          status={"Open"}
+          title={"Ticket title"}
+          type={"Ticket type"}
+        />
+        <TicketRow
+          id={1}
+          username={"User"}
+          date={"2022-01-01"}
+          status={"Open"}
+          title={"Ticket title"}
+          type={"Ticket type"}
+        />
+        <TicketRow
+          id={1}
+          username={"User"}
+          date={"2022-01-01"}
+          status={"Open"}
+          title={"Ticket title"}
+          type={"Ticket type"}
+        />
+
       </div>
 
       <div>
         <h2>Closed</h2>
-        <TicketRow id={1} username={"User"} date={"2022-01-01"} status={"Closed"} title={"Ticket title"} type={"Ticket type"} />
-        <TicketRow id={1} username={"User"} date={"2022-01-01"} status={"Closed"} title={"Ticket title"} type={"Ticket type"} />
-        <TicketRow id={1} username={"User"} date={"2022-01-01"} status={"Closed"} title={"Ticket title"} type={"Ticket type"} />
+        <TicketRow
+          id={1}
+          username={"User"}
+          date={"2022-01-01"}
+          status={"Closed"}
+          title={"Ticket title"}
+          type={"Ticket type"}
+        />
+        <TicketRow
+          id={1}
+          username={"User"}
+          date={"2022-01-01"}
+          status={"Closed"}
+          title={"Ticket title"}
+          type={"Ticket type"}
+        />
+        <TicketRow
+          id={1}
+          username={"User"}
+          date={"2022-01-01"}
+          status={"Closed"}
+          title={"Ticket title"}
+          type={"Ticket type"}
+        />
       </div>
     </div>
   )

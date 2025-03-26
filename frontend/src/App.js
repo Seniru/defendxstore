@@ -15,6 +15,10 @@ import Home from "./pages/Home"
 import Product from "./pages/Product"
 import Forum from "./pages/Forum"
 import ForumThread from "./pages/ForumThread"
+import PromoCodes from "./pages/Admin/promocodes"
+import Cart from "./pages/Cart"
+import Checkout from "./pages/Checkout"
+import Invoice from "./pages/Invoice"
 
 function App() {
   return (
@@ -25,6 +29,9 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="components" element={<Components />} />
+              <Route path="cart" element={<Cart />} />
+              <Route path="checkout" element={<Checkout />} />
+              <Route path="invoice" element={<Invoice />} />
               <Route path="product" element={<Product />} />
               <Route path="forum">
                 <Route index element={<Forum />} />
@@ -42,7 +49,7 @@ function App() {
               <Route element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}>
                 <Route path="*" element={<NotFound />} />
               </Route>
-              <Route element={<PrivateRoute requiredRole="ADMIN" />}>
+              <Route element={<PrivateRoute requiredRole="USER" />}>
                 <Route path="admin" element={<Admin />} />
                 <Route path="*" element={<NotFound />} />
               </Route>

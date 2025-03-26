@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-import Role from "./Role"
+import Role from "../../../components/Role"
 import {
   faAddressCard,
   faAt,
