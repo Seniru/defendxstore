@@ -1,5 +1,4 @@
-import { LineChart } from '@mui/x-charts/LineChart';
-
+import { LineChart } from "@mui/x-charts/LineChart"
 import "./SalesManagement.css"
 import Select from "../../components/Select"
 import Table from "../../components/Table"
@@ -30,7 +29,6 @@ export default function SalesManagement() {
             hello world
           </div>
         </div>
-        
         <h1>Monthly Sales Breakdown</h1>
       </div>
 

@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import ProfileImage from "../../components/ProfileImage"
 import { faStar } from "@fortawesome/free-solid-svg-icons"
+import pro1 from "../../assets/images/pro1.png"
 
 function Review({}) {
   return (
@@ -8,7 +9,6 @@ function Review({}) {
       <div className="review-stars">
         Orders #1
         <div>
-          <FontAwesomeIcon icon={faStar} />
           <FontAwesomeIcon icon={faStar} />
           <FontAwesomeIcon icon={faStar} />
           <FontAwesomeIcon icon={faStar} />
@@ -22,8 +22,15 @@ function Review({}) {
       </div>
 
       <div className="review-profile">
-        <ProfileImage username={"supun"} size={50} />
-        seniru Passan 2024/04/03
+        <img
+          style={{
+            width: "50px",
+            height: "50px",
+            borderRadius: "10px",
+          }}
+          src={pro1}
+        />
+        Passan 2024/04/03
       </div>
     </div>
   )

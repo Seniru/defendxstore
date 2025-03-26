@@ -68,3 +68,26 @@
     width: 20%;
   }
 }
+
+.Order-container {
+  display: flex;
+  margin-bottom: 20px;
+  justify-content: space-between;
+
+  .Order-stars {
+    width: 20%;
+    display: grid;
+  }
+
+  .Order-content {
+    align-items: center;
+    display: grid;
+  }
+
+  .Order-profile {
+    width: 20%;
+  }
+  .Order-status {
+    align-items: end;
+  }
+}
