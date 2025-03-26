@@ -75,11 +75,12 @@ const deleteOrder = async (req, res, next) => {
     try {
         const { id } = req.params
         const user = req.user
-        if (!req.user.roles.includes("ADMIN") && user.username !== req.user.username)
+        const order = await Order.findOne({ _id: id }).exec()
+        if (!order) return createResponse(res, StatusCodes.NOT_FOUND, "Order not found")
+        if (!user.roles.includes("ADMIN") && user.username !== order.username)
             return createResponse(res, StatusCodes.FORBIDDEN, "You cannot delete this order")
 
-        const order = await Order.findOneAndDelete({ _id: id }).exec()
-        if (!order) return createResponse(res, StatusCodes.NOT_FOUND, "Order not found")
+        await Order.findOneAndDelete({ _id: id }).exec()
         return createResponse(res, StatusCodes.OK, "Order deleted")
     } catch (error) {
         next(error)
