@@ -9,8 +9,9 @@ function Review({}) {
       <div className="review-stars">
         Orders #1
         <div>
-          <FontAwesomeIcon icon={faStar} />
-          <FontAwesomeIcon icon={faStar} />
+          <FontAwesomeIcon icon={faStar} color="yellow" />
+          <FontAwesomeIcon icon={faStar} color="yellow" />
+          <FontAwesomeIcon icon={faStar} color="yellow" />
           <FontAwesomeIcon icon={faStar} />
           <FontAwesomeIcon icon={faStar} />
         </div>
@@ -22,15 +23,10 @@ function Review({}) {
       </div>
 
       <div className="review-profile">
-        <img
-          style={{
-            width: "50px",
-            height: "50px",
-            borderRadius: "10px",
-          }}
-          src={pro1}
-        />
-        Passan 2024/04/03
+        <div className="review-profile-details">
+          <ProfileImage username="User" size={30} /> <span>User</span>
+        </div>
+        <span className="secondary-text">2024/04/03</span>
       </div>
     </div>
   )

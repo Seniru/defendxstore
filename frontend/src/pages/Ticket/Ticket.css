@@ -1,5 +1,6 @@
-.ticket-container {
+.ticket-view-container {
   display: FLEX;
+  padding: 30px;
 }
 
 .Edit-Delete {

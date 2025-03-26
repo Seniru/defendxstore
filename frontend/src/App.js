@@ -15,6 +15,7 @@ import Home from "./pages/Home"
 import Product from "./pages/Product"
 import Forum from "./pages/Forum"
 import ForumThread from "./pages/ForumThread"
+import PromoCodes from "./pages/Admin/promocodes"
 import Cart from "./pages/Cart"
 import Checkout from "./pages/Checkout"
 import Invoice from "./pages/Invoice"
@@ -48,7 +49,7 @@ function App() {
               <Route element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}>
                 <Route path="*" element={<NotFound />} />
               </Route>
-              <Route element={<PrivateRoute requiredRole="ADMIN" />}>
+              <Route element={<PrivateRoute requiredRole="USER" />}>
                 <Route path="admin" element={<Admin />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
