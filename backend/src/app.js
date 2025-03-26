@@ -13,6 +13,7 @@ const createResponse = require("./utils/createResponse")
 const usersRoute = require("./routes/users")
 const authRoute = require("./routes/auth")
 const itemRoute = require("./routes/items")
+const orderRoute = require("./routes/orders")
 const promocodesRoute = require("./routes/promocodes")
 
 // middlewares
@@ -28,6 +29,7 @@ app.use(
 app.use("/api/auth", authRoute)
 app.use("/api/users", usersRoute)
 app.use("/api/items", itemRoute)
+app.use("/api/orders", orderRoute)
 app.use("/api/promo", promocodesRoute)
 
 app.use((err, req, res, next) => {
