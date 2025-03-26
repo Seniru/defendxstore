@@ -14,7 +14,6 @@ function Order({}) {
   return (
     <div className="Order-container container">
       <div className="Order-stars">
-        Orders
         <div className="Order-profile">
           <img
             style={{

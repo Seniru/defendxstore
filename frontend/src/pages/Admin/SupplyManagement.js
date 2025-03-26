@@ -40,7 +40,6 @@ export default function SupplyManagement() {
           ["Order #6", "Item #2", "99", "99.9", "99.9", "99.9"],
           ["Order #7", "Item #3", "99", "99.9", "99.9", "99.9"],
           ["Order #8", "Item #4", "99", "99.9", "99.9", "99.9"],
-
         ]}
       />
     </div>

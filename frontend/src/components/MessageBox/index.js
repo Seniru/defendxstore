@@ -9,7 +9,7 @@ function MessageComponent({ isError, message, setMessage }) {
     if (message) {
       let timeout = setTimeout(() => {
         setMessage(null)
-      }, 6000)
+      }, 3000)
       // clear the timeout when unmouting
       return () => clearTimeout(timeout)
     }

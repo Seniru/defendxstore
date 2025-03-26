@@ -4,6 +4,8 @@
 .shopping-container {
   display: flex;
   justify-content: center;
+  margin-left: 40px;
+  margin-right: 40px;
 
   .container:nth-child(1) {
     width: -webkit-fill-available;
