@@ -18,13 +18,13 @@ function PromoCodeRow({ row, index }) {
   ) : (
     <tr key={index}>
       <td>
-        <Input placeholder="Promotion code" />
+        <Input placeholder="Promotion code" required />
       </td>
       <td>
-        <Input placeholder="Valid until" />
+        <Input type="date" placeholder="Valid until" required />
       </td>
       <td>
-        <Input placeholder="Discount" />
+        <Input type="number" placeholder="Discount" required />
       </td>
       <td>
         <Button kind="primary">Add code</Button>

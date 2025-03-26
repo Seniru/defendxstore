@@ -1,11 +1,10 @@
 const mongoose = require("mongoose")
-const PromocodeSchema = mongoose.Schema
-({
+const PromocodeSchema = mongoose.Schema({
     promocode: {
         type: String,
         required: true,
-        minlength:3,
-        maxlength:20
+        minlength: 3,
+        maxlength: 20,
     },
     validuntil: {
         type: Date,
@@ -15,7 +14,6 @@ const PromocodeSchema = mongoose.Schema
         type: Number,
         required: true,
     },
-    
 })
 
 module.exports = mongoose.model("Promocode", PromocodeSchema)

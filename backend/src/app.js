@@ -15,7 +15,6 @@ const authRoute = require("./routes/auth")
 const itemRoute = require("./routes/items")
 const promocodesRoute = require("./routes/promocodes")
 
-
 // middlewares
 app.use(cors())
 app.use(express.json({ limit: "4mb" }))

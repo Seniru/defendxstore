@@ -271,7 +271,7 @@ const InventoryManagement = () => {
               kind="secondary"
               onClick={() => setIsPromocodeWindowOpen(true)}
             >
-              Check promotion codes
+              Promotion codes
             </Button>
             <Button kind="secondary" onClick={() => window.print()}>
               Generate Report
