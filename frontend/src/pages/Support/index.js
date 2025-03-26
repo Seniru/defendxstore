@@ -78,7 +78,6 @@ export default function Support() {
           title={"Ticket title"}
           type={"Ticket type"}
         />
-
       </div>
 
       <div>

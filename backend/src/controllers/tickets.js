@@ -15,7 +15,6 @@ const createTickets = async (req, res, next) => {
     try {
         const { title, content, type } = req.body
         const user = req.user
-        console.log(user)
         const ticket = new Ticket({
             title,
             content,
@@ -33,12 +32,8 @@ const createTickets = async (req, res, next) => {
 
 const getTicket = async (req, res, next) => {
     try {
-        const { title, content, type } = req.body
-        const user = req.user
-        console.log(user)
-
-        const { id } = req.params
-        const ticket = await Ticket.find({ id }, {}).exec()
+        const { ticketId } = req.params
+        const ticket = await Ticket.find({ _id: ticketId }, {}).exec()
         return createResponse(res, StatusCodes.OK, ticket)
     } catch (error) {
         next(error)
@@ -48,13 +43,14 @@ const getTicket = async (req, res, next) => {
 const editTicket = async (req, res, next) => {
     try {
         const { title, content, type } = req.body
+        const { ticketId } = req.params
         const user = req.user
-        console.log(user)
-        const { id } = req.params
-        const ticket = await Ticket.findOneAndUpdate({ _id: id }, { title, content, type }).exec()
+        const ticket = await Ticket.findOneAndUpdate(
+            { _id: ticketId },
+            { title, content, type },
+        ).exec()
         if (!ticket) return createResponse(res, StatusCodes.NOT_FOUND, "Ticket not found")
-        return createResponse(res, StatusCodes.OK, "Ticket deleted")
-        return createResponse(res, StatusCodes.OK, ticket)
+        return createResponse(res, StatusCodes.OK, "Ticket updated")
     } catch (error) {
         next(error)
     }
@@ -63,12 +59,10 @@ const editTicket = async (req, res, next) => {
 const deleteTicket = async (req, res, next) => {
     try {
         const user = req.user
-        console.log(user)
-
-        const ticket = await Ticket.findOneAndDelete({ _id: id }).exec()
-        if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+        const { ticketId } = req.params
+        const ticket = await Ticket.findOneAndDelete({ _id: ticketId }).exec()
+        if (!ticket) return createResponse(res, StatusCodes.NOT_FOUND, "Ticket not found")
         return createResponse(res, StatusCodes.OK, "Ticket deleted")
-        return createResponse(res, StatusCodes.OK, ticket)
     } catch (error) {
         next(error)
     }
