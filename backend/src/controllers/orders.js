@@ -38,7 +38,7 @@ const createOrder = async (req, res, next) => {
             const user = req.user
             if (!order) return createResponse(res, StatusCodes.NOT_FOUND, "order not found")
             
-            if (!user.roles.include("DELIVERY_AGENT") && user.username !== order.username)
+            if (!user.roles.includes("DELIVERY_AGENT") && user.username !== order.username)
                 return createResponse(
                     res,
                     StatusCodes.FORBIDDEN,
