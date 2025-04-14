@@ -15,6 +15,7 @@ export default function SalesManagement() {
           <div>
             <LineChart
               height={300}
+              width={1000}
               series={[
                 {
                   data: [12, 32, 32, 43, 64, 43, 24, 53, 23, 54, 65, 40],

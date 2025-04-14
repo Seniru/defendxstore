@@ -107,10 +107,11 @@ export default function Header() {
             </div>
             <div>
               <b>
-                {user.username}
-                {user.roles.map((role) => (
-                  <Role role={role} includeOptions={false} />
-                ))}
+                {user?.username}
+                {user?.roles &&
+                  user.roles.map((role) => (
+                    <Role role={role} includeOptions={false} />
+                  ))}
               </b>
               <br />
               <br />
@@ -124,7 +125,7 @@ export default function Header() {
             <li>
               <Link to="/profile">My profile</Link>
             </li>
-            {user.roles.includes("ADMIN") && (
+            {user?.roles.includes("ADMIN") && (
               <li>
                 <Link to="/admin">Admin dashboard</Link>
               </li>
@@ -153,7 +154,7 @@ export default function Header() {
             <li>
               <Link to="cart">View cart</Link>
             </li>
-            {user.roles.includes("ADMIN") && (
+            {user?.roles.includes("ADMIN") && (
               <li>
                 <Link to="admin">Admin dashboard</Link>
               </li>
