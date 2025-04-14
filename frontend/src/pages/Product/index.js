@@ -8,16 +8,33 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCircleInfo, faTag } from "@fortawesome/free-solid-svg-icons"
 import useFetch from "../../hooks/useFetch"
 import NotFound from "../errors/NotFound"
+import api from "../../utils/api"
+import { useAuth } from "../../contexts/AuthProvider"
 
 const { REACT_APP_API_URL } = process.env
 
 const Product = () => {
+  const { user, token } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
   const id = searchParams.get("id")
   const [item, itemError, itemLoading] = useFetch(
     `${REACT_APP_API_URL}/api/items/${searchParams.get("id")}`,
     null,
   )
+
+  const addItemToCart = async () => {
+    if (!user) return alert("You need to signin")
+    const response = await api.post(
+      `/api/users/${user.username}/cart`,
+      {
+        productId: id,
+        color: "black",
+        size: "s",
+      },
+      token,
+    )
+    //const result = await response.json()
+  }
 
   if (!itemLoading && (id === null || item == null)) return <NotFound />
 
@@ -76,7 +93,9 @@ const Product = () => {
           <Input type="number" initialValue={1} />
         </div>
 
-        <button className="add-to-cart">Add to Cart</button>
+        <button className="add-to-cart" onClick={addItemToCart}>
+          Add to Cart
+        </button>
       </div>
     </div>
   )

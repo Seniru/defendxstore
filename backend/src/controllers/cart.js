@@ -11,7 +11,7 @@ const getCart = async (req, res, next) => {
             return createResponse(res, StatusCodes.FORBIDDEN, "Cannot access another user's cart")
 
         const user = await User.findOne({ username }, { cart: true })
-            .populate("cart.productId")
+            .populate("cart.product")
             .exec()
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
         return createResponse(res, StatusCodes.OK, user.cart)
@@ -42,7 +42,7 @@ const addItem = async (req, res, next) => {
 
         const item = await Item.findById(productId).exec()
         if (!item) return createResponse(res, StatusCodes.NOT_FOUND, "Item not found")
-        user.cart.push(req.body)
+        user.cart.push({ product: productId, size, color })
         await user.save()
 
         return createResponse(res, StatusCodes.OK, "Added item successfully")

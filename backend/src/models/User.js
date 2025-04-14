@@ -42,7 +42,7 @@ const UserSchema = new mongoose.Schema({
         default: [],
         type: [
             {
-                productId: {
+                product: {
                     type: mongoose.Types.ObjectId,
                     ref: "Item",
                 },
