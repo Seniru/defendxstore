@@ -13,8 +13,13 @@ import white from "../../assets/images/white.jpg"
 import pro1 from "../../assets/images/pro1.png"
 import pro2 from "../../assets/images/pro2.png"
 import pro3 from "../../assets/images/pro3.png"
+import useFetch from "../../hooks/useFetch"
+
+const { REACT_APP_API_URL } = process.env
 
 const Home = () => {
+  const [items] = useFetch(`${REACT_APP_API_URL}/api/items`, { body: [] })
+
   useEffect(() => {
     const swiper = new window.Swiper(".mySwiper", {
       pagination: {
@@ -34,7 +39,13 @@ const Home = () => {
 
   return (
     <div className="main-container">
-      <div style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
+      <div
+        style={{
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+          width: "calc(100vw - 15px)",
+        }}
+      >
         <div
           style={{
             display: "inline-block",
@@ -90,25 +101,35 @@ const Home = () => {
 
       <div className="popular">
         <h3>
-          Popular <span style={{ color: "grey" }}>Products</span>{" "}
+          Popular <span className="secondary-text">Products</span>{" "}
         </h3>
-        <div className="catelog">
-          <Productcard />
-          <Productcard />
-          <Productcard />
-          <Productcard />
-          <Productcard />
+        <div className="catalog">
+          {items.body?.map((item, index) => (
+            <Productcard
+              itemName={item.itemName}
+              category={item.category}
+              price={item.price}
+              product={item.product}
+              id={item._id}
+              key={index}
+            />
+          ))}
         </div>
       </div>
 
       <div className="popular">
         <h3>Trending Products</h3>
-        <div className="catelog">
-          <Productcard />
-          <Productcard />
-          <Productcard />
-          <Productcard />
-          <Productcard />
+        <div className="catalog">
+          {items.body?.map((item, index) => (
+            <Productcard
+              itemName={item.itemName}
+              category={item.category}
+              price={item.price}
+              product={item.product}
+              id={item._id}
+              key={index}
+            />
+          ))}
         </div>
       </div>
 
