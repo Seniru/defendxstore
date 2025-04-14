@@ -12,6 +12,8 @@ import api from "../../utils/api"
 import { useAuth } from "../../contexts/AuthProvider"
 import Button from "../../components/Button"
 import MessageBox from "../../components/MessageBox"
+import OverlayWindow from "../../components/OverlayWindow"
+import LoginForm from "../../forms/LoginForm"
 
 const { REACT_APP_API_URL } = process.env
 
@@ -22,6 +24,7 @@ const Product = () => {
   const [color, setColor] = useState("black")
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState(null)
+  const [isLoginFormOpen, setIsLoginFormOpen] = useState(false)
 
   const { user, token } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -33,7 +36,7 @@ const Product = () => {
 
   const addItemToCart = async (evt) => {
     evt.preventDefault()
-    if (!user) return alert("You need to signin")
+    if (!user) return setIsLoginFormOpen(true)
     const size = sizesSelectorRef.current.value
     const quantity = quantityRef.current.value
 
@@ -69,6 +72,9 @@ const Product = () => {
   return (
     <>
       <MessageBox isError={isError} message={message} setMessage={setMessage} />
+      <OverlayWindow isOpen={isLoginFormOpen} setIsOpen={setIsLoginFormOpen}>
+        <LoginForm className="no-image" style={{ width: "min-content" }} />
+      </OverlayWindow>
       <form className="product-checkout" noValidate>
         <div className="product-image-container">
           <img

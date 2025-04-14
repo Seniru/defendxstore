@@ -28,7 +28,7 @@ export default function Header() {
   const navigate = useNavigate()
   const location = useLocation()
   const [cartItems] = useFetch(
-    `${REACT_APP_API_URL}/api/users/${user.username}/cart`,
+    `${REACT_APP_API_URL}/api/users/${user?.username}/cart`,
   )
 
   useEffect(() => {
