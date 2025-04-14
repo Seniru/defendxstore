@@ -38,6 +38,19 @@ const UserSchema = new mongoose.Schema({
         type: Number,
         default: 1,
     },
+    cart: {
+        default: [],
+        type: [
+            {
+                product: {
+                    type: mongoose.Types.ObjectId,
+                    ref: "Item",
+                },
+                color: String,
+                size: String,
+            },
+        ],
+    },
 })
 
 UserSchema.methods.applyDerivations = function () {

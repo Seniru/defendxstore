@@ -1,0 +1,19 @@
+.menu-container {
+  position: absolute !important;
+  background-color: white !important;
+  padding: 5px;
+
+  ul {
+    list-style-type: none;
+    padding: 0px;
+    li {
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 6px;
+
+      &:hover {
+        box-shadow: inset 0px 0px 0px 30px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+}

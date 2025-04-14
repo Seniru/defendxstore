@@ -28,21 +28,7 @@
 
 .color-options {
   display: flex;
-  gap: 10px;
   margin-bottom: 20px;
-}
-
-.color-square {
-  width: 25px;
-  height: 25px;
-  border-radius: 5px;
-  cursor: pointer;
-  border: 1px solid #ccc;
-}
-
-.color-square:hover {
-  transform: scale(1.1);
-  transition: transform 0.3s ease;
 }
 
 .sizes {
@@ -68,4 +54,8 @@
 
 .add-to-cart:hover {
   background-color: #c6c6c6;
+}
+
+.no-image img {
+  display: none;
 }

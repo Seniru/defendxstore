@@ -54,6 +54,7 @@ export default function LoginForm({ className, ...props }) {
       onSubmit={handleLogin}
       className={`login-form container ${className}`}
       noValidate
+      {...props}
     >
       <div className="login-form-inputs">
         <h1>Login</h1>

@@ -19,47 +19,50 @@ import PromoCodes from "./pages/Admin/promocodes"
 import Cart from "./pages/Cart"
 import Checkout from "./pages/Checkout"
 import Invoice from "./pages/Invoice"
+import { CartProvider } from "./contexts/CartProvider"
 
 function App() {
   return (
     <div className="App">
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="components" element={<Components />} />
-              <Route path="cart" element={<Cart />} />
-              <Route path="checkout" element={<Checkout />} />
-              <Route path="invoice" element={<Invoice />} />
-              <Route path="product" element={<Product />} />
-              <Route path="forum">
-                <Route index element={<Forum />} />
-                <Route path="thread" element={<ForumThread />} />
+        <CartProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Home />} />
+                <Route path="components" element={<Components />} />
+                <Route path="cart" element={<Cart />} />
+                <Route path="checkout" element={<Checkout />} />
+                <Route path="invoice" element={<Invoice />} />
+                <Route path="product" element={<Product />} />
+                <Route path="forum">
+                  <Route index element={<Forum />} />
+                  <Route path="thread" element={<ForumThread />} />
+                </Route>
+                <Route element={<PrivateRoute />}>
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="ticket" element={<Ticket />} />
+                  <Route path="support" element={<Support />} />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+                <Route element={<PrivateRoute requiredRole="SUPPORT_AGENT" />}>
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+                <Route element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}>
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+                <Route element={<PrivateRoute requiredRole="USER" />}>
+                  <Route path="admin" element={<Admin />} />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
               </Route>
-              <Route element={<PrivateRoute />}>
-                <Route path="profile" element={<Profile />} />
-                <Route path="ticket" element={<Ticket />} />
-                <Route path="support" element={<Support />} />
-                <Route path="*" element={<NotFound />} />
+              <Route path="/auth">
+                <Route path="login" element={<Login />} />
+                <Route path="signup" element={<Signup />} />
               </Route>
-              <Route element={<PrivateRoute requiredRole="SUPPORT_AGENT" />}>
-                <Route path="*" element={<NotFound />} />
-              </Route>
-              <Route element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}>
-                <Route path="*" element={<NotFound />} />
-              </Route>
-              <Route element={<PrivateRoute requiredRole="USER" />}>
-                <Route path="admin" element={<Admin />} />
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Route>
-            <Route path="/auth">
-              <Route path="login" element={<Login />} />
-              <Route path="signup" element={<Signup />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+            </Routes>
+          </BrowserRouter>
+        </CartProvider>
       </AuthProvider>
     </div>
   )
