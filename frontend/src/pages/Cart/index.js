@@ -24,8 +24,14 @@ export default function Cart() {
   const navigate = useNavigate()
   const { items, refreshCart, setRefreshCart } = useCart()
 
+  useEffect(() => {
+    if (!user) {
+      navigate("login")
+    }
+  }, [user, navigate])
+
   if (!user) {
-    return navigate("login")
+    return null
   }
 
   return (
