@@ -1,37 +1,55 @@
-import React from "react"
+import React, { useEffect } from "react"
+import { Navigate, useSearchParams } from "react-router-dom"
 import "./Product.css"
 import product1 from "../../assets/images/item2.jpg"
 import Select from "../../components/Select"
 import Input from "../../components/Input"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons"
+import { faCircleInfo, faTag } from "@fortawesome/free-solid-svg-icons"
+import useFetch from "../../hooks/useFetch"
+import NotFound from "../errors/NotFound"
+
+const { REACT_APP_API_URL } = process.env
 
 const Product = () => {
-  const availableColors = ["black", "white", "grey", "maroon"] // Example colors
+  const [searchParams, setSearchParams] = useSearchParams()
+  const id = searchParams.get("id")
+  const [item, itemError, itemLoading] = useFetch(
+    `${REACT_APP_API_URL}/api/items/${searchParams.get("id")}`,
+    null,
+  )
+
+  if (!itemLoading && (id === null || item == null)) return <NotFound />
 
   return (
     <div className="product-checkout">
       <div className="product-image-container">
-        <img src={product1} alt="Product" className="product-image" />
+        <img
+          src={item?.body?.product}
+          alt="Product"
+          className="product-image"
+        />
       </div>
 
       <div className="product-details">
-        <h2>Over-Sized Relax Tee</h2>
-        <p>
-          Over-sized tee with a round neck and short sleeves. Made of 100%
-          cotton.
-        </p>
-        <div className="price">LKR 3200.00</div>
+        <h2>{item?.body?.itemName}</h2>
+        <p>{item?.body?.description}</p>
+        <div className="price">
+          <FontAwesomeIcon icon={faTag} /> LKR {item?.body?.price}
+        </div>
 
         <div className="colors">
           <h3>Colors</h3>
           <div className="color-options">
-            {availableColors.map((color, index) => (
-              <div
+            {item?.body?.colors.map((color, index) => (
+              <input
+                type="radio"
+                name="color"
+                value={color}
                 key={index}
                 className="color-square"
                 style={{ backgroundColor: color }}
-              ></div>
+              />
             ))}
           </div>
         </div>
@@ -39,7 +57,7 @@ const Product = () => {
         <div className="sizes">
           <h3>Sizes</h3>
           <div className="size-and-guide">
-            <Select items={["S", "M", "L", "XL", "XXL"]} />
+            <Select items={item?.body?.size || []} />
 
             <a
               href="https://i.etsystatic.com/36489670/r/il/b0d388/4051942364/il_1588xN.4051942364_gfvj.jpg"
@@ -55,7 +73,7 @@ const Product = () => {
 
         <div className="quantity">
           <h3>Quantity</h3>
-          <Input type="number" placeholder="1" />
+          <Input type="number" initialValue={1} />
         </div>
 
         <button className="add-to-cart">Add to Cart</button>

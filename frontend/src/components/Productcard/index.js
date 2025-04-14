@@ -15,7 +15,7 @@ const Productcard = ({ itemName, product, price, category, id }) => {
       <div className="product-data">
         <h3 className="product-title">{itemName}</h3>
         <div className="product-meta">
-          <p className="price">{price}</p>
+          <p className="price">LKR {price}</p>
           <p className="category">{category}</p>
         </div>
         <div className="action-btns">
