@@ -51,6 +51,10 @@ const UserSchema = new mongoose.Schema({
             },
         ],
     },
+    notifications: {
+        default: [],
+        type: [String],
+    },
 })
 
 UserSchema.methods.applyDerivations = function () {
@@ -58,6 +62,10 @@ UserSchema.methods.applyDerivations = function () {
     user.role = getRoles(this.role)
     if (this.profileImage) user.profileImage = encodeURI(this.profileImage)
     return user
+}
+
+UserSchema.methods.pushNotification = async function (notification) {
+    return await this.updateOne({ $push: { notifications: notification } })
 }
 
 const User = mongoose.model("User", UserSchema)
