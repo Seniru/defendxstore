@@ -16,6 +16,9 @@ import ProfileImage from "../ProfileImage"
 import Role from "../Role"
 import { useEffect, useState } from "react"
 import { faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons"
+import useFetch from "../../hooks/useFetch"
+
+const { REACT_APP_API_URL } = process.env
 
 export default function Header() {
   const { user, logoutAction } = useAuth()
@@ -24,6 +27,9 @@ export default function Header() {
   const [touchingMainDropDown, setTouchingMainDropDown] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
+  const [cartItems] = useFetch(
+    `${REACT_APP_API_URL}/api/users/${user.username}/cart`,
+  )
 
   useEffect(() => {
     setProfileDropdownOpen(false)
@@ -63,6 +69,11 @@ export default function Header() {
           <div className="header-user-information">
             <Link to="/cart" className="no-highlight">
               <FontAwesomeIcon icon={faCartShopping} size="lg" />
+              {cartItems?.body?.totalItems > 0 && (
+                <span className="count-indicator">
+                  {cartItems?.body?.totalItems}
+                </span>
+              )}
             </Link>
             <Button
               kind="secondary"
