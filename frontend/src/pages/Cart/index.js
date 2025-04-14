@@ -27,16 +27,6 @@ export default function Cart() {
     `${REACT_APP_API_URL}/api/users/${user?.username}/cart`,
     { body: [] },
   )
-  const [total, setTotal] = useState(0)
-
-  useEffect(() => {
-    if (items?.body == 0) return
-    setTotal(
-      items?.body
-        ?.map((item) => Number(item.product.price))
-        .reduce((total, value) => total + value),
-    )
-  }, [items])
 
   if (!user) {
     return navigate("login")
@@ -52,32 +42,33 @@ export default function Cart() {
       <div className="checkOut">
         <Table
           headers={["", "Product ", "Color ", "Price", "Quantity", "Subtotal"]}
-          rows={items?.body?.map((item) => [
+          rows={(items?.body?.cart || []).map((item) => [
             <img
               style={{
                 width: "100px",
                 height: "100px",
                 borderRadius: "10px",
               }}
-              src={item.product.product}
+              src={item.product}
             />,
-            item.product.itemName,
+            item.itemName,
             <div
               className="color-square"
               style={{ backgroundColor: item.color }}
             ></div>,
-            item.product.price,
-            1,
-            item.product.price,
+            item.price,
+            item.quantity,
+            item.price * item.quantity,
           ])}
         />
         <div className="container order-container">
           <h2> Order Summary </h2>
           <div className="checkout-row">
             <b>
-              <FontAwesomeIcon icon={faShirt} /> Items ({items?.body?.length}){" "}
+              <FontAwesomeIcon icon={faShirt} /> Items (
+              {items.body?.totalItems || 0}){" "}
             </b>
-            <span>RS {total}</span>
+            <span>RS {items.body?.totalPrice || 0}</span>
           </div>
           <br />
           <div className="checkout-row">
@@ -90,7 +81,7 @@ export default function Cart() {
           <hr />
           <div className="checkout-row">
             <h2>Total</h2>
-            <span>RS {total + 200}</span>
+            <span>RS {(items.body?.totalPrice || 0) + 200}</span>
           </div>
           <div className="checkOutButton">
             <Link to="/checkout">

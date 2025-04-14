@@ -14,7 +14,30 @@ const getCart = async (req, res, next) => {
             .populate("cart.product")
             .exec()
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
-        return createResponse(res, StatusCodes.OK, user.cart)
+        let totalItems = 0
+        let totalPrice = 0
+        const groupedCart = user.cart.reduce((acc, item) => {
+            const product = item.product.toObject()
+            const key = `${product.name}-${item.color.toLowerCase()}`
+
+            if (!acc[key]) {
+                acc[key] = {
+                    ...product,
+                    color: item.color.toLowerCase(),
+                    size: item.size,
+                    quantity: 0,
+                }
+            }
+
+            totalPrice += item.product.price
+            totalItems++
+            acc[key].quantity++
+            return acc
+        }, {})
+
+        const cart = Object.values(groupedCart)
+
+        return createResponse(res, StatusCodes.OK, { cart, totalItems, totalPrice })
     } catch (error) {
         next(error)
     }
