@@ -17,16 +17,12 @@ import { Link, useNavigate } from "react-router-dom"
 import useFetch from "../../hooks/useFetch"
 import { useAuth } from "../../contexts/AuthProvider"
 import { useEffect, useState } from "react"
-
-const { REACT_APP_API_URL } = process.env
+import { useCart } from "../../contexts/CartProvider"
 
 export default function Cart() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [items] = useFetch(
-    `${REACT_APP_API_URL}/api/users/${user?.username}/cart`,
-    { body: [] },
-  )
+  const { items, refreshCart, setRefreshCart } = useCart()
 
   if (!user) {
     return navigate("login")

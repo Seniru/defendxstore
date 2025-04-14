@@ -14,6 +14,7 @@ import Button from "../../components/Button"
 import MessageBox from "../../components/MessageBox"
 import OverlayWindow from "../../components/OverlayWindow"
 import LoginForm from "../../forms/LoginForm"
+import { useCart } from "../../contexts/CartProvider"
 
 const { REACT_APP_API_URL } = process.env
 
@@ -27,6 +28,7 @@ const Product = () => {
   const [isLoginFormOpen, setIsLoginFormOpen] = useState(false)
 
   const { user, token } = useAuth()
+  const { refreshCart, setRefreshCart } = useCart()
   const [searchParams, setSearchParams] = useSearchParams()
   const id = searchParams.get("id")
   const [item, itemError, itemLoading] = useFetch(
@@ -61,6 +63,7 @@ const Product = () => {
     const result = await response.json()
     setIsError(!response.ok)
     setMessage(result.body || response.statusText)
+    setRefreshCart(!refreshCart)
   }
 
   useEffect(() => {

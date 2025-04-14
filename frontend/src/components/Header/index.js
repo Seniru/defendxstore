@@ -17,11 +17,13 @@ import Role from "../Role"
 import { useEffect, useState } from "react"
 import { faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons"
 import useFetch from "../../hooks/useFetch"
+import { useCart } from "../../contexts/CartProvider"
 
 const { REACT_APP_API_URL } = process.env
 
 export default function Header() {
   const { user, logoutAction } = useAuth()
+  const { refreshCart } = useCart()
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
   const [mainDropdownOpen, setMainDropdownOpen] = useState(false)
   const [touchingMainDropDown, setTouchingMainDropDown] = useState(false)
@@ -29,6 +31,8 @@ export default function Header() {
   const location = useLocation()
   const [cartItems] = useFetch(
     `${REACT_APP_API_URL}/api/users/${user?.username}/cart`,
+    { body: { totalItems: 0 } },
+    refreshCart,
   )
 
   useEffect(() => {
