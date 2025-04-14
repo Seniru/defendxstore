@@ -11,6 +11,7 @@ const logger = require("./utils/logger")
 const { StatusCodes } = require("http-status-codes")
 const createResponse = require("./utils/createResponse")
 const usersRoute = require("./routes/users")
+const cartRoute = require("./routes/cart")
 const authRoute = require("./routes/auth")
 const ticketsRoute = require("./routes/tickets")
 const forumRoute = require("./routes/forums")
@@ -29,6 +30,7 @@ app.use(
 
 // routes
 app.use("/api/auth", authRoute)
+app.use("/api/users/:username/cart", cartRoute)
 app.use("/api/users", usersRoute)
 app.use("/api/tickets", ticketsRoute)
 app.use("/api/forums", forumRoute)
