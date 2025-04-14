@@ -22,7 +22,7 @@ const getCart = async (req, res, next) => {
 
 const addItem = async (req, res, next) => {
     try {
-        const { productId, size, color, amount } = req.body
+        const { productId, size, color, quantity } = req.body
         if (!productId || !size || !color)
             return createResponse(
                 res,
@@ -42,7 +42,8 @@ const addItem = async (req, res, next) => {
 
         const item = await Item.findById(productId).exec()
         if (!item) return createResponse(res, StatusCodes.NOT_FOUND, "Item not found")
-        user.cart.push({ product: productId, size, color })
+
+        for (let i = 0; i < quantity; i++) user.cart.push({ product: productId, size, color })
         await user.save()
 
         return createResponse(res, StatusCodes.OK, "Added item successfully")

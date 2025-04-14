@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Link, useNavigate } from "react-router-dom"
 import useFetch from "../../hooks/useFetch"
 import { useAuth } from "../../contexts/AuthProvider"
+import { useEffect, useState } from "react"
 
 const { REACT_APP_API_URL } = process.env
 
@@ -26,10 +27,16 @@ export default function Cart() {
     `${REACT_APP_API_URL}/api/users/${user?.username}/cart`,
     { body: [] },
   )
+  const [total, setTotal] = useState(0)
 
-  const total = items?.body
-    ?.map((item) => Number(item.product.price))
-    .reduce((total, value) => total + value)
+  useEffect(() => {
+    if (items?.body == 0) return
+    setTotal(
+      items?.body
+        ?.map((item) => Number(item.product.price))
+        .reduce((total, value) => total + value),
+    )
+  }, [items])
 
   if (!user) {
     return navigate("login")
