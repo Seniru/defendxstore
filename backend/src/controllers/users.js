@@ -92,10 +92,14 @@ const createUser = async (req, res, next) => {
         const token = createToken(user)
 
         // create verification token
-        const verificationToken = jwt.sign({ email }, process.env.JWT_SECRET, {
-            algorithm: "HS256",
-            expiresIn: "1h",
-        })
+        const verificationToken = jwt.sign(
+            { email, action: "EMAIL_VERIFICATION" },
+            process.env.JWT_SECRET,
+            {
+                algorithm: "HS256",
+                expiresIn: "1h",
+            },
+        )
 
         // send verification email
         sendMail(email, "Defendxstore Email verification", "verify-email", {
