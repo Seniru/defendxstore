@@ -20,6 +20,7 @@ import Cart from "./pages/Cart"
 import Checkout from "./pages/Checkout"
 import Invoice from "./pages/Invoice"
 import { CartProvider } from "./contexts/CartProvider"
+import Verify from "./pages/Verifiy"
 
 function App() {
   return (
@@ -31,9 +32,6 @@ function App() {
               <Route path="/" element={<Layout />}>
                 <Route index element={<Home />} />
                 <Route path="components" element={<Components />} />
-                <Route path="cart" element={<Cart />} />
-                <Route path="checkout" element={<Checkout />} />
-                <Route path="invoice" element={<Invoice />} />
                 <Route path="product" element={<Product />} />
                 <Route path="forum">
                   <Route index element={<Forum />} />
@@ -41,8 +39,12 @@ function App() {
                 </Route>
                 <Route element={<PrivateRoute />}>
                   <Route path="profile" element={<Profile />} />
+                  <Route path="cart" element={<Cart />} />
+                  <Route path="checkout" element={<Checkout />} />
+                  <Route path="invoice" element={<Invoice />} />
                   <Route path="ticket" element={<Ticket />} />
                   <Route path="support" element={<Support />} />
+                  <Route path="verify" element={<Verify />} />
                   <Route path="*" element={<NotFound />} />
                 </Route>
                 <Route element={<PrivateRoute requiredRole="SUPPORT_AGENT" />}>
