@@ -33,6 +33,7 @@ const verify = async (req, res, next) => {
                 { verified: true },
             ).exec()
             if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+            if (user.verified) return createResponse(res, StatusCodes.OK, "Already verified")
             user.pushNotification("You are successfully verified!")
         } catch (error) {
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid token")

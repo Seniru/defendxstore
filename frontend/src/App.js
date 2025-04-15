@@ -20,7 +20,7 @@ import Cart from "./pages/Cart"
 import Checkout from "./pages/Checkout"
 import Invoice from "./pages/Invoice"
 import { CartProvider } from "./contexts/CartProvider"
-import Verify from "./pages/Verifiy"
+import Verify from "./pages/Verify"
 
 function App() {
   return (
