@@ -31,12 +31,12 @@ const deleteAllNotifications = async (req, res, next) => {
 
 const deleteNotification = async (req, res, next) => {
     try {
-        const { id } = req.params
-        if (id < 0)
+        const id = parseInt(req.params.id, 10)
+        if (isNaN(id) || id < 0)
             return createResponse(
                 res,
                 StatusCodes.BAD_REQUEST,
-                "Notification id cannot be negative",
+                "Notification id must be a non-negative integer",
             )
         const user = await User.findOne({ username: req.user.username }).exec()
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
