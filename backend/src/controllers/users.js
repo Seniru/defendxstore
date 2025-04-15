@@ -46,6 +46,7 @@ const getAllUsers = async (req, res, next) => {
                         else: null,
                     },
                 },
+                verified: 1,
             },
         ).exec()
 

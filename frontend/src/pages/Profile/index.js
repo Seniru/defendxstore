@@ -8,8 +8,10 @@ import {
   faAddressCard,
   faAt,
   faCamera,
+  faCircleCheck,
   faPencil,
   faPhone,
+  faShieldHalved,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons"
 
@@ -126,7 +128,18 @@ export default function Profile() {
           <br />
           Welcome,
           <br />
-          <b className="username">{user.username}</b>
+          <b className="username">
+            {user.username}{" "}
+            {profileData?.body?.user?.verified && (
+              <FontAwesomeIcon
+                icon={faCircleCheck}
+                title="Email verified"
+                cursor="pointer"
+                color="var(--secondary-text-color)"
+                size="xs"
+              />
+            )}
+          </b>
           <hr />
           <br />
           <FontAwesomeIcon

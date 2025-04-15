@@ -41,8 +41,8 @@ export default function Verify() {
         <>
           <h1>You're Good to Go!</h1>
           <p className="secondary-text">
-            Email confirmed. Your email is verified. Here's what you unlock with
-            a verified account{" "}
+            Your email is verified. Here's what you unlock with a verified
+            account{" "}
           </p>
           <ul>
             <li>Recover your account with ease</li>
