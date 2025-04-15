@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faAt,
+  faBell,
   faCaretDown,
   faCaretUp,
   faCartShopping,
@@ -14,19 +15,24 @@ import "./Header.css"
 import { useAuth } from "../../contexts/AuthProvider"
 import ProfileImage from "../ProfileImage"
 import Role from "../Role"
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons"
 import useFetch from "../../hooks/useFetch"
 import { useCart } from "../../contexts/CartProvider"
+import Menu from "../Menu"
+import Notification from "./Notification"
+import api from "../../utils/api"
 
 const { REACT_APP_API_URL } = process.env
 
 export default function Header() {
-  const { user, logoutAction } = useAuth()
+  const { user, logoutAction, token } = useAuth()
   const { refreshCart } = useCart()
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
   const [mainDropdownOpen, setMainDropdownOpen] = useState(false)
   const [touchingMainDropDown, setTouchingMainDropDown] = useState(false)
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+  const [refreshNotifications, setRefreshNotifications] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const [cartItems] = useFetch(
@@ -34,10 +40,20 @@ export default function Header() {
     { body: { totalItems: 0 } },
     refreshCart,
   )
+  const [notifications] = useFetch(
+    `${REACT_APP_API_URL}/api/notifications`,
+    {},
+    refreshNotifications,
+  )
 
   useEffect(() => {
     setProfileDropdownOpen(false)
   }, [location])
+
+  const clearNotifications = async () => {
+    await api.delete("/api/notifications", {}, token)
+    setRefreshNotifications(!refreshNotifications)
+  }
 
   return (
     <>
@@ -79,6 +95,17 @@ export default function Header() {
                 </span>
               )}
             </Link>
+            <div
+              style={{ marginLeft: 20, marginRight: 15, cursor: "pointer" }}
+              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+            >
+              <FontAwesomeIcon icon={faBell} size="lg" />
+              {notifications?.body?.notificationCount > 0 && (
+                <span className="count-indicator">
+                  {notifications?.body?.notificationCount}
+                </span>
+              )}
+            </div>
             <Button
               kind="secondary"
               className="logout-button"
@@ -200,6 +227,37 @@ export default function Header() {
           </ul>
         </div>
       </div>
+      {isNotificationsOpen && (
+        <div className="container notification-menu">
+          <div className="header">
+            <h3>
+              <FontAwesomeIcon icon={faBell} /> Notification center
+            </h3>
+            <Button kind="secondary" onClick={clearNotifications}>
+              Clear all
+            </Button>
+          </div>
+          <hr />
+          {notifications?.body?.notifications.length == 0 ? (
+            <span className="secondary-text">
+              You are all caught up! No notifications to display
+            </span>
+          ) : (
+            notifications?.body?.notifications.map((notification, index) => (
+              <>
+                <Notification
+                  notification={notification.message}
+                  time={notification.date}
+                  index={index}
+                  refreshNotifications={refreshNotifications}
+                  setRefreshNotifications={setRefreshNotifications}
+                />
+                <hr />
+              </>
+            ))
+          )}
+        </div>
+      )}
     </>
   )
 }

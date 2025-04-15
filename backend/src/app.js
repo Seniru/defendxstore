@@ -18,6 +18,7 @@ const forumRoute = require("./routes/forums")
 const itemRoute = require("./routes/items")
 const orderRoute = require("./routes/orders")
 const promocodesRoute = require("./routes/promocodes")
+const notificationsRoute = require("./routes/notifications")
 
 // middlewares
 app.use(cors())
@@ -37,6 +38,7 @@ app.use("/api/forums", forumRoute)
 app.use("/api/items", itemRoute)
 app.use("/api/orders", orderRoute)
 app.use("/api/promo", promocodesRoute)
+app.use("/api/notifications", notificationsRoute)
 
 app.use((err, req, res, next) => {
     logger.error(err.stack)

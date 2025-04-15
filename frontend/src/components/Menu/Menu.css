@@ -2,6 +2,7 @@
   position: absolute !important;
   background-color: white !important;
   padding: 5px;
+  color: var(--primary-text-color);
 
   ul {
     list-style-type: none;
