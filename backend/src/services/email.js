@@ -8,7 +8,7 @@ const { EMAIL_SERVICE, EMAIL_ADDRESS, EMAIL_PASSWORD } = process.env
 
 if (!EMAIL_SERVICE || !EMAIL_ADDRESS || !EMAIL_PASSWORD)
     throw new Error(
-        "Couldn't find EMAIL_SERVICE, EMAIL_ADDRESSS, EMAIL_PASSWORD in your .env configuration",
+        "Couldn't find EMAIL_SERVICE, EMAIL_ADDRESS, EMAIL_PASSWORD in your .env configuration",
     )
 
 const transporter = nodemailer.createTransport({
