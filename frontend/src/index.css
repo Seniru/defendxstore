@@ -80,6 +80,10 @@ a.no-highlight:hover {
   color: var(--secondary-text-color);
 }
 
+.error-text {
+  color: var(--error-color);
+}
+
 .content {
   margin: 12px;
 }

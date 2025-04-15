@@ -68,6 +68,7 @@ export default function UserManagement() {
             deliveryAddress={user.deliveryAddress}
             contactNumbers={user.contactNumber}
             roles={user.role}
+            verified={user.verified}
             keyProp={index}
             setIsError={setIsError}
             setMessage={setMessage}

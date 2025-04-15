@@ -1,11 +1,14 @@
+require("dotenv").config()
 const mongoose = require("mongoose")
 const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 const { StatusCodes } = require("http-status-codes")
 
 const createResponse = require("../utils/createResponse")
 const createToken = require("../utils/createToken")
 const User = require("../models/User")
 const logger = require("../utils/logger")
+const { sendMail } = require("../services/email")
 
 const permissions = {
     USER: 1 << 0,
@@ -43,6 +46,7 @@ const getAllUsers = async (req, res, next) => {
                         else: null,
                     },
                 },
+                verified: 1,
             },
         ).exec()
 
@@ -87,6 +91,24 @@ const createUser = async (req, res, next) => {
         })
         await user.save()
         const token = createToken(user)
+
+        // create verification token
+        const verificationToken = jwt.sign(
+            { email, action: "EMAIL_VERIFICATION" },
+            process.env.JWT_SECRET,
+            {
+                algorithm: "HS256",
+                expiresIn: "1h",
+            },
+        )
+
+        // send verification email
+        sendMail(email, "Defendxstore Email verification", "verify-email", {
+            username,
+            url: `${process.env.FRONTEND_URL}/verify?token=${verificationToken}`,
+        })
+        user.pushNotification("Welcome to DefendX! Check your inbox to verify your email")
+
         return createResponse(res, StatusCodes.CREATED, { token })
     } catch (error) {
         if (error instanceof mongoose.Error.ValidationError) {

@@ -8,8 +8,10 @@ import {
   faAddressCard,
   faAt,
   faCamera,
+  faCircleCheck,
   faPencil,
   faPhone,
+  faShieldHalved,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons"
 
@@ -38,6 +40,7 @@ export default function Profile() {
   const [isPassswordFormOpen, setIsPasswordFormOpen] = useState(false)
   const [isDeleteAccountFormOpen, setIsDeleteAccountFormOpen] = useState(false)
   const [isBillingInfoFormOpen, setIsBillingInfoFormOpen] = useState(false)
+  const [isVerifyDialogOpen, setIsVerifyDialogOpen] = useState(false)
   const imageRef = useRef()
 
   const [profileData] = useFetch(
@@ -64,6 +67,10 @@ export default function Profile() {
       window.location.reload()
     }
     reader.readAsDataURL(file)
+  }
+
+  const verify = () => {
+    setIsVerifyDialogOpen(true)
   }
 
   return (
@@ -103,6 +110,25 @@ export default function Profile() {
           setMessage={setMessage}
         />
       </OverlayWindow>
+      <OverlayWindow
+        isOpen={isVerifyDialogOpen}
+        setIsOpen={setIsVerifyDialogOpen}
+      >
+        <h3>Verify your email</h3>
+        <hr />
+        <p>
+          We've sent a verification email to your inbox. Be sure to check your
+          spam folder too.
+        </p>
+        <p>Verifying your account unlocks these benefits:</p>
+
+        <ul>
+          <li>Recover your account with ease</li>
+          <li>Get access to exclusive discounts</li>
+          <li>Stay updated with order and delivery notifications</li>
+          <li>...and more perks tailored for you</li>
+        </ul>
+      </OverlayWindow>
       <div className="profile-main">
         <aside className="profile-details">
           <div className="profile-image-containter">
@@ -126,7 +152,18 @@ export default function Profile() {
           <br />
           Welcome,
           <br />
-          <b className="username">{user.username}</b>
+          <b className="username">
+            {user.username}{" "}
+            {profileData?.body?.user?.verified && (
+              <FontAwesomeIcon
+                icon={faCircleCheck}
+                title="Email verified"
+                cursor="pointer"
+                color="var(--secondary-text-color)"
+                size="xs"
+              />
+            )}
+          </b>
           <hr />
           <br />
           <FontAwesomeIcon
@@ -143,6 +180,15 @@ export default function Profile() {
                 <FontAwesomeIcon icon={faAt} size="sm" /> Email
               </div>
               {user.email}
+              {!profileData?.body?.user?.verified && (
+                <div
+                  style={{ fontSize: "small", cursor: "pointer" }}
+                  className="error-text"
+                  onClick={verify}
+                >
+                  (Email not verified, Verify now!)
+                </div>
+              )}
             </div>
             <br />
             <div>

@@ -60,6 +60,10 @@ const UserSchema = new mongoose.Schema({
             },
         ],
     },
+    verified: {
+        type: Boolean,
+        default: false,
+    },
 })
 
 UserSchema.methods.applyDerivations = function () {
@@ -70,7 +74,14 @@ UserSchema.methods.applyDerivations = function () {
 }
 
 UserSchema.methods.pushNotification = async function (notification) {
-    return await this.updateOne({ $push: { notifications: { message: notification } } })
+    await this.constructor.findByIdAndUpdate(this._id, {
+        $push: {
+            notifications: {
+                $each: [{ message: notification }],
+                $position: 0,
+            },
+        },
+    })
 }
 
 const User = mongoose.model("User", UserSchema)
