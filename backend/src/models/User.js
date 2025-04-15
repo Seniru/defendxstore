@@ -53,7 +53,12 @@ const UserSchema = new mongoose.Schema({
     },
     notifications: {
         default: [],
-        type: [String],
+        type: [
+            {
+                message: { type: String, required: true },
+                date: { type: Date, default: Date.now },
+            },
+        ],
     },
 })
 
@@ -65,7 +70,7 @@ UserSchema.methods.applyDerivations = function () {
 }
 
 UserSchema.methods.pushNotification = async function (notification) {
-    return await this.updateOne({ $push: { notifications: notification } })
+    return await this.updateOne({ $push: { notifications: { message: notification } } })
 }
 
 const User = mongoose.model("User", UserSchema)
