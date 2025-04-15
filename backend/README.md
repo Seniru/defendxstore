@@ -101,6 +101,9 @@ MONGO_URI="mongodb://127.0.0.1:27017/defendxstore?directConnection=true&serverSe
 SERVER_PORT=5000
 JWT_SECRET=jwtsecret
 ENVIRONMENT=development
+EMAIL_ADDRESS=user@email.com
+EMAIL_PASSWORD=pass
+EMAIL_SERVICE=gmail
 ```
 
 - `MONGO_URI`: The MongoDB connection URL. Use the one given in the above example if you are running the database in the **local** environment.

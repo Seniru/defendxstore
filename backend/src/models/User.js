@@ -70,7 +70,8 @@ UserSchema.methods.applyDerivations = function () {
 }
 
 UserSchema.methods.pushNotification = async function (notification) {
-    return await this.updateOne({ $push: { notifications: { message: notification } } })
+    this.notifications.unshift({ message: notification })
+    await this.save()
 }
 
 const User = mongoose.model("User", UserSchema)
