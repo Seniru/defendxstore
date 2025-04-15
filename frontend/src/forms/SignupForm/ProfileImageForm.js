@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faCircleInfo,
@@ -16,6 +16,7 @@ import api from "../../utils/api"
 
 export default function ProfileImageForm({ data, setData, errors, setErrors }) {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { setToken } = useAuth()
   const { setPage, gotoPreviousPage } = usePagination()
   const [imageUrl, setImageUrl] = useState(null)
@@ -47,6 +48,7 @@ export default function ProfileImageForm({ data, setData, errors, setErrors }) {
       username: data.username,
       email: data.email,
       password: data.password,
+      referredBy: searchParams.get("ref"),
     }
     if (imageUrl) request.profileImage = imageUrl
     if (data.tel) request.contactNumber = data.tel

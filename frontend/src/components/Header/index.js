@@ -53,7 +53,7 @@ export default function Header() {
   )
 
   const [profileData] = useFetch(
-    `${REACT_APP_API_URL}/api/users/${user.username}`,
+    `${REACT_APP_API_URL}/api/users/${user?.username}`,
   )
 
   useEffect(() => {
@@ -66,7 +66,7 @@ export default function Header() {
   }
 
   const copyReferal = async () => {
-    await navigator.clipboard.writeText(profileData?.body?.user?.referalLink)
+    await navigator.clipboard.writeText(profileData?.body?.user?.referralLink)
     setCopied(true)
     setTimeout(() => setCopied(false), 3500)
   }
@@ -185,7 +185,7 @@ export default function Header() {
                 <FontAwesomeIcon icon={faAt} /> {user.email}
               </div>
               <br />
-              {profileData?.body?.user?.referalLink && (
+              {profileData?.body?.user?.referralLink && (
                 <div>
                   <div>
                     <FontAwesomeIcon icon={faLink} size="sm" /> Referal link{" "}
@@ -197,7 +197,7 @@ export default function Header() {
                     />
                   </div>
                   <span className="secondary-text">
-                    {profileData?.body?.user?.referalLink}
+                    {profileData?.body?.user?.referralLink}
                   </span>
                   <Button kind="secondary" onClick={copyReferal}>
                     {copied ? (
