@@ -125,7 +125,6 @@ const createUser = async (req, res, next) => {
             const referredUser = await User.findById(referredBy).exec()
             if (!referredUser) return createResponse(res, StatusCodes.CREATED, { token })
             if (!referredUser.verified) return createResponse(res, StatusCodes.CREATED, { token })
-
             referredUser.referrals.push(user._id)
             await referredUser.save()
             referredUser.pushNotification(

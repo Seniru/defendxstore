@@ -68,7 +68,7 @@ const UserSchema = new mongoose.Schema({
     referrals: {
         type: [
             {
-                user: { type: mongoose.Types.ObjectId, ref: "User", unique: true },
+                user: { type: mongoose.Types.ObjectId, ref: "User" },
             },
         ],
     },
