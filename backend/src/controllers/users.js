@@ -120,7 +120,7 @@ const createUser = async (req, res, next) => {
         })
         user.pushNotification("Welcome to DefendX! Check your inbox to verify your email")
 
-        // handle referals
+        // handle referrals
         if (referredBy) {
             const referredUser = await User.findById(referredBy).exec()
             if (!referredUser) return createResponse(res, StatusCodes.CREATED, { token })

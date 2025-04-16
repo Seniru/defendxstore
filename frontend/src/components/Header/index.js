@@ -159,7 +159,7 @@ export default function Header() {
       {profileDropdownOpen && (
         <div className="container profile-dropdown">
           <h3>DefendX</h3>
-          <div class="profile-information container">
+          <div className="profile-information container">
             <div>
               <ProfileImage username={user.username} size={75} />
             </div>
