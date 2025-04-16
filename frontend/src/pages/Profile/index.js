@@ -29,6 +29,7 @@ import DeleteAccountForm from "../../forms/DeleteAccountForm"
 import ChangeBillingInformationForm from "../../forms/ChangeBillingInformationForm"
 import useFetch from "../../hooks/useFetch"
 import { useNavigate } from "react-router-dom"
+import Perks from "./Perks"
 
 const { REACT_APP_API_URL } = process.env
 
@@ -229,6 +230,7 @@ export default function Profile() {
           <TabMenu>
             <TabItem name="Orders" element={<OrderMenu />} />
             <TabItem name="Reviews" element={<Reviews />} />
+            <TabItem name="Perks" element={<Perks />} />
           </TabMenu>
         </div>
       </div>
