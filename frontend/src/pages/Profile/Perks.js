@@ -16,7 +16,7 @@ export default function Perks() {
           image={`${REACT_APP_API_URL}/${perk.image}`}
           title={perk.title}
           description={perk.description}
-          progress={{ progress: 1, max: perk.maxProgress }}
+          progress={{ progress: perk.progress, max: perk.maxProgress }}
           reward={perk.rewardText}
         />
       ))}

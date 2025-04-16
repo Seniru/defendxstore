@@ -4,8 +4,8 @@
  * 	special-flat family
  */
 
-module.exports = [
-    {
+module.exports = {
+    verified: {
         image: "images/verified_badge.png",
         title: "Verified user",
         description: "Get verified",
@@ -13,7 +13,7 @@ module.exports = [
         rewardText: "3% OFF promotion code",
         rewardFunction: async (user) => {},
     },
-    {
+    firstPurchase: {
         image: "images/first_purchase.png",
         title: "First Purchase",
         description: "Complete your first order",
@@ -21,7 +21,7 @@ module.exports = [
         rewardText: "3% OFF promtion code",
         rewardFunction: async (user) => {},
     },
-    {
+    casualShopper: {
         image: "images/casual_shopper.png",
         title: "Casual Shopper",
         description: "Buy 5 items from the store",
@@ -29,7 +29,7 @@ module.exports = [
         rewardText: "5% OFF promotion code",
         rewardFunction: async (user) => {},
     },
-    {
+    roseEnthusiast: {
         image: "images/rose_badge.png",
         title: "Rose Enthusiast",
         description: "Buy 3 items from the Rose Collection",
@@ -37,7 +37,7 @@ module.exports = [
         rewardText: "3% OFF promotion code",
         rewardFunction: async (user) => {},
     },
-    {
+    referralRookie: {
         image: "images/referal_badge.png",
         title: "Referral Rookie",
         description: "Refer 1 friend who makes a purchase",
@@ -45,7 +45,7 @@ module.exports = [
         rewardText: "3% OFF promotion code",
         rewardFunction: async (user) => {},
     },
-    {
+    influencer: {
         image: "images/influencer_badge.png",
         title: "Influencer",
         description: "Refer 10 friends and have their accounts verified",
@@ -53,7 +53,7 @@ module.exports = [
         rewardText: "10% OFF promotion code",
         rewardFunction: async (user) => {},
     },
-    {
+    supportSeeker: {
         image: "images/support_seeker.png",
         title: "Support Seeker",
         description: "Submit 1 support tickets",
@@ -61,7 +61,7 @@ module.exports = [
         rewardText: "3% OFF promotion code",
         rewardFunction: async (user) => {},
     },
-    {
+    forumNewbie: {
         image: "images/forum_newbie.png",
         title: "Forum Newbie",
         description: "Create your first forum thread",
@@ -69,7 +69,7 @@ module.exports = [
         rewardText: "3% OFF promotion code",
         rewardFunction: async (user) => {},
     },
-    {
+    threadMaster: {
         image: "images/thread_master.png",
         title: "Thread Master",
         description: "Create 5 forum threads",
@@ -77,7 +77,7 @@ module.exports = [
         rewardText: "3% OFF promotion code",
         rewardFunction: async (user) => {},
     },
-    {
+    communityHelper: {
         image: "images/community_helper.png",
         title: "Community Helper",
         description: "Reply to 20 forum threads",
@@ -85,4 +85,12 @@ module.exports = [
         rewardText: "5% OFF promotion code",
         rewardFunction: async (user) => {},
     },
-]
+    test: {
+        image: "",
+        title: "Test",
+        description: "",
+        maxProgress: 15,
+        rewardText: "",
+        rewardFunction: async (user) => {},
+    },
+}
