@@ -1,31 +1,39 @@
 .custom-table {
   width: 100%;
   margin-top: 20px;
-  border-collapse: collapse;
-  padding: 5px;
-  border-radius: 10px;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background-color: #f8f9fa;
 }
 
-.custom-table > thead {
+.custom-table thead {
   background-color: var(--primary-color);
   color: white;
 }
 
 .custom-table th,
 .custom-table td {
-  padding: 5px;
-  padding-right: 12px;
-}
-
-.custom-table th {
-  padding-bottom: 12px;
+  padding: 14px 18px;
   text-align: left;
 }
 
-.custom-table > tbody > tr:nth-child(odd) {
-  background-color: #d9d9d9;
+.custom-table th {
+  font-weight: 600;
+  letter-spacing: 0.4px;
 }
 
-.custom-table > tbody > tr:nth-child(even) {
-  background-color: white;
+.custom-table tbody tr:nth-child(odd) {
+  background-color: #e6e6e6;
+}
+
+.custom-table tbody tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+.custom-table tbody tr:hover {
+  background-color: #d0d0d0;
+  cursor: pointer;
 }
