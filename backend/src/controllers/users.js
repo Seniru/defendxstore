@@ -62,7 +62,15 @@ const getAllUsers = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
     try {
-        const { username, email, password, deliveryAddress, contactNumber, profileImage } = req.body
+        const {
+            username,
+            email,
+            password,
+            deliveryAddress,
+            contactNumber,
+            profileImage,
+            referredBy,
+        } = req.body
         if (!password)
             return createResponse(res, StatusCodes.BAD_REQUEST, [
                 {
@@ -78,6 +86,9 @@ const createUser = async (req, res, next) => {
                     message: "Invalid profile image format",
                 },
             ])
+        // check if referredBy is in valid format if it exist
+        if (referredBy && !mongoose.Types.ObjectId.isValid(referredBy))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid referredBy ID")
 
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
@@ -108,6 +119,23 @@ const createUser = async (req, res, next) => {
             url: `${process.env.FRONTEND_URL}/verify?token=${verificationToken}`,
         })
         user.pushNotification("Welcome to DefendX! Check your inbox to verify your email")
+
+        // handle referrals
+        if (referredBy) {
+            const referredUser = await User.findById(referredBy).exec()
+            if (!referredUser) return createResponse(res, StatusCodes.CREATED, { token })
+            if (!referredUser.verified) return createResponse(res, StatusCodes.CREATED, { token })
+            referredUser.referrals.push(user._id)
+            await referredUser.save()
+            await User.findByIdAndUpdate(
+                user._id,
+                { referredBy: referredUser._id },
+                { new: true, runValidators: true },
+            )
+            referredUser.pushNotification(
+                `You were referred by ${user.username}! Ask them to verify their account to enjoy special discounts.`,
+            )
+        }
 
         return createResponse(res, StatusCodes.CREATED, { token })
     } catch (error) {

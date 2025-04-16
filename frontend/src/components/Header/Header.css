@@ -59,8 +59,8 @@ header {
   z-index: 9999;
 
   .links {
+    margin-top: 10px;
     list-style-type: none;
-    padding: 0px;
     text-decoration: underline;
   }
 

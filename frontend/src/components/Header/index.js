@@ -6,7 +6,12 @@ import {
   faCaretDown,
   faCaretUp,
   faCartShopping,
+  faCheck,
   faChevronDown,
+  faCircleCheck,
+  faClipboard,
+  faInfoCircle,
+  faLink,
 } from "@fortawesome/free-solid-svg-icons"
 
 import SearchBar from "../SearchBar"
@@ -32,6 +37,7 @@ export default function Header() {
   const [mainDropdownOpen, setMainDropdownOpen] = useState(false)
   const [touchingMainDropDown, setTouchingMainDropDown] = useState(false)
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
   const [refreshNotifications, setRefreshNotifications] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
@@ -46,6 +52,10 @@ export default function Header() {
     refreshNotifications,
   )
 
+  const [profileData] = useFetch(
+    `${REACT_APP_API_URL}/api/users/${user?.username}`,
+  )
+
   useEffect(() => {
     setProfileDropdownOpen(false)
   }, [location])
@@ -53,6 +63,12 @@ export default function Header() {
   const clearNotifications = async () => {
     await api.delete("/api/notifications", {}, token)
     setRefreshNotifications(!refreshNotifications)
+  }
+
+  const copyreferral = async () => {
+    await navigator.clipboard.writeText(profileData?.body?.user?.referralLink)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 3500)
   }
 
   return (
@@ -143,13 +159,21 @@ export default function Header() {
       {profileDropdownOpen && (
         <div className="container profile-dropdown">
           <h3>DefendX</h3>
-          <div class="profile-information">
+          <div className="profile-information container">
             <div>
               <ProfileImage username={user.username} size={75} />
             </div>
             <div>
               <b>
-                {user?.username}
+                {user?.username}{" "}
+                {profileData?.body?.user?.verified && (
+                  <FontAwesomeIcon
+                    icon={faCircleCheck}
+                    title="Email verified"
+                    cursor="pointer"
+                    color="var(--secondary-text-color)"
+                  />
+                )}{" "}
                 {user?.roles &&
                   user.roles.map((role) => (
                     <Role role={role} includeOptions={false} />
@@ -157,13 +181,40 @@ export default function Header() {
               </b>
               <br />
               <br />
-              <span>
+              <div>
                 <FontAwesomeIcon icon={faAt} /> {user.email}
-              </span>
+              </div>
               <br />
+              {profileData?.body?.user?.referralLink && (
+                <div>
+                  <div>
+                    <FontAwesomeIcon icon={faLink} size="sm" /> Referral link{" "}
+                    <FontAwesomeIcon
+                      icon={faInfoCircle}
+                      size="sm"
+                      cursor="pointer"
+                      title="Share this code with your friends to earn exclusive benefits"
+                    />
+                  </div>
+                  <span className="secondary-text">
+                    {profileData?.body?.user?.referralLink}
+                  </span>
+                  <Button kind="secondary" onClick={copyreferral}>
+                    {copied ? (
+                      <>
+                        <FontAwesomeIcon icon={faCheck} /> Copied
+                      </>
+                    ) : (
+                      <>
+                        <FontAwesomeIcon icon={faClipboard} /> Copy
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
-          <ul className="links">
+          <ul className="links container">
             <li>
               <Link to="/profile">My profile</Link>
             </li>

@@ -1,3 +1,4 @@
+require("dotenv").config()
 const mongoose = require("mongoose")
 const { getRoles } = require("../utils/getRoles")
 
@@ -64,11 +65,23 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    referredBy: {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+    },
+    referrals: {
+        type: [
+            {
+                user: { type: mongoose.Types.ObjectId, ref: "User" },
+            },
+        ],
+    },
 })
 
 UserSchema.methods.applyDerivations = function () {
     let user = this.toObject()
     user.role = getRoles(this.role)
+    if (user.verified) user.referralLink = `${process.env.FRONTEND_URL}/auth/signup?ref=${user._id}`
     if (this.profileImage) user.profileImage = encodeURI(this.profileImage)
     return user
 }
