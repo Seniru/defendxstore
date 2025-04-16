@@ -1,22 +1,25 @@
 import Perk from "../../components/Perk"
+import { useAuth } from "../../contexts/AuthProvider"
+import useFetch from "../../hooks/useFetch"
+
+const { REACT_APP_API_URL } = process.env
 
 export default function Perks() {
+  const { token } = useAuth()
+  const [perks] = useFetch(`${REACT_APP_API_URL}/api/perks`, { body: [] })
+
   return (
     <>
-      <Perk
-        image="https://cdn4.kongcdn.com/badge_icons/0000/5553/swords_souls_easy.jpg"
-        title="Crazy shopper"
-        description="Shop 10 times"
-        progress={{ progress: 5, max: 12 }}
-        reward="5% OFF promotion code"
-      />
-      <Perk
-        image="https://cdn4.kongcdn.com/badge_icons/0000/5553/swords_souls_easy.jpg"
-        title="Community hero"
-        description="Receive 100 hearts from the community to a forum thread you created"
-        progress={{ progress: 5, max: 100 }}
-        reward="15% OFF promotion code"
-      />
+      {perks?.body?.map((perk) => (
+        <Perk
+          key={perk.id}
+          image={`${REACT_APP_API_URL}/${perk.image}`}
+          title={perk.title}
+          description={perk.description}
+          progress={{ progress: 1, max: perk.maxProgress }}
+          reward={perk.rewardText}
+        />
+      ))}
     </>
   )
 }
