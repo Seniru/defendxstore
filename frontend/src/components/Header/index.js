@@ -65,7 +65,7 @@ export default function Header() {
     setRefreshNotifications(!refreshNotifications)
   }
 
-  const copyReferal = async () => {
+  const copyreferral = async () => {
     await navigator.clipboard.writeText(profileData?.body?.user?.referralLink)
     setCopied(true)
     setTimeout(() => setCopied(false), 3500)
@@ -188,7 +188,7 @@ export default function Header() {
               {profileData?.body?.user?.referralLink && (
                 <div>
                   <div>
-                    <FontAwesomeIcon icon={faLink} size="sm" /> Referal link{" "}
+                    <FontAwesomeIcon icon={faLink} size="sm" /> Referral link{" "}
                     <FontAwesomeIcon
                       icon={faInfoCircle}
                       size="sm"
@@ -199,7 +199,7 @@ export default function Header() {
                   <span className="secondary-text">
                     {profileData?.body?.user?.referralLink}
                   </span>
-                  <Button kind="secondary" onClick={copyReferal}>
+                  <Button kind="secondary" onClick={copyreferral}>
                     {copied ? (
                       <>
                         <FontAwesomeIcon icon={faCheck} /> Copied
