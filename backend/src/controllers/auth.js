@@ -8,11 +8,14 @@ const User = require("../models/User")
 const createResponse = require("../utils/createResponse")
 const createToken = require("../utils/createToken")
 const { sendMail } = require("../services/email")
+const Promocodes = require("../models/Promocodes")
 
 const verify = async (req, res, next) => {
     try {
         const { token } = req.query
         if (!token) return createResponse(res, StatusCodes.BAD_REQUEST, "token is not present")
+
+        let user
 
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET)
@@ -28,16 +31,30 @@ const verify = async (req, res, next) => {
                     StatusCodes.FORBIDDEN,
                     "This token does not belong to this user",
                 )
-
-            const user = await User.findOneAndUpdate(
+            user = await User.findOneAndUpdate(
                 { email: decoded.email },
                 { verified: true },
-            ).exec()
-            if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
-            if (user.verified) return createResponse(res, StatusCodes.OK, "Already verified")
-            user.pushNotification("You are successfully verified!")
+                { new: true },
+            )
+                .populate("referredBy")
+                .exec()
         } catch (error) {
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid token")
+        }
+
+        if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+        if (user.verified) return createResponse(res, StatusCodes.OK, "Already verified")
+        user.pushNotification("You are successfully verified!")
+        const referredBy = user.referredBy
+        if (referredBy) {
+            const promocode = await Promocodes.generateRandomCode(
+                new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days from now
+                5,
+                referredBy._id,
+            )
+            referredBy.pushNotification(
+                `You've earned a reward for referring someone! Use code ${promocode.promocode} at checkout.`,
+            )
         }
         return createResponse(res, StatusCodes.OK, "User verified")
     } catch (error) {

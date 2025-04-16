@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-const PromocodeSchema = mongoose.Schema({
+const PromocodeSchema = new mongoose.Schema({
     promocode: {
         type: String,
         required: true,
@@ -14,6 +14,34 @@ const PromocodeSchema = mongoose.Schema({
         type: Number,
         required: true,
     },
+    createdFor: {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+        required: false,
+    },
 })
 
-module.exports = mongoose.model("Promocode", PromocodeSchema)
+PromocodeSchema.statics.generateRandomCode = async function (validuntil, discount, createdFor) {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    const length = 5
+
+    let promocode
+    let exists = true
+
+    while (exists) {
+        promocode = Array.from({ length }, () =>
+            chars.charAt(Math.floor(Math.random() * chars.length)),
+        ).join("")
+        exists = await this.exists({ promocode })
+    }
+
+    return this.create({
+        promocode,
+        validuntil,
+        discount,
+        createdFor,
+    })
+}
+
+const PromoCode = mongoose.model("Promocode", PromocodeSchema)
+module.exports = PromoCode

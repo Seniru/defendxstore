@@ -127,6 +127,11 @@ const createUser = async (req, res, next) => {
             if (!referredUser.verified) return createResponse(res, StatusCodes.CREATED, { token })
             referredUser.referrals.push(user._id)
             await referredUser.save()
+            await User.findByIdAndUpdate(
+                user._id,
+                { referredBy: referredUser._id },
+                { new: true, runValidators: true },
+            )
             referredUser.pushNotification(
                 `You were referred by ${user.username}! Ask them to verify their account to enjoy special discounts.`,
             )
