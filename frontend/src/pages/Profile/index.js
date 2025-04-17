@@ -46,12 +46,6 @@ export default function Profile() {
 
   const [profileData] = useFetch(
     `${REACT_APP_API_URL}/api/users/${user.username}`,
-    null,
-    null,
-    {
-      Authorization: "Bearer " + token,
-      "Content-Type": "application/json",
-    },
   )
 
   const openProfilePictureChanger = () => {
@@ -70,8 +64,9 @@ export default function Profile() {
     reader.readAsDataURL(file)
   }
 
-  const verify = () => {
+  const verify = async () => {
     setIsVerifyDialogOpen(true)
+    await api.post("/api/auth/verify", {}, token)
   }
 
   return (

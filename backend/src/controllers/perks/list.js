@@ -13,7 +13,17 @@ module.exports = {
         description: "Get verified",
         maxProgress: 1,
         rewardText: "3% OFF promotion code",
-        rewardFunction: async (user) => {},
+        rewardFunction: async (user) => {
+            const promocode = await PromoCode.generateRandomCode(
+                new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+                3,
+                user,
+            )
+            user.pushNotification(
+                `You've earned a perk! Use code ${promocode.promocode} at checkout.`,
+            )
+            return { promocode: { code: promocode.promocode, validUntil: promocode.validuntil } }
+        },
     },
     firstPurchase: {
         image: "images/first_purchase.png",

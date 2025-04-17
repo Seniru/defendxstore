@@ -96,14 +96,19 @@ UserSchema.methods.applyDerivations = function () {
 }
 
 UserSchema.methods.pushNotification = async function (notification) {
-    await this.constructor.findByIdAndUpdate(this._id, {
-        $push: {
-            notifications: {
-                $each: [{ message: notification }],
-                $position: 0,
+    const user = await this.constructor.findByIdAndUpdate(
+        this._id,
+        {
+            $push: {
+                notifications: {
+                    $each: [{ message: notification }],
+                    $position: 0,
+                },
             },
         },
-    })
+        { new: true },
+    )
+    Object.assign(this, user.toObject())
 }
 
 UserSchema.methods.incrementProgress = async function (perk) {
@@ -112,7 +117,7 @@ UserSchema.methods.incrementProgress = async function (perk) {
 
     // Only increment if not already completed
     if (currentProgress < maxProgress) {
-        await this.model("User").findByIdAndUpdate(
+        const user = await this.model("User").findByIdAndUpdate(
             this._id,
             {
                 $inc: {
@@ -121,6 +126,7 @@ UserSchema.methods.incrementProgress = async function (perk) {
             },
             { new: true },
         )
+        Object.assign(this, user.toObject())
     }
 }
 

@@ -31,6 +31,11 @@ const verify = async (req, res, next) => {
                     StatusCodes.FORBIDDEN,
                     "This token does not belong to this user",
                 )
+
+            // check if the user is already verified
+            user = await User.findOne({ email: decoded.email }).exec()
+            if (user.verified) return createResponse(res, StatusCodes.OK, "Already verified")
+
             user = await User.findOneAndUpdate(
                 { email: decoded.email },
                 { verified: true },
@@ -43,8 +48,9 @@ const verify = async (req, res, next) => {
         }
 
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
-        if (user.verified) return createResponse(res, StatusCodes.OK, "Already verified")
         user.pushNotification("You are successfully verified!")
+        await user.incrementProgress("verified")
+
         const referredBy = user.referredBy
         if (referredBy) {
             const promocode = await Promocodes.generateRandomCode(

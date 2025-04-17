@@ -41,6 +41,8 @@ const claimPerk = async (req, res, next) => {
     try {
         const { perk } = req.params
         const user = await User.findOne({ username: req.user.username }).exec()
+        if (!user.verified)
+            return createResponse(res, StatusCodes.FORBIDDEN, "You must be verified")
         if (!perkList[perk]) return createResponse(res, StatusCodes.NOT_FOUND, "Perk not found")
 
         const progress = user.perks.get(perk)
