@@ -4,6 +4,8 @@
  * 	special-flat family
  */
 
+const PromoCode = require("../../models/Promocodes")
+
 module.exports = {
     verified: {
         image: "images/verified_badge.png",
@@ -91,6 +93,16 @@ module.exports = {
         description: "",
         maxProgress: 15,
         rewardText: "",
-        rewardFunction: async (user) => {},
+        rewardFunction: async (user) => {
+            const promocode = await PromoCode.generateRandomCode(
+                new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+                5,
+                user,
+            )
+            user.pushNotification(
+                `You've earned a perk! Use code ${promocode.promocode} at checkout.`,
+            )
+            return { promocode: { code: promocode.promocode, validUntil: promocode.validuntil } }
+        },
     },
 }
