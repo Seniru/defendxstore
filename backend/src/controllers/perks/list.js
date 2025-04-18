@@ -33,7 +33,7 @@ module.exports = {
         title: "First Purchase",
         description: "Complete your first order",
         maxProgress: 1,
-        rewardText: "3% OFF promtion code",
+        rewardText: "3% OFF promotion code",
         rewardFunction: async (user) => {},
     },
     casualShopper: {

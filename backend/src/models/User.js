@@ -81,7 +81,7 @@ const UserSchema = new mongoose.Schema({
         type: Map,
         of: new mongoose.Schema({
             progress: { type: Number, default: 0 },
-            claimed: { type: Boolean, deafault: false },
+            claimed: { type: Boolean, default: false },
         }),
         default: {},
     },
