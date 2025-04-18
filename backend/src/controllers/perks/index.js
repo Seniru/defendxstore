@@ -29,7 +29,6 @@ const getPerks = async (req, res, next) => {
 const testPerks = async (req, res, next) => {
     try {
         const user = await User.findOne({ username: req.user.username }).exec()
-        console.log(user)
         await user.incrementProgress("test")
         return createResponse(res, StatusCodes.OK, "OK")
     } catch (error) {

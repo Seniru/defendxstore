@@ -19,10 +19,13 @@ module.exports = {
                 3,
                 user,
             )
-            user.pushNotification(
+            await user.pushNotification(
                 `You've earned a perk! Use code ${promocode.promocode} at checkout.`,
             )
-            return { promocode: { code: promocode.promocode, validUntil: promocode.validuntil } }
+            return {
+                type: "promocode",
+                promocode: { code: promocode.promocode, validUntil: promocode.validuntil },
+            }
         },
     },
     firstPurchase: {
@@ -109,10 +112,13 @@ module.exports = {
                 5,
                 user,
             )
-            user.pushNotification(
+            await user.pushNotification(
                 `You've earned a perk! Use code ${promocode.promocode} at checkout.`,
             )
-            return { promocode: { code: promocode.promocode, validUntil: promocode.validuntil } }
+            return {
+                type: "promocode",
+                promocode: { code: promocode.promocode, validUntil: promocode.validuntil },
+            }
         },
     },
 }
