@@ -43,6 +43,10 @@ button:active {
     inset 0px 0px 0px 30px rgba(0, 0, 0, 0.3);
 }
 
+button:disabled {
+  cursor: not-allowed;
+}
+
 @media print {
   button {
     display: none;

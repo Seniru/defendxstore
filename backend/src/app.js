@@ -1,6 +1,7 @@
 require("dotenv").config()
 
 const os = require("os")
+const path = require("path")
 const express = require("express")
 const app = express()
 const cors = require("cors")
@@ -19,6 +20,7 @@ const itemRoute = require("./routes/items")
 const orderRoute = require("./routes/orders")
 const promocodesRoute = require("./routes/promocodes")
 const notificationsRoute = require("./routes/notifications")
+const perksRoutes = require("./routes/perks")
 
 // middlewares
 app.use(cors())
@@ -28,6 +30,7 @@ app.use(
         stream: { write: (message) => logger.info(message.trim()) },
     }),
 )
+app.use(express.static(path.join(__dirname, "public")))
 
 // routes
 app.use("/api/auth", authRoute)
@@ -39,6 +42,7 @@ app.use("/api/items", itemRoute)
 app.use("/api/orders", orderRoute)
 app.use("/api/promo", promocodesRoute)
 app.use("/api/notifications", notificationsRoute)
+app.use("/api/perks", perksRoutes)
 
 app.use((err, req, res, next) => {
     logger.error(err.stack)

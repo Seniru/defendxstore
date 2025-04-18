@@ -29,6 +29,7 @@ import DeleteAccountForm from "../../forms/DeleteAccountForm"
 import ChangeBillingInformationForm from "../../forms/ChangeBillingInformationForm"
 import useFetch from "../../hooks/useFetch"
 import { useNavigate } from "react-router-dom"
+import Perks from "./Perks"
 
 const { REACT_APP_API_URL } = process.env
 
@@ -45,12 +46,6 @@ export default function Profile() {
 
   const [profileData] = useFetch(
     `${REACT_APP_API_URL}/api/users/${user.username}`,
-    null,
-    null,
-    {
-      Authorization: "Bearer " + token,
-      "Content-Type": "application/json",
-    },
   )
 
   const openProfilePictureChanger = () => {
@@ -69,8 +64,9 @@ export default function Profile() {
     reader.readAsDataURL(file)
   }
 
-  const verify = () => {
+  const verify = async () => {
     setIsVerifyDialogOpen(true)
+    await api.post("/api/auth/verify", {}, token)
   }
 
   return (
@@ -229,6 +225,7 @@ export default function Profile() {
           <TabMenu>
             <TabItem name="Orders" element={<OrderMenu />} />
             <TabItem name="Reviews" element={<Reviews />} />
+            <TabItem name="Perks" element={<Perks />} />
           </TabMenu>
         </div>
       </div>

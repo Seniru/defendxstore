@@ -1,0 +1,34 @@
+/* credits: https://stackoverflow.com/questions/41429906/how-to-display-data-label-inside-html5-progress-bar-cross-browser */
+
+progress {
+  text-align: center;
+  height: 15px;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 5px;
+  border: none;
+
+  /* Set the progressbar to relative */
+  position: relative;
+}
+progress:before {
+  content: attr(data-label);
+  font-size: small;
+  vertical-align: middle;
+  color: white;
+
+  /*Position text over the progress bar */
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+progress::-webkit-progress-bar {
+  background-color: #c9c9c9;
+}
+progress::-webkit-progress-value {
+  background-color: var(--primary-color);
+}
+progress::-moz-progress-bar {
+  background-color: var(--secondary-color);
+}

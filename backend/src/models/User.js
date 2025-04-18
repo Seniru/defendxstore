@@ -1,5 +1,6 @@
 require("dotenv").config()
 const mongoose = require("mongoose")
+const perkList = require("../controllers/perks/list")
 const { getRoles } = require("../utils/getRoles")
 
 const UserSchema = new mongoose.Schema({
@@ -76,6 +77,14 @@ const UserSchema = new mongoose.Schema({
             },
         ],
     },
+    perks: {
+        type: Map,
+        of: new mongoose.Schema({
+            progress: { type: Number, default: 0 },
+            claimed: { type: Boolean, default: false },
+        }),
+        default: {},
+    },
 })
 
 UserSchema.methods.applyDerivations = function () {
@@ -87,14 +96,38 @@ UserSchema.methods.applyDerivations = function () {
 }
 
 UserSchema.methods.pushNotification = async function (notification) {
-    await this.constructor.findByIdAndUpdate(this._id, {
-        $push: {
-            notifications: {
-                $each: [{ message: notification }],
-                $position: 0,
+    const user = await this.constructor.findByIdAndUpdate(
+        this._id,
+        {
+            $push: {
+                notifications: {
+                    $each: [{ message: notification }],
+                    $position: 0,
+                },
             },
         },
-    })
+        { new: true },
+    )
+    Object.assign(this, user.toObject())
+}
+
+UserSchema.methods.incrementProgress = async function (perk) {
+    const currentProgress = this.perks.get(perk)?.progress || 0
+    const maxProgress = perkList[perk].maxProgress
+
+    // Only increment if not already completed
+    if (currentProgress < maxProgress) {
+        const user = await this.model("User").findByIdAndUpdate(
+            this._id,
+            {
+                $inc: {
+                    [`perks.${perk}.progress`]: 1,
+                },
+            },
+            { new: true },
+        )
+        Object.assign(this, user.toObject())
+    }
 }
 
 const User = mongoose.model("User", UserSchema)
