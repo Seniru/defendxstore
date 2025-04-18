@@ -9,6 +9,7 @@ const createToken = require("../utils/createToken")
 const User = require("../models/User")
 const logger = require("../utils/logger")
 const { sendMail } = require("../services/email")
+const UserReport = require("../models/reports/UserReport")
 
 const permissions = {
     USER: 1 << 0,
@@ -284,6 +285,7 @@ const changeProfileImage = async (req, res, next) => {
 
 const addRole = async (req, res, next) => {
     try {
+        const reqUser = await User.findOne({ username: req.user.username }).exec()
         const { username } = req.params
         const { role } = req.body
         if (!role || !["USER", "DELIVERY_AGENT", "SUPPORT_AGENT", "ADMIN"].includes(role))
@@ -294,6 +296,11 @@ const addRole = async (req, res, next) => {
 
         user.role |= permissions[role]
         await user.save()
+        await UserReport.create({
+            user: reqUser._id,
+            action: "add-role",
+            data: { role, username: user.username },
+        })
         return createResponse(res, StatusCodes.OK, "Role added")
     } catch (error) {
         next(error)

@@ -20,7 +20,8 @@ const itemRoute = require("./routes/items")
 const orderRoute = require("./routes/orders")
 const promocodesRoute = require("./routes/promocodes")
 const notificationsRoute = require("./routes/notifications")
-const perksRoutes = require("./routes/perks")
+const perksRoute = require("./routes/perks")
+const reportsRoute = require("./routes/reports")
 
 // middlewares
 app.use(cors())
@@ -42,7 +43,8 @@ app.use("/api/items", itemRoute)
 app.use("/api/orders", orderRoute)
 app.use("/api/promo", promocodesRoute)
 app.use("/api/notifications", notificationsRoute)
-app.use("/api/perks", perksRoutes)
+app.use("/api/perks", perksRoute)
+app.use("/api/reports", reportsRoute)
 
 app.use((err, req, res, next) => {
     logger.error(err.stack)
