@@ -1,24 +1,27 @@
 import React from "react"
+import { Link } from "react-router-dom"
 import "./Productcard.css"
 import Button from "../Button"
 import item1 from "../../assets/images/item1.jpg"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faHeart } from "@fortawesome/free-regular-svg-icons"
 
-const Productcard = () => {
+const Productcard = ({ itemName, product, price, category, id }) => {
   return (
     <div className="product-card">
       <div className="product-photo">
-        <img src={item1} alt="product" />
+        <img src={product} alt="product" />
       </div>
       <div className="product-data">
-        <h3 className="product-title">Over-SIZED Tee</h3>
+        <h3 className="product-title">{itemName}</h3>
         <div className="product-meta">
-          <p className="price">LKR 3,200.00</p>
-          <p className="category">T Shirt</p>
+          <p className="price">LKR {price}</p>
+          <p className="category">{category}</p>
         </div>
         <div className="action-btns">
-          <Button kind="primary">Buy Now</Button>
+          <Link to={`/product?id=${id}`}>
+            <Button kind="primary">Buy Now</Button>
+          </Link>
           <FontAwesomeIcon
             style={{
               color: "black",

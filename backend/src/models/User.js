@@ -1,4 +1,6 @@
+require("dotenv").config()
 const mongoose = require("mongoose")
+const perkList = require("../controllers/perks/list")
 const { getRoles } = require("../utils/getRoles")
 
 const UserSchema = new mongoose.Schema({
@@ -38,13 +40,94 @@ const UserSchema = new mongoose.Schema({
         type: Number,
         default: 1,
     },
+    cart: {
+        default: [],
+        type: [
+            {
+                product: {
+                    type: mongoose.Types.ObjectId,
+                    ref: "Item",
+                },
+                color: String,
+                size: String,
+            },
+        ],
+    },
+    notifications: {
+        default: [],
+        type: [
+            {
+                message: { type: String, required: true },
+                date: { type: Date, default: Date.now },
+            },
+        ],
+    },
+    verified: {
+        type: Boolean,
+        default: false,
+    },
+    referredBy: {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+    },
+    referrals: {
+        type: [
+            {
+                user: { type: mongoose.Types.ObjectId, ref: "User" },
+            },
+        ],
+    },
+    perks: {
+        type: Map,
+        of: new mongoose.Schema({
+            progress: { type: Number, default: 0 },
+            claimed: { type: Boolean, default: false },
+        }),
+        default: {},
+    },
 })
 
 UserSchema.methods.applyDerivations = function () {
     let user = this.toObject()
     user.role = getRoles(this.role)
+    if (user.verified) user.referralLink = `${process.env.FRONTEND_URL}/auth/signup?ref=${user._id}`
     if (this.profileImage) user.profileImage = encodeURI(this.profileImage)
     return user
+}
+
+UserSchema.methods.pushNotification = async function (notification) {
+    const user = await this.constructor.findByIdAndUpdate(
+        this._id,
+        {
+            $push: {
+                notifications: {
+                    $each: [{ message: notification }],
+                    $position: 0,
+                },
+            },
+        },
+        { new: true },
+    )
+    Object.assign(this, user.toObject())
+}
+
+UserSchema.methods.incrementProgress = async function (perk) {
+    const currentProgress = this.perks.get(perk)?.progress || 0
+    const maxProgress = perkList[perk].maxProgress
+
+    // Only increment if not already completed
+    if (currentProgress < maxProgress) {
+        const user = await this.model("User").findByIdAndUpdate(
+            this._id,
+            {
+                $inc: {
+                    [`perks.${perk}.progress`]: 1,
+                },
+            },
+            { new: true },
+        )
+        Object.assign(this, user.toObject())
+    }
 }
 
 const User = mongoose.model("User", UserSchema)

@@ -33,6 +33,7 @@ const getItemById = async (req, res) => {
 // Create Item
 const createItem = async (req, res) => {
     const item = req.body
+    item.size = item.size.split(",")
     const newItem = new Item(item)
     try {
         await newItem.save()

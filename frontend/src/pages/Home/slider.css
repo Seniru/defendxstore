@@ -8,7 +8,7 @@
 }
 
 .carousel-section {
-  max-width: 100%;
+  max-width: 100vw;
   height: auto;
   align-items: center;
 }
@@ -16,6 +16,7 @@
 .swiper {
   width: calc(100vw - 15px);
   height: auto;
+  margin: unset;
 }
 
 .swiper-slide img {

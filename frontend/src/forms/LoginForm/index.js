@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faAt, faEyeSlash } from "@fortawesome/free-solid-svg-icons"
@@ -14,20 +14,47 @@ export default function LoginForm({ className, ...props }) {
   const { loginAction } = useAuth()
 
   const emailRef = useRef()
+  const [emailError, setEmailError] = useState(null)
   const passwordRef = useRef()
+  const [passwordError, setPasswordError] = useState(null)
 
-  const handleLogin = (evt) => {
+  const handleLogin = async (evt) => {
     evt.preventDefault()
-    loginAction({
+
+    const isEmailValid = emailRef.current.validity.valid
+    const isPasswordValid = passwordRef.current.validity.valid
+
+    setEmailError(isEmailValid ? null : emailRef.current.validationMessage)
+    setPasswordError(
+      isPasswordValid ? null : passwordRef.current.validationMessage,
+    )
+
+    if (!isEmailValid || !isPasswordValid) return
+
+    const response = await loginAction({
       email: emailRef.current.value,
       password: passwordRef.current.value,
     })
+    if (response) {
+      switch (response.field) {
+        case "email":
+          setEmailError(response.message)
+          break
+        case "password":
+          setPasswordError(response.message)
+          break
+        default:
+          break
+      }
+    }
   }
 
   return (
     <form
       onSubmit={handleLogin}
       className={`login-form container ${className}`}
+      noValidate
+      {...props}
     >
       <div className="login-form-inputs">
         <h1>Login</h1>
@@ -37,7 +64,9 @@ export default function LoginForm({ className, ...props }) {
           </label>
           <Input
             type="email"
+            name="email"
             placeholder="Enter your email"
+            error={emailError}
             width={300}
             ref={emailRef}
             required
@@ -49,7 +78,9 @@ export default function LoginForm({ className, ...props }) {
           </label>
           <Input
             type="password"
+            name="password"
             placeholder="Enter your password"
+            error={passwordError}
             ref={passwordRef}
             required
           />

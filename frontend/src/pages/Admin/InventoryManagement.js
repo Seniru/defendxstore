@@ -11,6 +11,9 @@ import useFetch from "../../hooks/useFetch"
 import OverlayWindow from "../../components/OverlayWindow"
 import PromoCodes from "./promocodes"
 import Input from "../../components/Input"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons"
+import Menu from "../../components/Menu"
 
 const InventoryManagement = () => {
   const { token } = useAuth()
@@ -38,6 +41,69 @@ const InventoryManagement = () => {
     {},
     refreshFlag,
   )
+
+  function ProductRow({ row, index }) {
+    const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
+
+    return (
+      <tr key={index}>
+        <td>
+          <img
+            src={row.product}
+            alt={row.itemName}
+            className="product-image"
+            style={{
+              width: "100px",
+              height: "100px",
+              borderRadius: "10px",
+            }}
+          />
+        </td>
+        <td>{row.itemName}</td>
+        <td>{row.category}</td>
+        <td>{row.description}</td>
+        <td>
+          <div style={{ display: "flex" }}>
+            {row.colors?.map((color, index) => (
+              <div
+                type="radio"
+                name="color"
+                value={color}
+                key={index}
+                className="color-square"
+                style={{
+                  backgroundColor: color,
+                  marginLeft: 1,
+                  marginRight: 1,
+                }}
+              />
+            ))}
+          </div>
+        </td>
+        <td>{`$${row.price}`}</td>
+        <td>{row.size}</td>
+        <td>{row.quantity}</td>
+        <td>
+          <StockStatus stock={row.stock} />
+        </td>
+        <td>
+          <FontAwesomeIcon
+            icon={faEllipsisVertical}
+            color="var(--secondary-text-color)"
+            cursor="pointer"
+            onClick={() => setIsContextMenuOpen(!isContextMenuOpen)}
+          />
+          <Menu isOpen={isContextMenuOpen} right={10}>
+            <ul>
+              <li onClick={() => handleRestockClick(index)}>Restock</li>
+              <li onClick={() => handleEditProduct(index)}>Edit item</li>
+              <li onClick={() => handleDeleteProduct(index)}>Delete item</li>
+            </ul>
+          </Menu>
+        </td>
+      </tr>
+    )
+  }
 
   // Clean up object URLs
   useEffect(() => {
@@ -295,50 +361,10 @@ const InventoryManagement = () => {
               "Size",
               "Quantity",
               "Stock",
-              "Action",
+              "",
             ]}
-            rows={(productData.body ? productData.body : []).map(
-              (product, index) => [
-                <img
-                  src={product.product}
-                  alt={product.itemName}
-                  className="product-image"
-                  style={{
-                    width: "100px",
-                    height: "100px",
-                    borderRadius: "10px",
-                  }}
-                />,
-                product.itemName,
-                product.category,
-                product.description,
-                Array.isArray(product.colors) ? product.colors.join(", ") : "",
-                `$${product.price}`,
-                product.size,
-                product.quantity,
-                <StockStatus stock={product.stock} />,
-                <div className="action-buttons">
-                  <Button
-                    kind="secondary"
-                    onClick={() => handleRestockClick(index)}
-                  >
-                    Restock
-                  </Button>
-                  <Button
-                    kind="primary"
-                    onClick={() => handleEditProduct(index)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    kind="danger"
-                    onClick={() => handleDeleteProduct(index)}
-                  >
-                    Delete
-                  </Button>
-                </div>,
-              ],
-            )}
+            rows={productData.body ? productData.body : []}
+            renderRowWith={ProductRow}
           />
         </div>
 

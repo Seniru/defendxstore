@@ -1,11 +1,14 @@
+require("dotenv").config()
 const mongoose = require("mongoose")
 const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 const { StatusCodes } = require("http-status-codes")
 
 const createResponse = require("../utils/createResponse")
 const createToken = require("../utils/createToken")
 const User = require("../models/User")
 const logger = require("../utils/logger")
+const { sendMail } = require("../services/email")
 
 const permissions = {
     USER: 1 << 0,
@@ -43,6 +46,7 @@ const getAllUsers = async (req, res, next) => {
                         else: null,
                     },
                 },
+                verified: 1,
             },
         ).exec()
 
@@ -58,7 +62,15 @@ const getAllUsers = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
     try {
-        const { username, email, password, deliveryAddress, contactNumber, profileImage } = req.body
+        const {
+            username,
+            email,
+            password,
+            deliveryAddress,
+            contactNumber,
+            profileImage,
+            referredBy,
+        } = req.body
         if (!password)
             return createResponse(res, StatusCodes.BAD_REQUEST, [
                 {
@@ -74,6 +86,9 @@ const createUser = async (req, res, next) => {
                     message: "Invalid profile image format",
                 },
             ])
+        // check if referredBy is in valid format if it exist
+        if (referredBy && !mongoose.Types.ObjectId.isValid(referredBy))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid referredBy ID")
 
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
@@ -87,6 +102,41 @@ const createUser = async (req, res, next) => {
         })
         await user.save()
         const token = createToken(user)
+
+        // create verification token
+        const verificationToken = jwt.sign(
+            { email, action: "EMAIL_VERIFICATION" },
+            process.env.JWT_SECRET,
+            {
+                algorithm: "HS256",
+                expiresIn: "1h",
+            },
+        )
+
+        // send verification email
+        sendMail(email, "Defendxstore Email verification", "verify-email", {
+            username,
+            url: `${process.env.FRONTEND_URL}/verify?token=${verificationToken}`,
+        })
+        user.pushNotification("Welcome to DefendX! Check your inbox to verify your email")
+
+        // handle referrals
+        if (referredBy) {
+            const referredUser = await User.findById(referredBy).exec()
+            if (!referredUser) return createResponse(res, StatusCodes.CREATED, { token })
+            if (!referredUser.verified) return createResponse(res, StatusCodes.CREATED, { token })
+            referredUser.referrals.push(user._id)
+            await referredUser.save()
+            await User.findByIdAndUpdate(
+                user._id,
+                { referredBy: referredUser._id },
+                { new: true, runValidators: true },
+            )
+            referredUser.pushNotification(
+                `You were referred by ${user.username}! Ask them to verify their account to enjoy special discounts.`,
+            )
+        }
+
         return createResponse(res, StatusCodes.CREATED, { token })
     } catch (error) {
         if (error instanceof mongoose.Error.ValidationError) {

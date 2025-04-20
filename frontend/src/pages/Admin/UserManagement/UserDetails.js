@@ -5,6 +5,7 @@ import {
   faAddressCard,
   faAt,
   faCamera,
+  faCircleCheck,
   faCirclePlus,
   faInfoCircle,
   faPhone,
@@ -25,6 +26,7 @@ export default function UserDetails({
   deliveryAddress,
   contactNumbers,
   roles,
+  verified,
   keyProp,
   setIsError,
   setMessage,
@@ -113,7 +115,18 @@ export default function UserDetails({
             key={`user-details-text-${keyProp}`}
           >
             <div>
-              <span className="username">{username}</span>
+              <span className="username">
+                {username}{" "}
+                {verified && (
+                  <FontAwesomeIcon
+                    icon={faCircleCheck}
+                    title="Email verified"
+                    cursor="pointer"
+                    color="var(--secondary-text-color)"
+                    size="xs"
+                  />
+                )}
+              </span>
               {roles.map((role) => (
                 <Role
                   username={username}
