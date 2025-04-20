@@ -6,16 +6,15 @@ const types = {
     users: UserReport,
 }
 
-const getReport = async (req, res, next) => {
+const getUsersReport = async (req, res, next) => {
     try {
-        const { type } = req.params
-        const model = types[type]
-        if (!model) return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid report type")
-        const report = await model.find({}).exec()
-        return createResponse(res, StatusCodes.OK, { type, report })
+        const report = await UserReport.find({})
+            .populate({ path: "user", select: "username" })
+            .exec()
+        return createResponse(res, StatusCodes.OK, { report })
     } catch (error) {
         next(error)
     }
 }
 
-module.exports = { getReport }
+module.exports = { getUsersReport }

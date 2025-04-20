@@ -2,8 +2,8 @@ const express = require("express")
 const router = express.Router()
 const { requireRole, roles } = require("../middlewares/auth")
 
-const { getReport } = require("../controllers/reports")
+const { getUsersReport } = require("../controllers/reports")
 
-router.get("/:type", requireRole(roles.ADMIN), getReport)
+router.get("/users", requireRole(roles.ADMIN), getUsersReport)
 
 module.exports = router
