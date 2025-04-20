@@ -20,6 +20,19 @@ const UserReportSchema = new mongoose.Schema({
     },
 })
 
+UserReportSchema.statics.actions = {
+    addRole: "add-role",
+    removeRole: "remove-role",
+    editProfile: "edit-profile",
+    createAccount: "create-account",
+    referral: "referral",
+    deleteAccount: "delete-account",
+    changePassword: "change-password",
+    changeProfileImage: "change-profile-image",
+    verify: "verify",
+    login: "login",
+}
+
 const UserReport = mongoose.model("UserReport", UserReportSchema)
 
 module.exports = UserReport

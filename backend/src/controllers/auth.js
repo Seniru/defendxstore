@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken")
 const { StatusCodes } = require("http-status-codes")
 
 const User = require("../models/User")
+const UserReport = require("../models/reports/UserReport")
 const createResponse = require("../utils/createResponse")
 const createToken = require("../utils/createToken")
 const { sendMail } = require("../services/email")
@@ -62,6 +63,11 @@ const verify = async (req, res, next) => {
                 `You've earned a reward for referring someone! Use code ${promocode.promocode} at checkout.`,
             )
         }
+        await UserReport.create({
+            user: user._id,
+            action: UserReport.actions.verify,
+            data: {},
+        })
         return createResponse(res, StatusCodes.OK, "User verified")
     } catch (error) {
         next(error)
@@ -108,6 +114,11 @@ const login = async (req, res, next) => {
 
         if (bcrypt.compareSync(password, user.password)) {
             let token = createToken(user)
+            await UserReport.create({
+                user: user._id,
+                action: UserReport.actions.login,
+                data: {},
+            })
             return createResponse(res, StatusCodes.OK, { token })
         }
         return createResponse(res, StatusCodes.UNAUTHORIZED, {
