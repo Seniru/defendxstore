@@ -51,7 +51,8 @@ export default function UserManagement() {
   return (
     <>
       <OverlayWindow isOpen={isLogsMenuOpen} setIsOpen={setIsLogsMenuOpen}>
-        <UserLogs />
+        {/** the isLogsMenuOpen flag is to load logs only when requested and to re-rerender when opened again */}
+        {isLogsMenuOpen && <UserLogs />}
       </OverlayWindow>
       <div className="content">
         <MessageBox

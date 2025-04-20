@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react"
 import Input from "../../../components/Input"
 import ProfileImage from "../../../components/ProfileImage"
 import Select from "../../../components/Select"
@@ -6,6 +7,7 @@ import useFetch from "../../../hooks/useFetch"
 import "./UserManagement.css"
 
 const { REACT_APP_API_URL } = process.env
+const now = Date.now()
 
 const actionColors = {
   "add-role": "#27ae60",
@@ -103,7 +105,40 @@ function UserLog({ row }) {
 }
 
 export default function UserLogs({}) {
-  const [logs] = useFetch(`${REACT_APP_API_URL}/api/reports/users`)
+  const [username, setUsername] = useState("")
+  const [fromDate, setFromDate] = useState(null)
+  const [toDate, setToDate] = useState(null)
+  const [action, setAction] = useState(null)
+  const [searchNextUpdate, setSearchNextUpdate] = useState(now)
+  const queryParams = useMemo(() => {
+    const params = {}
+    if (username) params.searchUser = username
+    if (fromDate) params.fromDate = fromDate
+    if (toDate) params.toDate = toDate
+    if (action) params.action = action
+    return params
+  }, [username, fromDate, toDate, action])
+
+  const [logs] = useFetch(
+    `${REACT_APP_API_URL}/api/reports/users?` +
+      new URLSearchParams(queryParams).toString(),
+  )
+
+  const changeAction = (evt) => {
+    if (evt.target.value == "All") return setAction(null)
+    setAction(evt.target.value)
+  }
+
+  const handleSearchChange = (evt) => {
+    setSearchNextUpdate((prev) => {
+      const nextUpdate = prev + 500
+      setTimeout(() => {
+        // if it has taken at least 400ms since the input start
+        if (nextUpdate <= Date.now()) setUsername(evt.target.value)
+      }, 500)
+      return nextUpdate
+    })
+  }
 
   return (
     <>
@@ -115,13 +150,20 @@ export default function UserLogs({}) {
           <span>
             <b>User</b>
           </span>
-          <Input type="text" placeholder="Search user by name" />
+          <Input
+            type="text"
+            placeholder="Search user by name"
+            onChange={handleSearchChange}
+          />
         </div>
         <div className="logs-parameter">
           <span>
             <b>Action</b>
           </span>
-          <Select items={["Add role", "Remove role"]} />
+          <Select
+            items={["All", ...(logs?.body?.actions || [])]}
+            onChange={changeAction}
+          />
         </div>
         <div className="logs-parameter">
           <span>
@@ -129,9 +171,15 @@ export default function UserLogs({}) {
           </span>
           <div>
             From
-            <Input type="date" />
+            <Input
+              type="date"
+              onChange={(evt) => setFromDate(evt.target.value)}
+            />
             To
-            <Input type="date" />
+            <Input
+              type="date"
+              onChange={(evt) => setToDate(evt.target.value)}
+            />
           </div>
         </div>
       </div>
