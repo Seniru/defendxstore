@@ -210,10 +210,24 @@ const changeProfileImage = async (req, res, next) => {
         if (!image || !image.match(/^data:(.+);base64,(.*)$/))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid profile image format")
 
-        const user = await User.findOneAndUpdate({ username }, { profileImage: image }).exec()
+        const user = await User.findOneAndUpdate(
+            { username },
+            { profileImage: image },
+            { runValidators: true },
+        ).exec()
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
         return createResponse(res, StatusCodes.OK, "Image updated successfully")
     } catch (error) {
+        if (error instanceof mongoose.Error.ValidationError) {
+            return createResponse(
+                res,
+                StatusCodes.BAD_REQUEST,
+                Object.keys(error.errors).map((key) => ({
+                    field: key,
+                    message: error.errors[key].message,
+                })),
+            )
+        }
         next(error)
     }
 }
