@@ -20,11 +20,11 @@ const getOrders = async (req, res, next) => {
         orders = orders.map((order) => {
             const groupedItems = order.items.reduce((acc, item) => {
                 const product = item.product
-                const key = `${product.name}-${item.color}-${item.size}`
+                const key = `${product.itemName}-${item.color}-${item.size}`
 
                 if (!acc[key]) {
                     acc[key] = {
-                        product: product,
+                        ...product.toObject(),
                         color: item.color || null,
                         size: item.size || null,
                         quantity: 0,
@@ -71,7 +71,11 @@ const createOrder = async (req, res, next) => {
         // apply promotion codes
         if (promocode) {
             const code = await PromoCode.findOne({ promocode }).exec()
-            if (!code) return createResponse(res, StatusCodes.NOT_FOUND, "Promocode not found")
+            if (!code)
+                return createResponse(res, StatusCodes.NOT_FOUND, {
+                    field: "promocode",
+                    message: "Promocode not found",
+                })
             const discount = total * (code.discount / 100)
             total -= discount
         }
@@ -98,16 +102,39 @@ const getOrder = async (req, res, next) => {
         const { id } = req.params
         const user = req.user
 
-        const order = await Order.findOne({ _id: id }).exec()
+        const order = await Order.findOne({ _id: id })
+            .populate("items.product")
+            .populate({ path: "user", select: "username email" })
+            .exec()
         if (!order) return createResponse(res, StatusCodes.NOT_FOUND, "Order not found")
-        if (!user.roles.includes("DELIVERY_AGENT") && user.username !== order.username)
+        if (!user.roles.includes("DELIVERY_AGENT") && user.username !== order.user.username)
             return createResponse(
                 res,
                 StatusCodes.FORBIDDEN,
                 "You are not authorized to access this order",
             )
 
-        return createResponse(res, StatusCodes.OK, { order })
+        const groupedItems = order.items.reduce((acc, item) => {
+            const product = item.product
+            const key = `${item.product.itemName}-${item.color}-${item.size}`
+
+            if (!acc[key]) {
+                acc[key] = {
+                    ...product.toObject(),
+                    color: item.color || null,
+                    size: item.size || null,
+                    quantity: 0,
+                }
+            }
+
+            acc[key].quantity += item.quantity || 1
+            return acc
+        }, {})
+
+        return createResponse(res, StatusCodes.OK, {
+            ...order.toObject(),
+            items: Object.values(groupedItems),
+        })
     } catch (error) {
         next(error)
     }

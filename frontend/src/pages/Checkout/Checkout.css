@@ -6,6 +6,7 @@
   justify-content: center;
   margin-left: 40px;
   margin-right: 40px;
+  align-items: flex-start;
 
   .container:nth-child(1) {
     width: -webkit-fill-available;

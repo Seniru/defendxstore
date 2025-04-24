@@ -2,7 +2,11 @@ import "./Profile.css"
 import Select from "../../components/Select"
 import useFetch from "../../hooks/useFetch"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCalendar, faMap } from "@fortawesome/free-solid-svg-icons"
+import {
+  faCalendar,
+  faChevronRight,
+  faMap,
+} from "@fortawesome/free-solid-svg-icons"
 import { useMemo, useState } from "react"
 
 const { REACT_APP_API_URL } = process.env
@@ -11,7 +15,11 @@ function Order({ order }) {
   return (
     <div className="profile-order-container container">
       <div className="order-header">
-        <div className="secondary-text">#{order._id}</div>
+        <div>
+          <a href={`invoice?id=${order._id}`}>
+            #{order._id} <FontAwesomeIcon icon={faChevronRight} />
+          </a>
+        </div>
         <div
           className="order-status"
           style={{
@@ -32,7 +40,7 @@ function Order({ order }) {
             height: "100px",
             borderRadius: "10px",
           }}
-          src={order.items[0].product.product}
+          src={order.items[0].product}
         />
         <div className="order-details">
           <span className="secondary-text">
@@ -58,10 +66,10 @@ function Order({ order }) {
                 ></div>
                 <div>
                   <div>
-                    <b>{item.product.itemName}</b> ({item.size})
+                    <b>{item.itemName}</b> ({item.size})
                   </div>
                   <div>
-                    LKR {item.product.price}{" "}
+                    LKR {item.price}{" "}
                     <span className="secondary-text"> x {item.quantity}</span>
                   </div>
                 </div>
