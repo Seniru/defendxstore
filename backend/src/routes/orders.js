@@ -4,7 +4,7 @@ const { getOrders, createOrder, getOrder, deleteOrder } = require("../controller
 const { requireRole, roles } = require("../middlewares/auth")
 
 router.get("/", requireRole(roles.USER), getOrders)
-router.post("/", createOrder)
+router.post("/", requireRole(roles.USER), createOrder)
 router.get("/:id", requireRole(roles.USER), getOrder)
 router.delete("/:id", requireRole(roles.USER), deleteOrder)
 

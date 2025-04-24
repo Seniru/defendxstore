@@ -76,27 +76,34 @@
     }
   }
 }
+.profile-order-container {
+  margin-top: 10px;
 
-.Order-container {
-  display: flex;
-  margin-bottom: 20px;
-  justify-content: space-between;
-
-  .Order-stars {
-    width: 20%;
-    display: grid;
-  }
-
-  .Order-content {
+  .order-header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    display: grid;
+
+    .order-status {
+      padding: 5px 10px;
+      border-radius: 10px;
+      margin: 5px;
+    }
   }
 
-  .Order-profile {
-    width: 20%;
-  }
-  .Order-status {
-    align-items: end;
+  .order-body {
+    display: flex;
+
+    .order-details {
+      margin-left: 20px;
+      margin-right: 20px;
+      width: -webkit-fill-available;
+
+      .order-item {
+        display: flex;
+        align-items: center;
+      }
+    }
   }
 }
 

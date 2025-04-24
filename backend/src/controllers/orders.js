@@ -1,11 +1,46 @@
 const { StatusCodes } = require("http-status-codes")
 const createResponse = require("../utils/createResponse")
 const jwt = require("jsonwebtoken")
+
 const Order = require("../models/Order")
+const User = require("../models/User")
+const PromoCode = require("../models/Promocodes")
 
 const getOrders = async (req, res, next) => {
     try {
-        const orders = await Order.find({}).exec()
+        const { status } = req.query
+        if (status && !["pending", "on_the_way", "delivered"].includes(status))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid status")
+        const user = await User.findOne({ username: req.user.username }).exec()
+
+        const query = { user: user._id }
+        if (status) query.status = status
+        let orders = await Order.find(query).populate("items.product").exec()
+
+        orders = orders.map((order) => {
+            const groupedItems = order.items.reduce((acc, item) => {
+                const product = item.product
+                const key = `${product.name}-${item.color}-${item.size}`
+
+                if (!acc[key]) {
+                    acc[key] = {
+                        product: product,
+                        color: item.color || null,
+                        size: item.size || null,
+                        quantity: 0,
+                    }
+                }
+
+                acc[key].quantity += item.quantity || 1
+                return acc
+            }, {})
+
+            return {
+                ...order.toObject(),
+                items: Object.values(groupedItems),
+            }
+        })
+
         return createResponse(res, StatusCodes.OK, orders)
     } catch (error) {
         next(error)
@@ -14,14 +49,11 @@ const getOrders = async (req, res, next) => {
 
 const createOrder = async (req, res, next) => {
     try {
-        const { cart, deliveryAddress } = req.body
-        // get user information
-        let token = req.headers.authorization
-        let user = null
-        if (token) {
-            token = token.split(" ")[1]
-            user = jwt.verify(token, process.env.JWT_SECRET)
-        }
+        const { deliveryAddress, promocode } = req.body
+        const user = await User.findOne({ username: req.user.username })
+            .populate({ path: "cart.product" })
+            .exec()
+        const cart = user.cart
 
         if (!Array.isArray(cart)) {
             return createResponse(
@@ -35,17 +67,27 @@ const createOrder = async (req, res, next) => {
             return createResponse(res, StatusCodes.BAD_REQUEST, "Cart is empty.")
         }
 
-        console.log("Cart has items:", cart, user)
+        let total = cart.map((item) => item.product.price).reduce((total, val) => total + val)
+        // apply promotion codes
+        if (promocode) {
+            const code = await PromoCode.findOne({ promocode }).exec()
+            if (!code) return createResponse(res, StatusCodes.NOT_FOUND, "Promocode not found")
+            const discount = total * (code.discount / 100)
+            total -= discount
+        }
 
         const order = new Order({
-            username: user?.username,
+            user: user._id,
             status: "pending",
             orderdate: Date.now(),
             deliveryAddress,
             items: cart,
-            price: 1000,
+            price: total,
         })
         await order.save()
+
+        user.cart = []
+        await user.save()
         return createResponse(res, StatusCodes.CREATED, order)
     } catch (error) {
         next(error)
