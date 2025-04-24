@@ -97,6 +97,7 @@ const createOrder = async (req, res, next) => {
         next(error)
     }
 }
+
 const getOrder = async (req, res, next) => {
     try {
         const { id } = req.params
@@ -156,9 +157,53 @@ const deleteOrder = async (req, res, next) => {
     }
 }
 
+const acquireDelivery = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const user = await User.findOne({ username: req.user.username }).exec()
+        const order = await Order.findOne({ _id: id }).exec()
+        if (!order) return createResponse(res, StatusCodes.NOT_FOUND, "Order not found")
+        if (order.status === "delivered")
+            return createResponse(res, StatusCodes.FORBIDDEN, "Already completed")
+        if (order.assignedAgent)
+            return createResponse(res, StatusCodes.CONFLICT, "Already assigned")
+
+        order.assignedAgent = user._id
+        await order.save()
+        return createResponse(res, StatusCodes.OK, "Order acquired")
+    } catch (error) {
+        next(error)
+    }
+}
+
+const updateOrderStatus = async (req, res, next) => {
+    try {
+        const { status } = req.body
+        const { id } = req.params
+        if (!status || !["pending", "on_the_way", "delivered"].includes(status))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid status")
+
+        const user = await User.findOne({ username: req.user.username }).exec()
+        const order = await Order.findOne({ _id: id }).exec()
+
+        console.log(order.assignedAgent, user._id)
+        if (!order.assignedAgent.equals(user._id))
+            return createResponse(res, StatusCodes.FORBIDDEN, "This order is not assigned to you")
+
+        order.status = status
+        await order.save()
+
+        return createResponse(res, StatusCodes.OK, "Order status updated")
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getOrders,
     createOrder,
     getOrder,
     deleteOrder,
+    acquireDelivery,
+    updateOrderStatus,
 }

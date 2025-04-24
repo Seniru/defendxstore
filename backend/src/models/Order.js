@@ -35,6 +35,11 @@ const ordersSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    assignedAgent: {
+        default: null,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
 })
 
 const Order = mongoose.model("Order", ordersSchema)

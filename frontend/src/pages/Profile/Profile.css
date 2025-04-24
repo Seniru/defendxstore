@@ -78,33 +78,6 @@
 }
 .profile-order-container {
   margin-top: 20px;
-
-  .order-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .order-status {
-      padding: 5px 10px;
-      border-radius: 10px;
-      margin: 5px;
-    }
-  }
-
-  .order-body {
-    display: flex;
-
-    .order-details {
-      margin-left: 20px;
-      margin-right: 20px;
-      width: -webkit-fill-available;
-
-      .order-item {
-        display: flex;
-        align-items: center;
-      }
-    }
-  }
 }
 
 .perks-unverified {
