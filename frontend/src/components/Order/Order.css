@@ -23,4 +23,22 @@
       align-items: center;
     }
   }
+
+  .order-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .details {
+      display: flex;
+      align-items: center;
+
+      .detail {
+        display: flex;
+        align-items: center;
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+    }
+  }
 }

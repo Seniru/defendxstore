@@ -41,7 +41,9 @@ export default function OrderMenu() {
       {orders?.body?.length == 0 ? (
         <span className="secondary-text">No orders to display</span>
       ) : (
-        (orders?.body || []).map((order) => <Order order={order} />)
+        (orders?.body || []).map((order) => (
+          <Order order={order} includeAgent={!!order.assignedAgent} />
+        ))
       )}
     </div>
   )

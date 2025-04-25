@@ -1,11 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import "./Order.css"
 import {
+  faAt,
   faBoxesPacking,
   faCalendar,
   faCheckCircle,
   faChevronRight,
   faMap,
+  faPhone,
   faTruck,
 } from "@fortawesome/free-solid-svg-icons"
 import Button from "../Button"
@@ -13,12 +15,15 @@ import api from "../../utils/api"
 import { useAuth } from "../../contexts/AuthProvider"
 import MessageBox from "../MessageBox"
 import { useState } from "react"
+import ProfileImage from "../ProfileImage"
 
 export default function Order({
   order,
   includeAcquireButton,
   includeStartDeliveryButton,
   includeCompleteDeliveryButton,
+  includeUser,
+  includeAgent,
   refreshOrders,
   setRefreshOrders,
 }) {
@@ -134,21 +139,77 @@ export default function Order({
               Total: <b>LKR {order.price}</b>
             </div>
             <br />
-            {includeAcquireButton && (
-              <Button kind="primary" onClick={acquireDelivery}>
-                <FontAwesomeIcon icon={faBoxesPacking} /> Acquire delivery
-              </Button>
-            )}
-            {includeStartDeliveryButton && (
-              <Button kind="primary" onClick={startDelivery}>
-                <FontAwesomeIcon icon={faTruck} /> Start delivery
-              </Button>
-            )}
-            {includeCompleteDeliveryButton && (
-              <Button kind="primary" onClick={completeDelivery}>
-                <FontAwesomeIcon icon={faCheckCircle} /> Complete delivery
-              </Button>
-            )}
+            <div className="order-footer">
+              <div>
+                {includeUser && (
+                  <div className="details">
+                    <span className="secondary-text">Order placed by</span>
+                    <div className="detail">
+                      <ProfileImage
+                        username={order.user.username || "-"}
+                        size={20}
+                      />
+                      {order.user.username}
+                    </div>
+                    <div className="detail">
+                      <FontAwesomeIcon icon={faAt} style={{ marginRight: 5 }} />{" "}
+                      {order.user.email}
+                    </div>
+                    {order.user.contactNumber.length > 0 && (
+                      <div className="detail">
+                        <FontAwesomeIcon
+                          icon={faPhone}
+                          style={{ marginRight: 5 }}
+                        />{" "}
+                        {order.user.contactNumber}
+                      </div>
+                    )}
+                  </div>
+                )}
+                {includeAgent && (
+                  <div className="details">
+                    <span className="secondary-text">Assigned agent</span>
+                    <div className="detail">
+                      <ProfileImage
+                        username={order.assignedAgent.username || "-"}
+                        size={20}
+                      />
+                      {order.assignedAgent.username}
+                    </div>
+                    <div className="detail">
+                      <FontAwesomeIcon icon={faAt} style={{ marginRight: 5 }} />{" "}
+                      {order.assignedAgent.email}
+                    </div>
+                    {order.assignedAgent.contactNumber.length > 0 && (
+                      <div className="detail">
+                        <FontAwesomeIcon
+                          icon={faPhone}
+                          style={{ marginRight: 5 }}
+                        />{" "}
+                        {order.assignedAgent.contactNumber}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              <div>
+                {includeAcquireButton && (
+                  <Button kind="primary" onClick={acquireDelivery}>
+                    <FontAwesomeIcon icon={faBoxesPacking} /> Acquire delivery
+                  </Button>
+                )}
+                {includeStartDeliveryButton && (
+                  <Button kind="primary" onClick={startDelivery}>
+                    <FontAwesomeIcon icon={faTruck} /> Start delivery
+                  </Button>
+                )}
+                {includeCompleteDeliveryButton && (
+                  <Button kind="primary" onClick={completeDelivery}>
+                    <FontAwesomeIcon icon={faCheckCircle} /> Complete delivery
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

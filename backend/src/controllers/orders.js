@@ -15,7 +15,11 @@ const getOrders = async (req, res, next) => {
 
         const query = { user: user._id }
         if (status) query.status = status
-        let orders = await Order.find(query).populate("items.product").exec()
+        let orders = await Order.find(query)
+            .populate("items.product")
+            .populate({ path: "user", select: "username email contactNumber" })
+            .populate({ path: "assignedAgent", select: "username email contactNumber" })
+            .exec()
 
         orders = orders.map((order) => {
             const groupedItems = order.items.reduce((acc, item) => {
