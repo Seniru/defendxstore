@@ -265,8 +265,7 @@ const updateOrderStatus = async (req, res, next) => {
 
         const user = await User.findOne({ username: req.user.username }).exec()
         const order = await Order.findOne({ _id: id }).exec()
-
-        if (!order.assignedAgent.equals(user._id))
+        if (!order.assignedAgent || !order.assignedAgent.equals(user._id))
             return createResponse(res, StatusCodes.FORBIDDEN, "This order is not assigned to you")
 
         order.status = status
