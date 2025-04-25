@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken")
 const Order = require("../models/Order")
 const User = require("../models/User")
 const PromoCode = require("../models/Promocodes")
+const logger = require("../utils/logger")
+const { sendMail } = require("../services/email")
 
 const getOrders = async (req, res, next) => {
     try {
@@ -51,6 +53,65 @@ const getOrders = async (req, res, next) => {
     }
 }
 
+const sendInvoiceToEmail = async (user, data) => {
+    try {
+        let rows = []
+
+        const groupedItems = Object.values(
+            data.items.reduce((acc, item) => {
+                const product = item.product
+                const key = `${item.product.itemName}-${item.color}-${item.size}`
+
+                if (!acc[key]) {
+                    acc[key] = {
+                        ...product.toObject(),
+                        color: item.color || null,
+                        size: item.size || null,
+                        quantity: 0,
+                    }
+                }
+
+                acc[key].quantity += item.quantity || 1
+                return acc
+            }, {}),
+        )
+
+        for (let item of groupedItems) {
+            let row = `
+            <tr>
+                <td style="padding: 8px"><b>${item.itemName}</b> (${item.size})</td>
+                <td style="padding: 8px">
+                    <span
+                        style="
+                            display: inline-block;
+                            width: 15px;
+                            height: 15px;
+                            background-color: ${item.color};
+                            border-radius: 3px;
+                        "
+                    ></span>
+                </td>
+                <td style="padding: 8px; text-align: right">LKR ${item.price}</td>
+                <td style="padding: 8px; text-align: right">${item.quantity}</td>
+                <td style="padding: 8px; text-align: right">LKR ${item.price * item.quantity}</td>
+            </tr>`
+            rows.push(row)
+        }
+
+        sendMail(user.email, "DefendxStore Order Invoice", "invoice", {
+            email: user.email,
+            username: user.username,
+            orderId: data.orderId,
+            orderDate: data.orderDate,
+            deliveryAddress: data.deliveryAddress,
+            total: data.total,
+            items: rows.join(""),
+        })
+    } catch (error) {
+        logger.error(error.toString())
+    }
+}
+
 const createOrder = async (req, res, next) => {
     try {
         const { deliveryAddress, promocode } = req.body
@@ -93,6 +154,15 @@ const createOrder = async (req, res, next) => {
             price: total,
         })
         await order.save()
+
+        if (user.verified)
+            await sendInvoiceToEmail(user, {
+                orderId: order._id,
+                orderDate: order.orderdate,
+                deliveryAddress: order.deliveryAddress,
+                items: cart,
+                total,
+            })
 
         user.cart = []
         await user.save()

@@ -19,13 +19,6 @@ const transporter = nodemailer.createTransport({
     },
 })
 
-const mailOptions = {
-    from: EMAIL_ADDRESS,
-    to: "kringehusxd95@gmail.com",
-    subject: "Sending Email using Node.js",
-    text: "That was easy!",
-}
-
 const sendMail = (to, subject, templateName, params = {}) => {
     const templatePath = path.join(__dirname, "../templates", `${templateName}.html`)
     let html = fs.readFileSync(templatePath, "utf-8")
