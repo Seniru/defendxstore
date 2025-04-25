@@ -174,6 +174,12 @@ const acquireDelivery = async (req, res, next) => {
 
         order.assignedAgent = user._id
         await order.save()
+
+        const orderUser = await User.findById(order.user).exec()
+        await orderUser.pushNotification(
+            `${user.username} has been assigned for the delivery of your order (Order ID: #${id})`,
+        )
+
         return createResponse(res, StatusCodes.OK, "Order acquired")
     } catch (error) {
         next(error)
@@ -190,12 +196,25 @@ const updateOrderStatus = async (req, res, next) => {
         const user = await User.findOne({ username: req.user.username }).exec()
         const order = await Order.findOne({ _id: id }).exec()
 
-        console.log(order.assignedAgent, user._id)
         if (!order.assignedAgent.equals(user._id))
             return createResponse(res, StatusCodes.FORBIDDEN, "This order is not assigned to you")
 
         order.status = status
         await order.save()
+
+        const orderUser = await User.findById(order.user).exec()
+        switch (status) {
+            case "on_the_way":
+                await orderUser.pushNotification(`Your order is on the way! (Order ID: #${id}`)
+                break
+            case "delivered":
+                await orderUser.pushNotification(
+                    `Your order has been delivered! (Order ID: #${id})`,
+                )
+                break
+            default:
+                break
+        }
 
         return createResponse(res, StatusCodes.OK, "Order status updated")
     } catch (error) {
