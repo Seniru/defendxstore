@@ -3,36 +3,27 @@ import pic1 from "../../assets/images/pic1.jpg"
 import pic2 from "../../assets/images/pic2.jpg"
 import pic3 from "../../assets/images/pic3.jpg"
 import pic4 from "../../assets/images/pic4.jpg"
-import useFetch from "../../hooks/useFetch"
-import { useSearchParams } from "react-router-dom"
-
-const { REACT_APP_API_URL } = process.env
 
 export default function Invoice() {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [order] = useFetch(
-    `${REACT_APP_API_URL}/api/orders/${searchParams.get("id")}`,
-  )
-
   return (
     <div className="container">
       <div class="header">
         <h1> DefendX Pvt Ltd Invoice</h1>
-        <p>Order Number #{order?.body?._id}</p>
-        <p>Date: {new Date(order?.body?.orderdate).toLocaleString()}</p>
+        <p>Order Number #123456789</p>
+        <p>Date: March 24 2025</p>
       </div>
       <div class="section">
         <div class="section-title">
           <h2>Customer Information</h2>
         </div>
         <p>
-          <strong>Name:</strong> {order?.body?.user?.username}
+          <strong>Name:</strong> Rukshan perera
         </p>
         <p>
-          <strong>Email:</strong> {order?.body?.user?.email}
+          <strong>Email:</strong> Perera@example.com
         </p>
         <p>
-          <strong>Shipping Address:</strong> {order?.body?.deliveryAddress}
+          <strong>Shipping Address:</strong> 202, Malabe, Srilanka
         </p>
       </div>
 
@@ -40,24 +31,68 @@ export default function Invoice() {
         <Table
           headers={["", "Product ", "Color ", "Price", "Quantity", "Subtotal"]}
           rows={[
-            ...(order?.body?.items || []).map((item) => [
+            [
               <img
                 style={{
                   width: "50px",
                   height: "50px",
                   borderRadius: "10px",
                 }}
-                src={item.product}
+                src={pic1}
               />,
-              item.itemName,
-              <div
-                className="color-square"
-                style={{ backgroundColor: item.color }}
+              "Oversized Black",
+              "Black",
+              "3900",
+              "2",
+              "7800",
+            ],
+
+            [
+              <img
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  borderRadius: "10px",
+                }}
+                src={pic2}
               />,
-              `LKR ${item.price}`,
-              item.quantity,
-              `LKR ${item.price * item.quantity}`,
-            ]),
+              "Oversized White",
+              "White",
+              "3500",
+              "1",
+              "3500",
+            ],
+            [
+              <img
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  borderRadius: "10px",
+                }}
+                src={pic3}
+              />,
+              "Oversized Black rose",
+              "Black",
+              "3900",
+              "1",
+              "3900",
+            ],
+            [
+              <img
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  borderRadius: "10px",
+                }}
+                src={pic4}
+              />,
+              "Oversized maroon rose",
+              "maroon",
+              "4000",
+              "2",
+              "8000",
+            ],
+
             [
               <>
                 <br />
@@ -72,7 +107,7 @@ export default function Invoice() {
 
               <>
                 <br />
-                <b>LKR {order?.body?.price}</b>
+                <b> 8000</b>
                 <br />
               </>,
             ],
