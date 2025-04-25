@@ -1,8 +1,9 @@
 const mongoose = require("mongoose")
 
 const ordersSchema = new mongoose.Schema({
-    username: {
-        type: String,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
     },
     deliveryAddress: {
         type: String,
@@ -14,16 +15,30 @@ const ordersSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["pending", "on the way", "delivered"],
+        enum: ["pending", "on_the_way", "delivered"],
         required: true,
     },
     items: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "Item",
+        default: [],
+        type: [
+            {
+                product: {
+                    type: mongoose.Types.ObjectId,
+                    ref: "Item",
+                },
+                color: String,
+                size: String,
+            },
+        ],
     },
     price: {
         type: Number,
         required: true,
+    },
+    assignedAgent: {
+        default: null,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
     },
 })
 

@@ -1,0 +1,28 @@
+.agent-dashboard-main {
+  display: flex;
+
+  .profile-details {
+    background-color: var(--secondary-color);
+    margin-right: 12px;
+    display: block;
+    position: fixed;
+    height: 100%;
+    z-index: 10;
+    width: 250px;
+    padding: 12px;
+    color: white;
+
+    .username {
+      font-size: x-large;
+    }
+
+    .profile-title {
+      font-weight: lighter;
+    }
+  }
+
+  .dashboard-content {
+    margin-left: 274px;
+    width: -webkit-fill-available;
+  }
+}
