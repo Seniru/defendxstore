@@ -15,7 +15,7 @@ const { REACT_APP_API_URL } = process.env
 export default function Checkout() {
   const { user, token } = useAuth()
   const navigate = useNavigate()
-  const { items } = useCart()
+  const { items, refreshCart, setRefreshCart } = useCart()
   const houseNoRef = useRef()
   const streetRef = useRef()
   const cityRef = useRef()
@@ -95,7 +95,10 @@ export default function Checkout() {
     if (!response.ok) {
       if (result.body.field && result.body.field === "promocode")
         setPromocodeError(result.body.message)
-    } else navigate(`/invoice?id=${result.body._id}`)
+    } else {
+      setRefreshCart(!refreshCart)
+      navigate(`/invoice?id=${result.body._id}`)
+    }
   }
 
   return (
