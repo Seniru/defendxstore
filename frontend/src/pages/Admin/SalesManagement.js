@@ -4,8 +4,29 @@ import Select from "../../components/Select"
 import Table from "../../components/Table"
 import { PieChart } from "@mui/x-charts/PieChart"
 import * as React from "react"
+import useFetch from "../../hooks/useFetch"
+
+const { REACT_APP_API_URL } = process.env
 
 export default function SalesManagement() {
+  const [monthlySales] = useFetch(
+    `${REACT_APP_API_URL}/api/sales?period=weekly`,
+  )
+  const sales = monthlySales
+
+  const chartData = []
+  if (sales?.body?.[1]?.revenueData)
+    chartData.push({ data: sales.body[1].revenueData, label: "Revenue" })
+  if (sales?.body?.[1]?.costData)
+    chartData.push({ data: sales.body[1].costData, label: "Cost" })
+  if (sales?.body?.[1]?.expectedSalesData)
+    chartData.push({
+      data: sales.body[1].expectedSalesData,
+      label: "Expected Sales",
+    })
+  if (sales?.body?.[1]?.incomeData)
+    chartData.push({ data: sales.body[1].incomeData, label: "Income" })
+
   return (
     <div className="content">
       <div className="sales-management-actions">
@@ -16,37 +37,11 @@ export default function SalesManagement() {
             <LineChart
               height={300}
               width={1000}
-              series={[
-                {
-                  data: [12, 32, 32, 43, 64, 43, 24, 53, 23, 54, 65, 40],
-                  label: "Revenue",
-                },
-                {
-                  data: [8, 24, 26, 35, 50, 36, 18, 42, 17, 45, 55, 30],
-                  label: "Cost",
-                },
-                {
-                  data: [4, 8, 6, 8, 14, 7, 6, 11, 6, 9, 10, 10],
-                  label: "profit",
-                },
-              ]}
+              series={chartData}
               xAxis={[
                 {
                   scaleType: "point",
-                  data: [
-                    "January",
-                    "February",
-                    "March",
-                    "April",
-                    "May",
-                    "June",
-                    "July",
-                    "August",
-                    "September",
-                    "October",
-                    "Novemeber",
-                    "Decemeber",
-                  ],
+                  data: sales?.body?.[0] || [],
                 },
               ]}
             />
@@ -71,15 +66,15 @@ export default function SalesManagement() {
         </div>
         <h1>Monthly Sales Breakdown</h1>
       </div>
-
       <Table
         headers={["Month ", "Expected Sales", "Revenue", "Cost", "Profit"]}
-        rows={[
-          ["January", "99", "99.9", "99.9", "99.9"],
-          ["February", "99", "99.9", "99.9", "99.9"],
-          ["March", "99", "99.9", "99.9", "99.9"],
-          ["April", "99", "99.9", "99.9", "99.9"],
-        ]}
+        rows={(monthlySales?.body?.[1].revenueData || []).map((row, index) => [
+          `LKR ${monthlySales?.body?.[0]?.[index] || ""}`,
+          `LKR ${monthlySales?.body?.[1]?.expectedSalesData[index].toFixed(2) || ""}`,
+          `LKR ${monthlySales?.body?.[1]?.revenueData[index].toFixed(2) || ""}`,
+          `LKR ${monthlySales?.body?.[1]?.costData[index].toFixed(2) || ""}`,
+          `LKR ${monthlySales?.body?.[1]?.profitData[index].toFixed(2) || ""}`,
+        ])}
       />
     </div>
   )
