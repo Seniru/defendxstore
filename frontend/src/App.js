@@ -15,6 +15,7 @@ import Home from "./pages/Home"
 import Product from "./pages/Product"
 import Forum from "./pages/Forum"
 import ForumThread from "./pages/ForumThread"
+import CreateTicket from "./pages/Ticket/CreateTicket"
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
               <Route element={<PrivateRoute />}>
                 <Route path="profile" element={<Profile />} />
                 <Route path="ticket" element={<Ticket />} />
+                <Route path="ticket/new" element={<CreateTicket />} />
                 <Route path="support" element={<Support />} />
                 <Route path="*" element={<NotFound />} />
               </Route>

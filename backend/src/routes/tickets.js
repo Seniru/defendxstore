@@ -14,5 +14,5 @@ router.get("/", getAllTickets)
 router.post("/", requireRole(roles.USER), createTickets)
 router.get("/:ticketId", getTicket)
 router.put("/:ticketId", editTicket)
-router.delete("/:ticketId", deleteTicket)
+router.delete("/:tiicketId", deleteTicket)
 module.exports = router

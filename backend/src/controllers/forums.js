@@ -26,7 +26,7 @@ const createThread = async (req, res, next) => {
 const getAllThreads = async (req, res, next) => {
     try {
         const user = req.user
-        const forums = await ForumThread.find({ }).exec()
+        const forums = await ForumThread.find({}).exec()
         return createResponse(res, StatusCodes.OK, forums)
     } catch (error) {
         next(error)

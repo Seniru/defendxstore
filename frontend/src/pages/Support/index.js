@@ -6,33 +6,41 @@ import Button from "../../components/Button"
 import ProfileImage from "../../components/ProfileImage"
 
 import "./Support.css"
+import useFetch from "../../hooks/useFetch"
 
-function TicketRow({ username, id, title, type, status, date}) {
+const { REACT_APP_API_URL } = process.env
+
+function TicketRow({ username, id, title, type, status, date }) {
   return (
     <div className="container ticket-container">
       <div style={{ display: "flex" }}>
         <div className="box2">
           <div className="userprofile">
-            <ProfileImage username={username} size={30} />{" "}
-            {username}
+            <ProfileImage username={username} size={30} /> {username}
           </div>
           <b>Ticket #{id}</b>
         </div>
         <h2>{title}</h2>
       </div>
-      <div  style={{ display: "grid", justifyItems: "end" }}>
+      <div style={{ display: "grid", justifyItems: "end" }}>
         <div>
           <span className="tickettype">{type}</span>
-          <span className={status}>{status}</span> <FontAwesomeIcon icon={faPen} />{" "}
+          <span className={status}>{status}</span>{" "}
+          <FontAwesomeIcon icon={faPen} />{" "}
           <FontAwesomeIcon icon={faTrash} color="red" />
         </div>
-        <span className="secondary-text"><br />{date}</span>
+        <span className="secondary-text">
+          <br />
+          {date}
+        </span>
       </div>
     </div>
   )
 }
 
 export default function Support() {
+  const [tickets] = useFetch(`${REACT_APP_API_URL}/api/tickets/`, { body: [] })
+
   return (
     <div className="content">
       <h1>
@@ -51,16 +59,20 @@ export default function Support() {
       <div>
         <h2>Open</h2>
 
-        <TicketRow id={1} username={"User"} date={"2022-01-01"} status={"Open"} title={"Ticket title"} type={"Ticket type"} />
-        <TicketRow id={1} username={"User"} date={"2022-01-01"} status={"Open"} title={"Ticket title"} type={"Ticket type"} />
-        <TicketRow id={1} username={"User"} date={"2022-01-01"} status={"Open"} title={"Ticket title"} type={"Ticket type"} />
+        {tickets?.body?.map((ticket) => (
+          <TicketRow
+            id={1}
+            username={ticket.username}
+            date={ticket.date}
+            status={ticket.ticketstatus}
+            title={ticket.title}
+            type={ticket.type}
+          />
+        ))}
       </div>
 
       <div>
         <h2>Closed</h2>
-        <TicketRow id={1} username={"User"} date={"2022-01-01"} status={"Closed"} title={"Ticket title"} type={"Ticket type"} />
-        <TicketRow id={1} username={"User"} date={"2022-01-01"} status={"Closed"} title={"Ticket title"} type={"Ticket type"} />
-        <TicketRow id={1} username={"User"} date={"2022-01-01"} status={"Closed"} title={"Ticket title"} type={"Ticket type"} />
       </div>
     </div>
   )

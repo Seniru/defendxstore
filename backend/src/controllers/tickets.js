@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes")
 const createResponse = require("../utils/createResponse")
 const Ticket = require("../models/Ticket")
-
+//get all tickets
 const getAllTickets = async (req, res, next) => {
     try {
         const tickets = await Ticket.find({})
@@ -10,7 +10,7 @@ const getAllTickets = async (req, res, next) => {
         next(error)
     }
 }
-
+//create ticket
 const createTickets = async (req, res, next) => {
     try {
         const { title, content, type } = req.body
@@ -25,26 +25,25 @@ const createTickets = async (req, res, next) => {
             username: user.username,
         })
         await ticket.save()
-        return createResponse(res, StatusCodes.CREATED, "Created")
+        return createResponse(res, StatusCodes.CREATED, ticket)
     } catch (error) {
         next(error)
     }
 }
-
+//get ticket by Id
 const getTicket = async (req, res, next) => {
     try {
-        const { title, content, type } = req.body
         const user = req.user
         console.log(user)
 
-        const { id } = req.params
-        const ticket = await Ticket.find({ id }, {}).exec()
+        const { ticketId } = req.params
+        const ticket = await Ticket.findById(ticketId, {}).exec()
         return createResponse(res, StatusCodes.OK, ticket)
     } catch (error) {
         next(error)
     }
 }
-
+//edit ticket
 const editTicket = async (req, res, next) => {
     try {
         const { title, content, type } = req.body
@@ -59,7 +58,7 @@ const editTicket = async (req, res, next) => {
         next(error)
     }
 }
-
+//delete ticket
 const deleteTicket = async (req, res, next) => {
     try {
         const user = req.user

@@ -9,8 +9,19 @@ import ProfileImage from "../../components/ProfileImage"
 
 import "./Ticket.css"
 import Button from "../../components/Button"
+import { useSearchParams } from "react-router-dom"
+import useFetch from "../../hooks/useFetch"
+
+const { REACT_APP_API_URL } = process.env
 
 export default function Ticket() {
+  const [searchParams] = useSearchParams()
+  const id = searchParams.get("id")
+
+  const [ticket] = useFetch(`${REACT_APP_API_URL}/api/tickets/${id}`, {
+    body: [],
+  })
+
   return (
     <div className="content">
       <h1>
@@ -20,37 +31,34 @@ export default function Ticket() {
       <div className="ticket-container">
         <div className="ticket-type">
           <div>
-            <ProfileImage username="User" size={50} />
-            Username
+            <ProfileImage username={ticket?.body?.username} size={50} />
+            {ticket?.body?.username}
           </div>
-          <div>Ticket Type Date</div>
+          <div>
+            {ticket?.body?.type}Date {ticket?.body?.date}
+          </div>
         </div>
 
         <div>
           <div className="Edit-Delete">
             <div>
               <div>
-                <h3>Ticket #1</h3>
-                <h2>Title</h2>
+                <h3>{ticket?.body?._id}</h3>
+                <h2>{ticket?.body?.title}</h2>
               </div>
             </div>
 
             <div>
               <div>
-                <span className="Open">OPEN</span>{" "}
+                <span className="ticket?.body?.status">
+                  {ticket?.body?.ticketstatus}
+                </span>{" "}
                 <FontAwesomeIcon icon={faPen} />{" "}
                 <FontAwesomeIcon icon={faTrash} />
               </div>
             </div>
           </div>
-          <div>
-            frufhruhr greufhwefuwehfweuh fehfewufhefehf wefheufhef fekfweufhefwe
-            foefeffjfnef fefeenfewfnefnefnefefwefefefe dfkdjfweifjwekfjwefjrf
-            ffjmwekfjefijeefwkgjefejwf dfdfjfffffk fkfkkkfkfkfkfkfkfkfkffkefdo
-            rfkijrijrrijeiejewfwef fefiejfeijefijefefjfefio feofefejffidjffejfew
-            fefdjfifjwefewjfdkfffpofefoefpeofefpefefjfwefjfepjepojf effjfdljfdi
-            jfjfdjfpfdfdjfpdisfdfokdfpfkepfkpkfpejfee
-          </div>
+          <div>{ticket?.body?.content}</div>
           <div className="Button">
             <Button kind="primary">Resolve ticket</Button>
           </div>
