@@ -45,12 +45,12 @@ const InventoryManagement = () => {
     refreshFlag,
   )
 
-  // Filter products based on search query and dropdown filter
+  
   useEffect(() => {
     if (productData.body) {
       let results = [...productData.body];
       
-      // Apply text search filter
+      
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         results = results.filter(product => 
@@ -62,7 +62,7 @@ const InventoryManagement = () => {
         );
       }
       
-      // Apply dropdown filter
+     
       if (selectedFilter !== "All") {
         results = results.filter(product => product.stock === selectedFilter);
       }
@@ -71,7 +71,7 @@ const InventoryManagement = () => {
     }
   }, [productData.body, searchQuery, selectedFilter]);
 
-  // Handle search input change
+  
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
@@ -119,7 +119,7 @@ const InventoryManagement = () => {
             ))}
           </div>
         </td>
-        <td>{`$${row.price}`}</td>
+        <td>{`LKR ${row.price}`}</td>
         <td>{row.size}</td>
         <td>{row.quantity}</td>
         <td>
