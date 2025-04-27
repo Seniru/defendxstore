@@ -37,3 +37,25 @@
     padding: 3px;
   }
 }
+
+.logs-parameters {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  .logs-parameter {
+    display: grid;
+  }
+}
+
+.logs-table {
+  overflow: scroll;
+  max-height: 400px;
+
+  .action {
+    padding: 5px 10px;
+    border-radius: 10px;
+    width: 100%;
+    margin: 5px;
+  }
+}

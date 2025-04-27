@@ -224,6 +224,11 @@ export default function Header() {
                 <Link to="/admin">Admin dashboard</Link>
               </li>
             )}
+            {user?.roles.includes("DELIVERY_AGENT") && (
+              <li>
+                <Link to="delivery/dashboard">Delivery dashboard</Link>
+              </li>
+            )}
           </ul>
         </div>
       )}
@@ -251,6 +256,11 @@ export default function Header() {
             {user?.roles.includes("ADMIN") && (
               <li>
                 <Link to="admin">Admin dashboard</Link>
+              </li>
+            )}
+            {user?.roles.includes("DELIVERY_AGENT") && (
+              <li>
+                <Link to="delivery/dashboard">Delivery dashboard</Link>
               </li>
             )}
           </ul>

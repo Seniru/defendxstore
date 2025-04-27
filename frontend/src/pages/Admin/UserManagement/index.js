@@ -6,6 +6,11 @@ import { useEffect, useMemo, useState } from "react"
 
 import "./UserManagement.css"
 import MessageBox from "../../../components/MessageBox"
+import Button from "../../../components/Button"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faFileAlt } from "@fortawesome/free-solid-svg-icons"
+import OverlayWindow from "../../../components/OverlayWindow"
+import UserLogs from "./UserLogs"
 
 const { REACT_APP_API_URL } = process.env
 const now = Date.now()
@@ -17,6 +22,7 @@ export default function UserManagement() {
   const [users, setUsers] = useState([])
   const [search, setSearch] = useState("")
   const [category, setCategory] = useState("ALL")
+  const [isLogsMenuOpen, setIsLogsMenuOpen] = useState(false)
   const [searchNextUpdate, setSearchNextUpdate] = useState(now)
   const queryParams = useMemo(() => {
     let params = { search }
@@ -43,39 +49,57 @@ export default function UserManagement() {
   }
 
   return (
-    <div className="content">
-      <MessageBox isError={isError} message={message} setMessage={setMessage} />
-      <div className="user-management-actions">
-        <SearchBar placeholder={"Search users"} onChange={handleSearchChange} />
-        <Select
-          items={{
-            ALL: "All",
-            USER: "Users",
-            DELIVERY_AGENT: "Delivery Agents",
-            SUPPORT_AGENT: "Support Agents",
-            ADMIN: "Administrators",
-          }}
-          onChange={(evt) => setCategory(evt.target.value)}
+    <>
+      <OverlayWindow isOpen={isLogsMenuOpen} setIsOpen={setIsLogsMenuOpen}>
+        {/** the isLogsMenuOpen flag is to load logs only when requested and to re-rerender when opened again */}
+        {isLogsMenuOpen && <UserLogs />}
+      </OverlayWindow>
+      <div className="content">
+        <MessageBox
+          isError={isError}
+          message={message}
+          setMessage={setMessage}
         />
-      </div>
-      <div className="secondary-text">Showing {users.length} users...</div>
-      {users &&
-        users.map((user, index) => (
-          <UserDetails
-            id={user.id}
-            username={user.username}
-            email={user.email}
-            deliveryAddress={user.deliveryAddress}
-            contactNumbers={user.contactNumber}
-            roles={user.role}
-            verified={user.verified}
-            keyProp={index}
-            setIsError={setIsError}
-            setMessage={setMessage}
-            refreshFlag={refreshFlag}
-            setRefreshFlag={setRefreshFlag}
+        <div className="user-management-actions">
+          <SearchBar
+            placeholder={"Search users"}
+            onChange={handleSearchChange}
           />
-        ))}
-    </div>
+          <div>
+            <Button kind="secondary" onClick={() => setIsLogsMenuOpen(true)}>
+              <FontAwesomeIcon icon={faFileAlt} /> View logs
+            </Button>
+            <Select
+              items={{
+                ALL: "All",
+                USER: "Users",
+                DELIVERY_AGENT: "Delivery Agents",
+                SUPPORT_AGENT: "Support Agents",
+                ADMIN: "Administrators",
+              }}
+              onChange={(evt) => setCategory(evt.target.value)}
+            />
+          </div>
+        </div>
+        <div className="secondary-text">Showing {users.length} users...</div>
+        {users &&
+          users.map((user, index) => (
+            <UserDetails
+              id={user.id}
+              username={user.username}
+              email={user.email}
+              deliveryAddress={user.deliveryAddress}
+              contactNumbers={user.contactNumber}
+              roles={user.role}
+              verified={user.verified}
+              keyProp={index}
+              setIsError={setIsError}
+              setMessage={setMessage}
+              refreshFlag={refreshFlag}
+              setRefreshFlag={setRefreshFlag}
+            />
+          ))}
+      </div>
+    </>
   )
 }
