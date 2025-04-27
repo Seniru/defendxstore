@@ -22,8 +22,8 @@ const InventoryManagement = () => {
   const [formMode, setFormMode] = useState("add")
   const [refreshFlag, setRefreshFlag] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("") 
-  const [filteredProducts, setFilteredProducts] = useState([]) 
+  const [searchQuery, setSearchQuery] = useState("")
+  const [filteredProducts, setFilteredProducts] = useState([])
   const [selectedFilter, setSelectedFilter] = useState("All") // State for filter dropdown
   const [newProduct, setNewProduct] = useState({
     product: null,
@@ -48,38 +48,41 @@ const InventoryManagement = () => {
   // Filter products based on search query and dropdown filter
   useEffect(() => {
     if (productData.body) {
-      let results = [...productData.body];
-      
+      let results = [...productData.body]
+
       // Apply text search filter
       if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        results = results.filter(product => 
-          product.itemName?.toLowerCase().includes(query) || 
-          product.description?.toLowerCase().includes(query) || 
-          product.category?.toLowerCase().includes(query) ||
-          (Array.isArray(product.colors) && product.colors.some(color => 
-            color.toLowerCase().includes(query)))
-        );
+        const query = searchQuery.toLowerCase()
+        results = results.filter(
+          (product) =>
+            product.itemName?.toLowerCase().includes(query) ||
+            product.description?.toLowerCase().includes(query) ||
+            product.category?.toLowerCase().includes(query) ||
+            (Array.isArray(product.colors) &&
+              product.colors.some((color) =>
+                color.toLowerCase().includes(query),
+              )),
+        )
       }
-      
+
       // Apply dropdown filter
       if (selectedFilter !== "All") {
-        results = results.filter(product => product.stock === selectedFilter);
+        results = results.filter((product) => product.stock === selectedFilter)
       }
-      
-      setFilteredProducts(results);
+
+      setFilteredProducts(results)
     }
-  }, [productData.body, searchQuery, selectedFilter]);
+  }, [productData.body, searchQuery, selectedFilter])
 
   // Handle search input change
   const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
+    setSearchQuery(e.target.value)
+  }
 
   // Handle filter dropdown change
   const handleFilterChange = (e) => {
-    setSelectedFilter(e.target.value);
-  };
+    setSelectedFilter(e.target.value)
+  }
 
   function ProductRow({ row, index }) {
     const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
@@ -370,7 +373,10 @@ const InventoryManagement = () => {
       <div className="content">
         <div className="print-title">Inventory Report</div>
         <div className="inventory-management-actions">
-          <SearchBar placeholder={"Search items..."} onChange={handleSearchChange} />
+          <SearchBar
+            placeholder={"Search items..."}
+            onChange={handleSearchChange}
+          />
           <span>
             <Button
               kind="secondary"
@@ -381,9 +387,9 @@ const InventoryManagement = () => {
             <Button kind="secondary" onClick={() => window.print()}>
               Generate Report
             </Button>
-            <Select 
-              items={["All", "In Stock", "Running Low", "Out of Stock"]} 
-              onChange={handleFilterChange} 
+            <Select
+              items={["All", "In Stock", "Running Low", "Out of Stock"]}
+              onChange={handleFilterChange}
             />
             <Button onClick={handleAddProductClick}>Add Product</Button>
           </span>
