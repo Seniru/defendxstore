@@ -58,7 +58,7 @@ export default function FAQ() {
     },
     {
       question: "What payment methods do you accept?",
-      answer: "We accept all major credit cards (Visa, MasterCard)and bank transfers. All transactions are secured using industry-standard encryption to protect your payment information."
+      answer: "We accept all major credit cards (Visa, MasterCard) and bank transfers. All transactions are secured using industry-standard encryption to protect your payment information."
     },
     {
       question: "How long does shipping take?",
