@@ -16,6 +16,11 @@ footer {
         display: inline;
         margin-left: 5px;
         margin-right: 5px;
+
+        a,a:visited {
+          color: white; 
+          text-decoration: none; 
+        }
       }
     }
   }
