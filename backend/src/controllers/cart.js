@@ -18,7 +18,7 @@ const getCart = async (req, res, next) => {
         let totalPrice = 0
         const groupedCart = user.cart.reduce((acc, item) => {
             const product = item.product.toObject()
-            const key = `${product.name}-${item.color.toLowerCase()}`
+            const key = `${product.itemName}-${item.color.toLowerCase()}`
 
             if (!acc[key]) {
                 acc[key] = {

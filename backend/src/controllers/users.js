@@ -9,6 +9,7 @@ const createToken = require("../utils/createToken")
 const User = require("../models/User")
 const logger = require("../utils/logger")
 const { sendMail } = require("../services/email")
+const UserReport = require("../models/reports/UserReport")
 
 const permissions = {
     USER: 1 << 0,
@@ -113,6 +114,12 @@ const createUser = async (req, res, next) => {
             },
         )
 
+        await UserReport.create({
+            user: user._id,
+            action: UserReport.actions.createAccount,
+            data: {},
+        })
+
         // send verification email
         sendMail(email, "Defendxstore Email verification", "verify-email", {
             username,
@@ -132,6 +139,11 @@ const createUser = async (req, res, next) => {
                 { referredBy: referredUser._id },
                 { new: true, runValidators: true },
             )
+            await UserReport.create({
+                user: user._id,
+                action: UserReport.actions.referral,
+                data: { referredUser },
+            })
             referredUser.pushNotification(
                 `You were referred by ${user.username}! Ask them to verify their account to enjoy special discounts.`,
             )
@@ -175,6 +187,11 @@ const deleteUser = async (req, res, next) => {
 
         const user = await User.findOneAndDelete({ username }).exec()
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+        await UserReport.create({
+            user: user._id,
+            action: UserReport.actions.deleteAccount,
+            data: {},
+        })
         return createResponse(res, StatusCodes.OK, "User deleted")
     } catch (error) {
         next(error)
@@ -220,6 +237,11 @@ const changePassword = async (req, res, next) => {
         const user = await User.findOneAndUpdate({ username }, { password: hashedPassword }).exec()
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
 
+        await UserReport.create({
+            user: user._id,
+            action: UserReport.actions.changePassword,
+            data: {},
+        })
         return createResponse(res, StatusCodes.OK, "Password changed")
     } catch (error) {
         next(error)
@@ -266,6 +288,11 @@ const changeProfileImage = async (req, res, next) => {
             { runValidators: true },
         ).exec()
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+        await UserReport.create({
+            user: user._id,
+            action: UserReport.actions.changeProfileImage,
+            data: {},
+        })
         return createResponse(res, StatusCodes.OK, "Image updated successfully")
     } catch (error) {
         if (error instanceof mongoose.Error.ValidationError) {
@@ -284,6 +311,7 @@ const changeProfileImage = async (req, res, next) => {
 
 const addRole = async (req, res, next) => {
     try {
+        const reqUser = await User.findOne({ username: req.user.username }).exec()
         const { username } = req.params
         const { role } = req.body
         if (!role || !["USER", "DELIVERY_AGENT", "SUPPORT_AGENT", "ADMIN"].includes(role))
@@ -294,6 +322,11 @@ const addRole = async (req, res, next) => {
 
         user.role |= permissions[role]
         await user.save()
+        await UserReport.create({
+            user: reqUser._id,
+            action: UserReport.actions.addRole,
+            data: { role, username: user.username },
+        })
         return createResponse(res, StatusCodes.OK, "Role added")
     } catch (error) {
         next(error)
@@ -302,6 +335,7 @@ const addRole = async (req, res, next) => {
 
 const removeRole = async (req, res, next) => {
     try {
+        const reqUser = await User.findOne({ username: req.user.username }).exec()
         const { username, role } = req.params
         if (!["USER", "DELIVERY_AGENT", "SUPPORT_AGENT", "ADMIN"].includes(role))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid role")
@@ -311,6 +345,11 @@ const removeRole = async (req, res, next) => {
 
         user.role &= (2 ** Object.keys(permissions).length - 1) & ~permissions[role]
         await user.save()
+        await UserReport.create({
+            user: reqUser._id,
+            action: UserReport.actions.removeRole,
+            data: { role, username: user.username },
+        })
         return createResponse(res, StatusCodes.OK, "Role removed")
     } catch (error) {
         next(error)
@@ -331,6 +370,11 @@ const editUser = async (req, res, next) => {
         const user = await User.findOneAndUpdate({ username }, update)
 
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+        await UserReport.create({
+            user: user._id,
+            action: UserReport.actions.editProfile,
+            data: {},
+        })
         return createResponse(res, StatusCodes.OK, "Editted")
     } catch (error) {
         if (error instanceof mongoose.Error.ValidationError) {
