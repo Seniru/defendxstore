@@ -32,10 +32,12 @@
 
   .select-menu {
     position: absolute;
-    z-index: 999;
+    z-index: 99;
     padding: 3px;
     width: max-content;
     min-width: 200px;
+    overflow-y: scroll;
+    max-height: 500%;
 
     ul {
       list-style-type: none;

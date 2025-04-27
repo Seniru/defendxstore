@@ -18,6 +18,8 @@ export default function SalesManagement() {
   const [dateFrom, setDateFrom] = useState(null)
   const [dateTo, setDateTo] = useState(null)
   const [metric, setMetric] = useState(null)
+  const [compareMetric, setCompareMetric] = useState("sales")
+  const [compareItems, setCompareItems] = useState([])
 
   const changeCategory = (evt) => {
     if (evt.target.value === "all") return setMetric(null)
@@ -31,8 +33,21 @@ export default function SalesManagement() {
     if (metric) q.metric = metric
     return new URLSearchParams(q).toString()
   }, [dateFrom, dateTo, metric])
+
+  const compareQueryParams = useMemo(() => {
+    let q = { items: compareItems.join(",") }
+    if (dateFrom) q.dateFrom = dateFrom
+    if (dateTo) q.dateTo = dateTo
+    if (compareMetric) q.metric = compareMetric
+    return new URLSearchParams(q).toString()
+  }, [dateFrom, dateTo, compareMetric, compareItems])
+
   const [monthlySales] = useFetch(`${REACT_APP_API_URL}/api/sales/monthly`)
   const [sales] = useFetch(`${REACT_APP_API_URL}/api/sales?${queryParams}`)
+  const [comparativeSales] = useFetch(
+    `${REACT_APP_API_URL}/api/sales/compare?${compareQueryParams}`,
+  )
+  const [items] = useFetch(`${REACT_APP_API_URL}/api/items`)
 
   const chartData = []
   if (sales?.body?.[1]?.revenueData)
@@ -47,15 +62,30 @@ export default function SalesManagement() {
   if (sales?.body?.[1]?.profitData)
     chartData.push({ data: sales.body[1].profitData, label: "Sales" })
 
+  const compareChartData = []
+  for (let [k, v] of Object.entries(comparativeSales?.body?.[1] || {}))
+    compareChartData.push({ data: v, label: k })
+
   return (
     <div className="content">
       <div style={{ display: "flex", alignItems: "center" }}>
-        <span>Compare items...</span>
-        <Select items={["Apple", "Orange"]} multiple />
+        <div>
+          From{" "}
+          <Input
+            type="date"
+            onChange={(evt) => setDateFrom(evt.target.value)}
+          />
+        </div>
+        <div>
+          {" "}
+          To{" "}
+          <Input type="date" onChange={(evt) => setDateTo(evt.target.value)} />
+        </div>
+        <hr />
       </div>
       <hr />
       <div className="sales-management-actions">
-        <div className="action">
+        <div className="container">
           View{" "}
           <Select
             items={{
@@ -67,55 +97,83 @@ export default function SalesManagement() {
             }}
             onChange={changeCategory}
           />
+          <div>
+            <LineChart
+              height={300}
+              width={500}
+              series={chartData}
+              xAxis={[
+                {
+                  scaleType: "point",
+                  data: sales?.body?.[0] || [],
+                },
+              ]}
+              colors={mangoFusionPalette}
+            />
+          </div>
         </div>
-        <div className="action">
-          From{" "}
-          <Input
-            type="date"
-            onChange={(evt) => setDateFrom(evt.target.value)}
-          />
+        <div className="container">
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div>
+              <span>Compare items...</span>
+              <div style={{ width: "max-content" }}>
+                <Select
+                  items={(items?.body || []).map((item) => item.itemName)}
+                  multiple
+                  onMultiChange={setCompareItems}
+                />
+              </div>
+            </div>
+            <div>
+              View{" "}
+              <Select
+                items={{
+                  sales: "Sales",
+                  expected_sales: "Expected Sales",
+                  revenue: "Revenue",
+                  expenses: "Costs",
+                }}
+                onChange={(evt) => setCompareMetric(evt.target.value)}
+              />
+            </div>
+          </div>
+          <div>
+            <LineChart
+              height={300}
+              width={500}
+              series={compareChartData}
+              xAxis={[
+                {
+                  scaleType: "point",
+                  data: comparativeSales?.body?.[0] || [],
+                },
+              ]}
+              colors={mangoFusionPalette}
+            />
+          </div>
         </div>
-        <div className="action">
-          To{" "}
-          <Input type="date" onChange={(evt) => setDateTo(evt.target.value)} />
+        <div className="container">
+          <h3>Monthly costs Breakdown</h3>
+          <div>
+            <PieChart
+              series={[
+                {
+                  data: [
+                    { id: 0, value: 15000, label: "Supply costs" },
+                    { id: 1, value: 10000, label: "Electricity" },
+                    { id: 2, value: 10000, label: "Delivery cost" },
+                    { id: 3, value: 45000, label: "Salaries" },
+                    { id: 4, value: 3000, label: "Other costs" },
+                  ],
+                },
+              ]}
+              width={400}
+              height={200}
+              colors={cheerfulFiestaPalette}
+            />
+          </div>
         </div>
       </div>
-      <br />
-      <div style={{ display: "flex" }}>
-        <div>
-          <LineChart
-            height={300}
-            width={1000}
-            series={chartData}
-            xAxis={[
-              {
-                scaleType: "point",
-                data: sales?.body?.[0] || [],
-              },
-            ]}
-            colors={mangoFusionPalette}
-          />
-        </div>
-        <div>
-          <PieChart
-            series={[
-              {
-                data: [
-                  { id: 0, value: 15000, label: "Supply costs" },
-                  { id: 1, value: 10000, label: "Electricity" },
-                  { id: 2, value: 10000, label: "Delivery cost" },
-                  { id: 3, value: 45000, label: "Salaries" },
-                  { id: 2, value: 3000, label: "Other costs" },
-                ],
-              },
-            ]}
-            width={400}
-            height={200}
-            colors={cheerfulFiestaPalette}
-          />
-        </div>
-      </div>
-      <h1>Monthly Sales Breakdown</h1>
       <Table
         headers={["Month ", "Expected Sales", "Revenue", "Cost", "Profit"]}
         rows={(monthlySales?.body?.[1].revenueData || []).map((row, index) => [

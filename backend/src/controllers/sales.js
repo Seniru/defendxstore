@@ -1,9 +1,11 @@
 const { StatusCodes } = require("http-status-codes")
 const Order = require("../models/Order")
+const Item = require("../models/Item")
 const createResponse = require("../utils/createResponse")
 
 // helper function
-const processSales = async (res, dateFrom, dateTo, metric, period) => {
+
+const validateAndGetQuery = async (res, dateFrom, dateTo, metric, period) => {
     let frequency = null
 
     if (metric && !["expenses", "sales", "revenue", "expected_sales"].includes(metric))
@@ -32,8 +34,10 @@ const processSales = async (res, dateFrom, dateTo, metric, period) => {
         if (dateTo) query.orderdate.$lte = dateTo
     }
 
-    const orders = await Order.find(query).sort({ orderdate: 1 }).exec()
+    return [query, frequency]
+}
 
+const processSales = async (orders, frequency, metric) => {
     let date = []
     let revenueData = []
     let costData = []
@@ -43,7 +47,7 @@ const processSales = async (res, dateFrom, dateTo, metric, period) => {
     let currentCostData = []
     let currentExpectedSalesData = []
     let currentProfitData = []
-    if (orders.length == 0) return createResponse(res, StatusCodes.OK, [date, {}])
+    if (orders.length == 0) return { code: StatusCodes.OK, body: [date, {}] }
 
     let currentDate = new Date(orders[0].orderdate)
     currentDate.setHours(0, 0, 0, 0)
@@ -99,7 +103,7 @@ const processSales = async (res, dateFrom, dateTo, metric, period) => {
         }[metric]
     }
 
-    return createResponse(res, StatusCodes.OK, [date, returnData])
+    return [date, returnData]
 }
 
 const getSales = async (req, res, next) => {
@@ -108,7 +112,10 @@ const getSales = async (req, res, next) => {
         const dateTo = req.query.dateTo ? new Date(req.query.dateTo) : null
         const metric = req.query.metric
         const period = req.query.period || "7d" // defaults to weekly
-        return processSales(res, dateFrom, dateTo, metric, period)
+        const [query, frequency] = await validateAndGetQuery(res, dateFrom, dateTo, metric, period)
+        const orders = await Order.find(query).sort({ orderdate: 1 }).exec()
+        const processed = await processSales(orders, frequency, metric)
+        return createResponse(res, StatusCodes.OK, processed)
     } catch (error) {
         next(error)
     }
@@ -120,10 +127,57 @@ const getMonthlySales = async (req, res, next) => {
         const dateTo = req.query.dateTo ? new Date(req.query.dateTo) : null
         const metric = req.query.metric
         const period = "1m"
-        return processSales(res, dateFrom, dateTo, metric, period)
+        const [query, frequency] = await validateAndGetQuery(res, dateFrom, dateTo, metric, period)
+        const orders = await Order.find(query).sort({ orderdate: 1 }).exec()
+        const processed = await processSales(orders, frequency, metric)
+        return createResponse(res, StatusCodes.OK, processed)
     } catch (error) {
         next(error)
     }
 }
 
-module.exports = { getSales, getMonthlySales }
+const compareItems = async (req, res, next) => {
+    try {
+        const dateFrom = req.query.dateFrom ? new Date(req.query.dateFrom) : null
+        const dateTo = req.query.dateTo ? new Date(req.query.dateTo) : null
+        const metric = req.query.metric
+        const period = "7d"
+
+        const items = req.query.items?.split(",")?.filter((item) => item)
+        if (!items || items.length == 0)
+            return createResponse(res, StatusCodes.BAD_REQUEST, "No items provided")
+
+        const [query, frequency] = await validateAndGetQuery(res, dateFrom, dateTo, metric, period)
+        query["items.product"] = {
+            $in: await Item.find({ itemName: { $in: items } }).distinct("_id"),
+        }
+
+        const orders = await Order.find(query)
+            .sort({ orderdate: 1 })
+            .populate({ path: "items.product", select: "itemName price" })
+            .exec()
+
+        let longest = ""
+        let statistics = {}
+        for (let itemName of items) {
+            let filteredOrders = orders.filter((order) =>
+                order.items.some((item) => item.product.itemName == itemName),
+            )
+            statistics[itemName] = await processSales(filteredOrders, frequency, metric)
+            if (longest == "" || statistics[itemName][0].length > statistics[longest][0].length)
+                longest = itemName
+        }
+        //const processed = await processSales(dateFrom, dateTo, metric, period, items)
+        let longestDateRange = statistics[longest][0]
+        let data = {}
+        for (let key of Object.keys(statistics)) {
+            let availableData = Object.keys(statistics[key][1])[0]
+            data[key] = statistics[key][1][availableData]
+        }
+        return createResponse(res, StatusCodes.OK, [longestDateRange, data])
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { getSales, getMonthlySales, compareItems }

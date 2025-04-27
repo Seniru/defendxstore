@@ -1,8 +1,13 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import "./Select.css"
 import Input from "../Input"
 
-export default function Select({ items, multiple = false, ...props }) {
+export default function Select({
+  items,
+  onMultiChange,
+  multiple = false,
+  ...props
+}) {
   const [isOpen, setIsOpen] = useState(false)
   const [selected, setSelected] = useState(() => {
     if (!Array.isArray(items)) return {}
@@ -21,7 +26,14 @@ export default function Select({ items, multiple = false, ...props }) {
   }
 
   // Filter selected items
-  const selectedItems = Object.keys(selected).filter((item) => selected[item])
+  const selectedItems = useMemo(
+    () => Object.keys(selected).filter((item) => selected[item]),
+    [selected],
+  )
+
+  useEffect(() => {
+    if (onMultiChange) onMultiChange(selectedItems)
+  }, [selectedItems, onMultiChange])
 
   if (multiple) {
     return (
