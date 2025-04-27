@@ -8,7 +8,7 @@
     position: fixed;
     height: 100%;
     z-index: 10;
-    width: 200px;
+    width: 250px;
     padding: 12px;
     color: white;
 
@@ -36,7 +36,7 @@
   }
 
   .profile-content {
-    margin-left: 224px;
+    margin-left: 274px;
     width: -webkit-fill-available;
   }
 }
@@ -76,28 +76,8 @@
     }
   }
 }
-
-.Order-container {
-  display: flex;
-  margin-bottom: 20px;
-  justify-content: space-between;
-
-  .Order-stars {
-    width: 20%;
-    display: grid;
-  }
-
-  .Order-content {
-    align-items: center;
-    display: grid;
-  }
-
-  .Order-profile {
-    width: 20%;
-  }
-  .Order-status {
-    align-items: end;
-  }
+.profile-order-container {
+  margin-top: 20px;
 }
 
 .perks-unverified {
