@@ -14,7 +14,9 @@ export default function Footer() {
       <nav>
         <ul>
           <li>About us</li>
-          <li><Link to="/faq">FAQ</Link></li>
+          <li>
+            <Link to="/faq">FAQ</Link>
+          </li>
           <li>Privacy Policy</li>
         </ul>
       </nav>

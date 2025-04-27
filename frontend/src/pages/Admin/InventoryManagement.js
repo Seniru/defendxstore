@@ -45,10 +45,9 @@ const InventoryManagement = () => {
     refreshFlag,
   )
 
-  
   useEffect(() => {
     if (productData.body) {
-      let results = [...productData.body];
+      let results = [...productData.body]
 
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
@@ -72,7 +71,6 @@ const InventoryManagement = () => {
     }
   }, [productData.body, searchQuery, selectedFilter])
 
-  
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value)
   }
