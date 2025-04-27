@@ -27,6 +27,7 @@ import { useCart } from "../../contexts/CartProvider"
 import Menu from "../Menu"
 import Notification from "./Notification"
 import api from "../../utils/api"
+import FAQ from "../../pages/FAQ"
 
 const { REACT_APP_API_URL } = process.env
 
@@ -279,7 +280,9 @@ export default function Header() {
           <h2>Information</h2>
           <ul>
             <li>About us</li>
-            <li>FAQ</li>
+            <li>
+              <Link to="faq">FAQ</Link>
+            </li>
             <li>Privacy policy</li>
             <li>
               <FontAwesomeIcon icon={faInstagram} size="lg" />{" "}

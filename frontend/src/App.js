@@ -21,6 +21,7 @@ import Checkout from "./pages/Checkout"
 import Invoice from "./pages/Invoice"
 import { CartProvider } from "./contexts/CartProvider"
 import Verify from "./pages/Verify"
+import FAQ from "./pages/FAQ"
 import DeliveryDashboard from "./pages/DeliveryDashboard"
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
                 <Route index element={<Home />} />
                 <Route path="components" element={<Components />} />
                 <Route path="product" element={<Product />} />
+                <Route path="faq" element={<FAQ />} />
                 <Route path="forum">
                   <Route index element={<Forum />} />
                   <Route path="thread" element={<ForumThread />} />
