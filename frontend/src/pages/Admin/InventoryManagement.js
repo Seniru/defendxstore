@@ -48,6 +48,8 @@ const InventoryManagement = () => {
     stock: "In Stock",
   })
   const [selectedProductIndex, setSelectedProductIndex] = useState(null)
+  const [qrCodeData, setQrCodeData] = useState(null)
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false)
 
   const [productData] = useFetch(
     `${process.env.REACT_APP_API_URL}/api/items`,
@@ -121,6 +123,21 @@ const InventoryManagement = () => {
   function ProductRow({ row, index }) {
     const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
 
+    const handleGetQrCode = () => {
+      // Create QR code with direct URL to the product
+      const productUrl = `${window.location.origin}/product?id=${row._id}`;
+      
+      // Still keep some metadata for display purposes
+      setQrCodeData({
+        id: row._id,
+        name: row.itemName,
+        price: row.price,
+        category: row.category,
+        url: productUrl
+      });
+      setIsQrModalOpen(true);
+    }
+
     return (
       <tr key={index}>
         <td>
@@ -161,6 +178,11 @@ const InventoryManagement = () => {
         <td>{row.quantity}</td>
         <td>
           <StockStatus stock={row.stock} />
+        </td>
+        <td>
+          <Button kind="secondary" onClick={() => handleGetQrCode()}>
+            Get QR
+          </Button>
         </td>
         <td>
           <FontAwesomeIcon
@@ -520,6 +542,24 @@ const InventoryManagement = () => {
     }
   }
 
+  //qr
+  const handleQrModalClose = () => {
+    setIsQrModalOpen(false)
+    setQrCodeData(null)
+  }
+//qr download
+  const downloadQrCode = () => {
+    const qrCanvas = document.getElementById('product-qr-code');
+    if (qrCanvas) {
+      const link = document.createElement('a');
+      link.href = qrCanvas.toDataURL('image/png');
+      link.download = `qr-${qrCodeData.name.replace(/\s+/g, '-')}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
+
   return (
     <>
       {/* Out of stock notification - error/red color at top position */}
@@ -601,6 +641,7 @@ const InventoryManagement = () => {
               "Size",
               "Quantity",
               "Stock",
+              "QR Code",
               "",
             ]}
             rows={filteredProducts}
@@ -756,6 +797,42 @@ const InventoryManagement = () => {
                   </Button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* QR Code Modal */}
+        {isQrModalOpen && qrCodeData && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h2>QR Code for {qrCodeData.name}</h2>
+              <div className="qr-container">
+                <canvas id="product-qr-code"></canvas>
+                <script type="text/javascript">
+                  {/*when the modal is opened */}
+                  {setTimeout(() => {
+                    const QRCode = window.QRCode;
+                    if (QRCode) {
+                      new QRCode(document.getElementById("product-qr-code"), {
+                        text: qrCodeData.url, // Use the direct URL instead of JSON
+                        width: 256,
+                        height: 256,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                      });
+                    } else {
+                      console.error("QRCode library not loaded");
+                    }
+                  }, 100)}
+                </script>
+              </div>
+              <p className="qr-info">Scan this QR code to view the product details</p>
+              <p className="qr-url"><small>{qrCodeData.url}</small></p>
+              <div className="form-actions">
+                <Button onClick={downloadQrCode}>Download QR Code</Button>
+                <Button kind="secondary" onClick={handleQrModalClose}>Close</Button>
+              </div>
             </div>
           </div>
         )}
