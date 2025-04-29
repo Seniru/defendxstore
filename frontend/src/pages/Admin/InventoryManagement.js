@@ -608,7 +608,7 @@ const InventoryManagement = () => {
       img.src = url;
       
       setMessage("QR code downloading...");
-      setMessageType("info");
+      setMessageType("success");
       setIsError(false);
     } catch (error) {
       console.error("Error downloading QR code:", error);
