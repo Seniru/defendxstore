@@ -7,6 +7,7 @@ const User = require("../models/User")
 const PromoCode = require("../models/Promocodes")
 const logger = require("../utils/logger")
 const { sendMail } = require("../services/email")
+const OrderReport = require("../models/reports/OrderReport")
 
 const getOrders = async (req, res, next) => {
     try {
@@ -166,6 +167,13 @@ const createOrder = async (req, res, next) => {
 
         user.cart = []
         await user.save()
+
+        await OrderReport.create({
+            user: user._id,
+            action: OrderReport.actions.createOrder,
+            data: {},
+        })
+
         return createResponse(res, StatusCodes.CREATED, order)
     } catch (error) {
         next(error)
@@ -225,6 +233,12 @@ const deleteOrder = async (req, res, next) => {
             return createResponse(res, StatusCodes.FORBIDDEN, "You cannot delete this order")
 
         await Order.findOneAndDelete({ _id: id }).exec()
+
+        await OrderReport.create({
+            user: user._id,
+            action: OrderReport.actions.deleteOrder,
+            data: { orderId: order._id },
+        })
         return createResponse(res, StatusCodes.OK, "Order deleted")
     } catch (error) {
         next(error)
@@ -250,6 +264,11 @@ const acquireDelivery = async (req, res, next) => {
             `${user.username} has been assigned for the delivery of your order (Order ID: #${id})`,
         )
 
+        await OrderReport.create({
+            user: user._id,
+            action: OrderReport.actions.acquireDelivery,
+            data: { orderId: order._id },
+        })
         return createResponse(res, StatusCodes.OK, "Order acquired")
     } catch (error) {
         next(error)
@@ -285,6 +304,11 @@ const updateOrderStatus = async (req, res, next) => {
                 break
         }
 
+        await OrderReport.create({
+            user: user._id,
+            action: OrderReport.actions.updateOrderStatus,
+            data: { orderId: order._id, status },
+        })
         return createResponse(res, StatusCodes.OK, "Order status updated")
     } catch (error) {
         next(error)
