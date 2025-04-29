@@ -9,6 +9,9 @@ import { useAuth } from "../../contexts/AuthProvider"
 import useFetch from "../../hooks/useFetch"
 import api from "../../utils/api"
 import { useEffect, useRef, useState } from "react"
+import OverlayWindow from "../../components/OverlayWindow"
+import LocationSelectorForm from "../../forms/LocationSelectorForm"
+import getLocation from "../../utils/getLocation"
 
 const { REACT_APP_API_URL } = process.env
 
@@ -26,6 +29,8 @@ export default function Checkout() {
   const [cityError, setCityError] = useState(null)
   const [postalCodeError, setPostalCodeError] = useState(null)
   const [promocodeError, setPromocodeError] = useState(null)
+  const [isLocationSelectorOpen, setIsLocationSelectorOpen] = useState(false)
+  const [location, setLocation] = useState(null)
   const [profileData, _, profileDataLoading] = useFetch(
     `${REACT_APP_API_URL}/api/users/${user.username}`,
     { body: {} },
@@ -85,7 +90,19 @@ export default function Checkout() {
     )
       return
 
-    const deliveryAddress = `${houseNoRef.current.value}, ${streetRef.current.value}\n${postalCodeRef.current.value}, ${cityRef.current.value}`
+    setLocation(
+      await getLocation(
+        houseNoRef.current.value,
+        streetRef.current.value,
+        cityRef.current.value,
+        postalCodeRef.current.value,
+      ),
+    )
+    setIsLocationSelectorOpen(true)
+  }
+
+  const submitOrder = async (coords) => {
+    const deliveryAddress = `\n${houseNoRef.current.value}, ${streetRef.current.value}\n${postalCodeRef.current.value}, ${cityRef.current.value}\n(${coords})`
 
     let body = { deliveryAddress }
     if (promocodeRef.current.value) body.promocode = promocodeRef.current.value
@@ -102,135 +119,147 @@ export default function Checkout() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="content shopping-container"
-      noValidate
-    >
-      <div className="container">
-        <h2>Delivery Information</h2>
+    <>
+      <OverlayWindow
+        isOpen={isLocationSelectorOpen}
+        setIsOpen={setIsLocationSelectorOpen}
+      >
+        <LocationSelectorForm
+          location={location}
+          setLocation={setLocation}
+          onSubmit={submitOrder}
+        />
+      </OverlayWindow>
+      <form
+        onSubmit={handleSubmit}
+        className="content shopping-container"
+        noValidate
+      >
+        <div className="container">
+          <h2>Delivery Information</h2>
 
-        <div className="ShoppingInfo">
           <div className="ShoppingInfo">
-            <label htmlFor="fname">Full name:</label>
-            <Input
-              type="text"
-              id="fname"
-              name="fname"
-              value={profileData?.body?.user?.username}
-              required
-            />
+            <div className="ShoppingInfo">
+              <label htmlFor="fname">Full name:</label>
+              <Input
+                type="text"
+                id="fname"
+                name="fname"
+                value={profileData?.body?.user?.username}
+                required
+              />
 
-            <br />
+              <br />
 
-            <label htmlFor="Cname">House number:</label>
-            <Input
-              type="text"
-              id="houseNo"
-              name="houseNo"
-              value={houseNo}
-              ref={houseNoRef}
-              error={houseNoError}
-              required
-            />
+              <label htmlFor="Cname">House number:</label>
+              <Input
+                type="text"
+                id="houseNo"
+                name="houseNo"
+                value={houseNo}
+                ref={houseNoRef}
+                error={houseNoError}
+                required
+              />
 
-            <label htmlFor="Sname">Street:</label>
-            <Input
-              type="text"
-              id="Sname"
-              name="Sname"
-              value={street}
-              ref={streetRef}
-              error={streetError}
-              required
-            />
+              <label htmlFor="Sname">Street:</label>
+              <Input
+                type="text"
+                id="Sname"
+                name="Sname"
+                value={street}
+                ref={streetRef}
+                error={streetError}
+                required
+              />
 
-            <label htmlFor="Cname">City:</label>
-            <Input
-              type="text"
-              id="Cname"
-              name="Cname"
-              value={city}
-              ref={cityRef}
-              error={cityError}
-              required
-            />
+              <label htmlFor="Cname">City:</label>
+              <Input
+                type="text"
+                id="Cname"
+                name="Cname"
+                value={city}
+                ref={cityRef}
+                error={cityError}
+                required
+              />
 
-            <label htmlFor="Pcode">Postal code:</label>
-            <Input
-              type="text"
-              id="Pcode"
-              name="Pcode"
-              value={postalCode}
-              ref={postalCodeRef}
-              error={postalCodeError}
-              required
-            />
+              <label htmlFor="Pcode">Postal code:</label>
+              <Input
+                type="number"
+                id="Pcode"
+                name="Pcode"
+                value={postalCode}
+                ref={postalCodeRef}
+                error={postalCodeError}
+                required
+              />
 
-            <br />
-            <br />
+              <br />
+              <br />
 
-            <Button type="submit" value="Submit">
-              Submit
-            </Button>
+              <Button type="submit" value="Submit">
+                Submit
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="container">
-        <div className="product-info">
-          <h2> Order Summary </h2>
-          {(items?.body?.cart || []).map((item) => (
-            <div className="shopping-row">
-              <div style={{ display: "flex" }}>
-                <img
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "10px",
-                  }}
-                  src={item.product}
-                />
-                <div>
-                  <b>{item.itemName}</b>
-                  <div className="secondary-text">Qty: {item.quantity}</div>
+        <div className="container">
+          <div className="product-info">
+            <h2> Order Summary </h2>
+            {(items?.body?.cart || []).map((item) => (
+              <div className="shopping-row">
+                <div style={{ display: "flex" }}>
+                  <img
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "10px",
+                    }}
+                    src={item.product}
+                  />
+                  <div>
+                    <b>{item.itemName}</b>
+                    <div className="secondary-text">Qty: {item.quantity}</div>
+                  </div>
                 </div>
-              </div>
 
-              <span>LKR {item.price * item.quantity}</span>
+                <span>LKR {item.price * item.quantity}</span>
+              </div>
+            ))}
+
+            <div className="checkout-row">
+              <h5>
+                <FontAwesomeIcon icon={faTruck} /> Shipping
+              </h5>
+              <span>LKR 200</span>
             </div>
-          ))}
+            <hr />
+          </div>
+          <div className="checkout-row">
+            <h5>Promo Code</h5>
+            <span>
+              <Input
+                type="text"
+                id="Proname"
+                name="Proname"
+                minLength="2"
+                ref={promocodeRef}
+                error={promocodeError}
+              />
+            </span>
+          </div>
+          <span className="secondary-text">
+            <FontAwesomeIcon icon={faInfoCircle} /> Discount will be applied at
+            checkout
+          </span>
 
           <div className="checkout-row">
-            <h5>
-              <FontAwesomeIcon icon={faTruck} /> Shipping
-            </h5>
-            <span>LKR 200</span>
+            <h2>Total</h2>
+            <span>LKR {total}</span>
           </div>
-          <hr />
         </div>
-        <div className="checkout-row">
-          <h5>Promo Code</h5>
-          <span>
-            <Input
-              type="text"
-              id="Proname"
-              name="Proname"
-              minLength="2"
-              ref={promocodeRef}
-              error={promocodeError}
-            />
-          </span>
-        </div>
-        <span className="secondary-text">
-          <FontAwesomeIcon icon={faInfoCircle} /> Discount will be applied at
-          checkout
-        </span>
-
-        <div className="checkout-row">
-          <h2>Total</h2>
-          <span>LKR {total}</span>
-        </div>
-      </div>
-    </form>
+      </form>
+    </>
   )
 }
