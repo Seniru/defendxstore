@@ -1,18 +1,41 @@
 .message-box {
   position: fixed;
-  top: 20px;
   right: 20px;
   z-index: 9999;
   padding: 10px 20px 10px 10px;
   border-radius: 6px;
   color: white;
+  width: 320px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
+
+.message-box.top-position {
+  top: 20px;
+}
+
+.message-box.middle-position {
+  top: 90px;
+}
+
+.message-box.bottom-position {
+  top: 160px;
+}
+
 .message-box.error-box {
-  background-color: #f44336;
+  background-color: #e74c3c; /* Red */
 }
 
 .message-box.info-box {
-  background-color: #67a30a;
+  background-color: #3498db; /* Blue */
+}
+
+.message-box.warning-box {
+  background-color: #f39c12; /* Orange/amber */
+}
+
+.message-box.success-box {
+  background-color: #2ecc71; /* Green */
 }
 
 .message-box-close-button {

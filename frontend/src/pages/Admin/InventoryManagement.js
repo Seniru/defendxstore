@@ -14,6 +14,7 @@ import Input from "../../components/Input"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons"
 import Menu from "../../components/Menu"
+import MessageBox from "../../components/MessageBox"
 
 const InventoryManagement = () => {
   const { token } = useAuth()
@@ -25,6 +26,13 @@ const InventoryManagement = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [filteredProducts, setFilteredProducts] = useState([])
   const [selectedFilter, setSelectedFilter] = useState("All") // State for filter dropdown
+  const [isError, setIsError] = useState(false)
+  const [message, setMessage] = useState(null)
+  const [messageType, setMessageType] = useState("info")
+  const [lowStockMessage, setLowStockMessage] = useState(null)
+  const [outOfStockMessage, setOutOfStockMessage] = useState(null)
+  const [showLowStockNotification, setShowLowStockNotification] =
+    useState(false)
   const [newProduct, setNewProduct] = useState({
     product: null,
     productPreview: null,
@@ -68,6 +76,34 @@ const InventoryManagement = () => {
       }
 
       setFilteredProducts(results)
+
+      // Low stock items notification
+      const lowStockItems = productData.body.filter(
+        (item) => item.stock === "Running Low",
+      )
+      if (lowStockItems.length > 0) {
+        const itemNames = lowStockItems.map((item) => item.itemName).join(", ")
+        setLowStockMessage(
+          `Alert: ${lowStockItems.length} items are running low on stock: ${itemNames}`,
+        )
+      } else {
+        setLowStockMessage(null)
+      }
+
+      // Out of stock items notification
+      const outOfStockItems = productData.body.filter(
+        (item) => item.stock === "Out of Stock",
+      )
+      if (outOfStockItems.length > 0) {
+        const itemNames = outOfStockItems
+          .map((item) => item.itemName)
+          .join(", ")
+        setOutOfStockMessage(
+          `Alert: ${outOfStockItems.length} items are out of stock: ${itemNames}`,
+        )
+      } else {
+        setOutOfStockMessage(null)
+      }
     }
   }, [productData.body, searchQuery, selectedFilter])
 
@@ -360,6 +396,38 @@ const InventoryManagement = () => {
 
   return (
     <>
+      {/* Out of stock notification - error/red color at top position */}
+      {outOfStockMessage && (
+        <MessageBox
+          isError={true}
+          message={outOfStockMessage}
+          setMessage={setOutOfStockMessage}
+          type="error"
+          position="top"
+        />
+      )}
+
+      {/* Low stock notification - warning/amber color at middle position */}
+      {lowStockMessage && (
+        <MessageBox
+          isError={false}
+          message={lowStockMessage}
+          setMessage={setLowStockMessage}
+          type="warning"
+          position="middle"
+        />
+      )}
+
+      {/* Original MessageBox for other notifications at bottom position */}
+      {message && (
+        <MessageBox
+          isError={isError}
+          message={message}
+          setMessage={setMessage}
+          type={messageType}
+          position="bottom"
+        />
+      )}
       <OverlayWindow
         isOpen={isPromocodeWindowOpen}
         setIsOpen={setIsPromocodeWindowOpen}
