@@ -260,7 +260,7 @@ const InventoryManagement = () => {
           }
 
           // Add borders to cells
-          row.eachCell((cell) => {
+          row.eachCell((cell, colNumber) => {
             cell.border = {
               top: { style: "thin", color: { argb: "FFD3D3D3" } },
               left: { style: "thin", color: { argb: "FFD3D3D3" } },
@@ -269,7 +269,7 @@ const InventoryManagement = () => {
             }
 
             // Add color coding for stock status
-            if (cell.col === 8) {
+            if (colNumber === 8) {
               // Stock status column
               const stockStatus = cell.value
               if (stockStatus === "Out of Stock") {
