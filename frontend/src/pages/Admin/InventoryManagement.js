@@ -126,12 +126,10 @@ const InventoryManagement = () => {
 
     const handleGetQrCode = () => {
       try {
-        // Create QR code with direct URL to the product
         if (!row._id) {
           throw new Error("Product ID is missing");
         }
         
-        // Construct a proper URL with encodeURIComponent to handle special characters
         const baseUrl = window.location.origin;
         const productUrl = `${baseUrl}/product?id=${encodeURIComponent(row._id)}`;
         
@@ -569,12 +567,9 @@ const InventoryManagement = () => {
       if (!svgElement) {
         throw new Error("QR code SVG element not found");
       }
-      
-      // Create a canvas 
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
-      // Set  size (256x256)
       canvas.width = 256;
       canvas.height = 256;
       
@@ -590,7 +585,6 @@ const InventoryManagement = () => {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         
-        // Convert canvas to PNG
         const dataURL = canvas.toDataURL('image/png');
         
         // Create download link
@@ -601,7 +595,6 @@ const InventoryManagement = () => {
         link.click();
         document.body.removeChild(link);
         
-        // Clean up
         URL.revokeObjectURL(url);
       };
       
@@ -620,7 +613,6 @@ const InventoryManagement = () => {
 
   return (
     <>
-      {/* Out of stock notification - error/red color*/}
       {outOfStockMessage && (
         <MessageBox
           isError={true}
@@ -631,7 +623,6 @@ const InventoryManagement = () => {
         />
       )}
 
-      {/* Low stock notification - warning/amber color*/}
       {lowStockMessage && (
         <MessageBox
           isError={false}
@@ -642,7 +633,6 @@ const InventoryManagement = () => {
         />
       )}
 
-      {/* Original MessageBox for other*/}
       {message && (
         <MessageBox
           isError={isError}
