@@ -337,7 +337,7 @@ const InventoryManagement = () => {
         `Inventory_Report_${new Date().toLocaleDateString().replace(/\//g, "-")}.xlsx`,
       )
 
-      setMessage("Excel file exported successfully with styled headers")
+      setMessage("Excel file exported successfully")
       setMessageType("success")
       setIsError(false)
 
