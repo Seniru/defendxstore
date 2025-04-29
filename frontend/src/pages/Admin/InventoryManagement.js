@@ -127,27 +127,27 @@ const InventoryManagement = () => {
     const handleGetQrCode = () => {
       try {
         if (!row._id) {
-          throw new Error("Product ID is missing");
+          throw new Error("Product ID is missing")
         }
-        
-        const baseUrl = window.location.origin;
-        const productUrl = `${baseUrl}/product?id=${encodeURIComponent(row._id)}`;
-        
+
+        const baseUrl = window.location.origin
+        const productUrl = `${baseUrl}/product?id=${encodeURIComponent(row._id)}`
+
         // Store product data for display
         setQrCodeData({
           id: row._id,
           name: row.itemName || "Unknown Product",
           price: row.price || "N/A",
           category: row.category || "N/A",
-          url: productUrl
-        });
-        
-        setIsQrModalOpen(true);
+          url: productUrl,
+        })
+
+        setIsQrModalOpen(true)
       } catch (error) {
-        console.error("Error generating QR code:", error);
-        setMessage("Failed to generate QR code: " + error.message);
-        setMessageType("error");
-        setIsError(true);
+        console.error("Error generating QR code:", error)
+        setMessage("Failed to generate QR code: " + error.message)
+        setMessageType("error")
+        setIsError(true)
       }
     }
 
@@ -560,54 +560,58 @@ const InventoryManagement = () => {
     setIsQrModalOpen(false)
     setQrCodeData(null)
   }
-//qr download
+  //qr download
   const downloadQrCode = () => {
     try {
-      const svgElement = document.getElementById('product-qr-code').querySelector('svg');
+      const svgElement = document
+        .getElementById("product-qr-code")
+        .querySelector("svg")
       if (!svgElement) {
-        throw new Error("QR code SVG element not found");
+        throw new Error("QR code SVG element not found")
       }
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      
-      canvas.width = 256;
-      canvas.height = 256;
-      
+      const canvas = document.createElement("canvas")
+      const ctx = canvas.getContext("2d")
+
+      canvas.width = 256
+      canvas.height = 256
+
       // Create an image from the SVG
-      const img = new Image();
-      const svgData = new XMLSerializer().serializeToString(svgElement);
-      const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
-      const url = URL.createObjectURL(svgBlob);
-      
+      const img = new Image()
+      const svgData = new XMLSerializer().serializeToString(svgElement)
+      const svgBlob = new Blob([svgData], {
+        type: "image/svg+xml;charset=utf-8",
+      })
+      const url = URL.createObjectURL(svgBlob)
+
       // Once the image loads, draw it to canvas and create download
       img.onload = () => {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        
-        const dataURL = canvas.toDataURL('image/png');
-        
+        ctx.fillStyle = "white"
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+
+        const dataURL = canvas.toDataURL("image/png")
+
         // Create download link
-        const link = document.createElement('a');
-        link.href = dataURL;
-        link.download = `qr-${qrCodeData.name.replace(/\s+/g, '-')}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        URL.revokeObjectURL(url);
-      };
-      
-      img.src = url;
-      
-      setMessage("QR code downloading...");
-      setMessageType("success");
-      setIsError(false);
+        const link = document.createElement("a")
+        link.href = dataURL
+        link.download = `qr-${qrCodeData.name.replace(/\s+/g, "-")}.png`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+        URL.revokeObjectURL(url)
+      }
+
+      img.src = url
+
+      setMessage("QR code downloading...")
+      setMessageType("success")
+      setIsError(false)
     } catch (error) {
-      console.error("Error downloading QR code:", error);
-      setMessage("Failed to download QR code: " + error.message);
-      setMessageType("error");
-      setIsError(true);
+      console.error("Error downloading QR code:", error)
+      setMessage("Failed to download QR code: " + error.message)
+      setMessageType("error")
+      setIsError(true)
     }
   }
 
@@ -856,8 +860,8 @@ const InventoryManagement = () => {
               <h2>QR Code for {qrCodeData.name}</h2>
               <div className="qr-container" id="qr-code-container">
                 <div id="product-qr-code">
-                  <QRCode 
-                    value={qrCodeData.url} 
+                  <QRCode
+                    value={qrCodeData.url}
                     size={256}
                     level="H"
                     style={{ height: "auto", maxWidth: "100%", width: "100%" }}
@@ -865,12 +869,18 @@ const InventoryManagement = () => {
                   />
                 </div>
               </div>
-              <p className="qr-info">Scan this QR code to view the product details</p>
-              <p className="qr-url"><small>{qrCodeData.url}</small></p>
-              
+              <p className="qr-info">
+                Scan this QR code to view the product details
+              </p>
+              <p className="qr-url">
+                <small>{qrCodeData.url}</small>
+              </p>
+
               <div className="form-actions">
                 <Button onClick={downloadQrCode}>Download QR Code</Button>
-                <Button kind="secondary" onClick={handleQrModalClose}>Close</Button>
+                <Button kind="secondary" onClick={handleQrModalClose}>
+                  Close
+                </Button>
               </div>
             </div>
           </div>
