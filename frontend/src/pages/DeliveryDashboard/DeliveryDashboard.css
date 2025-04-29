@@ -26,3 +26,12 @@
     width: -webkit-fill-available;
   }
 }
+
+.delivery-map-pins {
+  display: flex;
+  div {
+    display: flex;
+    align-items: center;
+    margin: 5px;
+  }
+}
