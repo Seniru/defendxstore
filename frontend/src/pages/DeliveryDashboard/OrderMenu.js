@@ -28,6 +28,7 @@ export default function OrderMenu({
             order={order}
             includeCompleteDeliveryButton={true}
             includeUser={true}
+            includeMap={true}
             refreshOrders={refreshOrders}
             setRefreshOrders={setRefreshOrders}
           />
@@ -47,6 +48,7 @@ export default function OrderMenu({
             order={order}
             includeStartDeliveryButton={true}
             includeUser={true}
+            includeMap={true}
             refreshOrders={refreshOrders}
             setRefreshOrders={setRefreshOrders}
           />
@@ -66,6 +68,7 @@ export default function OrderMenu({
             order={order}
             includeAcquireButton={true}
             includeUser={true}
+            includeMap={true}
             refreshOrders={refreshOrders}
             setRefreshOrders={setRefreshOrders}
           />
@@ -84,6 +87,7 @@ export default function OrderMenu({
           <Order
             order={order}
             includeUser={true}
+            includeMap={true}
             refreshOrders={refreshOrders}
             setRefreshOrders={setRefreshOrders}
           />
