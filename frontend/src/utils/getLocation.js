@@ -17,7 +17,11 @@ const getLocation = async (houseNo, street, city, postalCode) => {
 
   for (let query of queries) {
     const url = `https://nominatim.openstreetmap.org/search?format=json&${query}`
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": "DefendXStore/1.0 (senirupasan@gmail.com)",
+      },
+    })
     let data = await response.json()
     data = data.filter((location) => location.display_name.includes(postalCode))
 
