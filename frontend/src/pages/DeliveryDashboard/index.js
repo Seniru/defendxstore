@@ -15,6 +15,7 @@ import TabMenu from "../../components/TabMenu"
 import { useState } from "react"
 import useFetch from "../../hooks/useFetch"
 import DeliveryMap from "./DeliveryMap"
+import OrderReport from "./OrderReport"
 
 const { REACT_APP_API_URL } = process.env
 
@@ -105,6 +106,7 @@ export default function DeliveryDashboard({}) {
             }
           />
           <TabItem name="Reviews" element={<Reviews />} />
+          <TabItem name="Report" element={<OrderReport />} />
         </TabMenu>
       </div>
     </div>

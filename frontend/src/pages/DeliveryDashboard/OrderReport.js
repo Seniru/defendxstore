@@ -1,0 +1,154 @@
+import { useMemo, useState } from "react"
+import useFetch from "../../hooks/useFetch"
+import Table from "../../components/Table"
+import Input from "../../components/Input"
+import Select from "../../components/Select"
+import ProfileImage from "../../components/ProfileImage"
+
+const { REACT_APP_API_URL } = process.env
+const now = Date.now()
+
+const actionColors = {
+  "create-order": "#2ecc71", // Green
+  "delete-order": "#e74c3c", // Red
+  "acquire-delivery": "#f39c12", // Orange
+  "update-order": "#3498db", // Blue
+}
+
+const actionMessages = {
+  "create-order": ({ actionUser, orderId }) => (
+    <>
+      <b>{actionUser}</b> placed an order
+    </>
+  ),
+  "delete-order": ({ actionUser, orderId }) => (
+    <>
+      <b>{actionUser}</b> deleted order <b>#{orderId}</b>
+    </>
+  ),
+  "acquire-delivery": ({ actionUser, orderId }) => (
+    <>
+      <b>{actionUser}</b> acquired delivery for order <b>#{orderId}</b>
+    </>
+  ),
+  "update-order": ({ actionUser, orderId, status }) => (
+    <>
+      <b>{actionUser}</b> updated order <b>#{orderId}</b> to <b>{status}</b>
+    </>
+  ),
+}
+
+function OrderLog({ row }) {
+  return (
+    <tr>
+      <td>{row.timestamp}</td>
+      <td>
+        <ProfileImage username={row.user.username} size={35} />
+      </td>
+      <td>
+        <span
+          className="action"
+          style={{
+            backgroundColor: actionColors[row.action] || "#cccccc",
+          }}
+        >
+          {row.action}
+        </span>
+      </td>
+      <td>
+        {actionMessages[row.action]
+          ? actionMessages[row.action]({
+              actionUser: row.user.username,
+              ...row.data,
+            })
+          : Object.entries(row.action)}
+      </td>
+    </tr>
+  )
+}
+export default function OrderReport() {
+  const [username, setUsername] = useState("")
+  const [fromDate, setFromDate] = useState(null)
+  const [toDate, setToDate] = useState(null)
+  const [action, setAction] = useState(null)
+  const [searchNextUpdate, setSearchNextUpdate] = useState(now)
+  const queryParams = useMemo(() => {
+    const params = {}
+    if (username) params.searchUser = username
+    if (fromDate) params.fromDate = fromDate
+    if (toDate) params.toDate = toDate
+    if (action) params.action = action
+    return params
+  }, [username, fromDate, toDate, action])
+
+  const [logs] = useFetch(
+    `${REACT_APP_API_URL}/api/reports/orders?` +
+      new URLSearchParams(queryParams).toString(),
+  )
+
+  const changeAction = (evt) => {
+    if (evt.target.value == "All") return setAction(null)
+    setAction(evt.target.value)
+  }
+
+  const handleSearchChange = (evt) => {
+    setSearchNextUpdate((prev) => {
+      const nextUpdate = prev + 500
+      setTimeout(() => {
+        // if it has taken at least 400ms since the input start
+        if (nextUpdate <= Date.now()) setUsername(evt.target.value)
+      }, 500)
+      return nextUpdate
+    })
+  }
+
+  return (
+    <div className="content">
+      <div className="logs-parameters">
+        <div className="logs-parameter">
+          <span>
+            <b>User</b>
+          </span>
+          <Input
+            type="text"
+            placeholder="Search user by name"
+            onChange={handleSearchChange}
+          />
+        </div>
+        <div className="logs-parameter">
+          <span>
+            <b>Action</b>
+          </span>
+          <Select
+            items={["All", ...(logs?.body?.actions || [])]}
+            onChange={changeAction}
+          />
+        </div>
+        <div className="logs-parameter">
+          <span>
+            <b>Date</b>
+          </span>
+          <div>
+            From
+            <Input
+              type="date"
+              onChange={(evt) => setFromDate(evt.target.value)}
+            />
+            To
+            <Input
+              type="date"
+              onChange={(evt) => setToDate(evt.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="logs-table">
+        <Table
+          headers={["Timestamp", "User", "Action", "Log"]}
+          rows={logs?.body?.report || []}
+          renderRowWith={OrderLog}
+        />
+      </div>
+    </div>
+  )
+}
