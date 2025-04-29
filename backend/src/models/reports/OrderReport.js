@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 
-const OrderReportScehma = new mongoose.Schema({
+const OrderReportSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -20,7 +20,7 @@ const OrderReportScehma = new mongoose.Schema({
     },
 })
 
-OrderReportScehma.statics.actions = {
+OrderReportSchema.statics.actions = {
     createOrder: "create-order",
     deleteOrder: "delete-order",
     acquireDelivery: "acquire-delivery",
