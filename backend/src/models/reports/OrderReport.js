@@ -27,6 +27,6 @@ OrderReportSchema.statics.actions = {
     updateOrderStatus: "update-order",
 }
 
-const OrderReport = mongoose.model("OrderReport", OrderReportScehma)
+const OrderReport = mongoose.model("OrderReport", OrderReportSchema)
 
 module.exports = OrderReport
