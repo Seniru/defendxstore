@@ -17,6 +17,7 @@ import Menu from "../../components/Menu"
 import MessageBox from "../../components/MessageBox"
 import * as ExcelJS from "exceljs"
 import { saveAs } from "file-saver"
+import QRCode from "react-qr-code"
 
 const InventoryManagement = () => {
   const { token } = useAuth()
@@ -124,18 +125,32 @@ const InventoryManagement = () => {
     const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
 
     const handleGetQrCode = () => {
-      // Create QR code with direct URL to the product
-      const productUrl = `${window.location.origin}/product?id=${row._id}`;
-      
-      // Still keep some metadata for display purposes
-      setQrCodeData({
-        id: row._id,
-        name: row.itemName,
-        price: row.price,
-        category: row.category,
-        url: productUrl
-      });
-      setIsQrModalOpen(true);
+      try {
+        // Create QR code with direct URL to the product
+        if (!row._id) {
+          throw new Error("Product ID is missing");
+        }
+        
+        // Construct a proper URL with encodeURIComponent to handle special characters
+        const baseUrl = window.location.origin;
+        const productUrl = `${baseUrl}/product?id=${encodeURIComponent(row._id)}`;
+        
+        // Store product data for display
+        setQrCodeData({
+          id: row._id,
+          name: row.itemName || "Unknown Product",
+          price: row.price || "N/A",
+          category: row.category || "N/A",
+          url: productUrl
+        });
+        
+        setIsQrModalOpen(true);
+      } catch (error) {
+        console.error("Error generating QR code:", error);
+        setMessage("Failed to generate QR code: " + error.message);
+        setMessageType("error");
+        setIsError(true);
+      }
     }
 
     return (
@@ -549,20 +564,63 @@ const InventoryManagement = () => {
   }
 //qr download
   const downloadQrCode = () => {
-    const qrCanvas = document.getElementById('product-qr-code');
-    if (qrCanvas) {
-      const link = document.createElement('a');
-      link.href = qrCanvas.toDataURL('image/png');
-      link.download = `qr-${qrCodeData.name.replace(/\s+/g, '-')}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    try {
+      const svgElement = document.getElementById('product-qr-code').querySelector('svg');
+      if (!svgElement) {
+        throw new Error("QR code SVG element not found");
+      }
+      
+      // Create a canvas 
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Set  size (256x256)
+      canvas.width = 256;
+      canvas.height = 256;
+      
+      // Create an image from the SVG
+      const img = new Image();
+      const svgData = new XMLSerializer().serializeToString(svgElement);
+      const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(svgBlob);
+      
+      // Once the image loads, draw it to canvas and create download
+      img.onload = () => {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        // Convert canvas to PNG
+        const dataURL = canvas.toDataURL('image/png');
+        
+        // Create download link
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = `qr-${qrCodeData.name.replace(/\s+/g, '-')}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up
+        URL.revokeObjectURL(url);
+      };
+      
+      img.src = url;
+      
+      setMessage("QR code downloading...");
+      setMessageType("info");
+      setIsError(false);
+    } catch (error) {
+      console.error("Error downloading QR code:", error);
+      setMessage("Failed to download QR code: " + error.message);
+      setMessageType("error");
+      setIsError(true);
     }
   }
 
   return (
     <>
-      {/* Out of stock notification - error/red color at top position */}
+      {/* Out of stock notification - error/red color*/}
       {outOfStockMessage && (
         <MessageBox
           isError={true}
@@ -573,7 +631,7 @@ const InventoryManagement = () => {
         />
       )}
 
-      {/* Low stock notification - warning/amber color at middle position */}
+      {/* Low stock notification - warning/amber color*/}
       {lowStockMessage && (
         <MessageBox
           isError={false}
@@ -584,7 +642,7 @@ const InventoryManagement = () => {
         />
       )}
 
-      {/* Original MessageBox for other notifications at bottom position */}
+      {/* Original MessageBox for other*/}
       {message && (
         <MessageBox
           isError={isError}
@@ -806,29 +864,20 @@ const InventoryManagement = () => {
           <div className="modal-overlay">
             <div className="modal-content">
               <h2>QR Code for {qrCodeData.name}</h2>
-              <div className="qr-container">
-                <canvas id="product-qr-code"></canvas>
-                <script type="text/javascript">
-                  {/*when the modal is opened */}
-                  {setTimeout(() => {
-                    const QRCode = window.QRCode;
-                    if (QRCode) {
-                      new QRCode(document.getElementById("product-qr-code"), {
-                        text: qrCodeData.url, // Use the direct URL instead of JSON
-                        width: 256,
-                        height: 256,
-                        colorDark: "#000000",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                      });
-                    } else {
-                      console.error("QRCode library not loaded");
-                    }
-                  }, 100)}
-                </script>
+              <div className="qr-container" id="qr-code-container">
+                <div id="product-qr-code">
+                  <QRCode 
+                    value={qrCodeData.url} 
+                    size={256}
+                    level="H"
+                    style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                    viewBox={`0 0 256 256`}
+                  />
+                </div>
               </div>
               <p className="qr-info">Scan this QR code to view the product details</p>
               <p className="qr-url"><small>{qrCodeData.url}</small></p>
+              
               <div className="form-actions">
                 <Button onClick={downloadQrCode}>Download QR Code</Button>
                 <Button kind="secondary" onClick={handleQrModalClose}>Close</Button>
