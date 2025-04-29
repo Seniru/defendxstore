@@ -15,6 +15,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons"
 import Menu from "../../components/Menu"
 import MessageBox from "../../components/MessageBox"
+import * as ExcelJS from "exceljs"
+import { saveAs } from "file-saver"
+
 
 const InventoryManagement = () => {
   const { token } = useAuth()
@@ -187,6 +190,119 @@ const InventoryManagement = () => {
       }
     }
   }, [newProduct.productPreview])
+
+  const exportToExcel = async () => {
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Inventory');
+      
+      worksheet.columns = [
+        { header: 'Item Name', key: 'itemName', width: 25 },
+        { header: 'Category', key: 'category', width: 15 },
+        { header: 'Description', key: 'description', width: 30 },
+        { header: 'Colors', key: 'colors', width: 20 },
+        { header: 'Price (LKR)', key: 'price', width: 15 },
+        { header: 'Size', key: 'size', width: 10 },
+        { header: 'Quantity', key: 'quantity', width: 10 },
+        { header: 'Stock Status', key: 'stock', width: 15 }
+      ];
+      
+      //header row  styling
+      const headerRow = worksheet.getRow(1);
+      headerRow.font = { 
+        bold: true, 
+        color: { argb: 'FFFFFFFF' },
+        size: 12
+      };
+      headerRow.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF000000' } 
+      };
+      headerRow.alignment = { 
+        vertical: 'middle', 
+        horizontal: 'center'
+      };
+      headerRow.height = 25; 
+      
+      // Apply borders to header cells
+      headerRow.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin', color: { argb: 'FF000000' } },
+          left: { style: 'thin', color: { argb: 'FF000000' } },
+          bottom: { style: 'thin', color: { argb: 'FF000000' } },
+          right: { style: 'thin', color: { argb: 'FF000000' } }
+        };
+      });
+      
+      // Add data rows
+      filteredProducts.forEach((product) => {
+        worksheet.addRow({
+          itemName: product.itemName,
+          category: product.category,
+          description: product.description,
+          colors: Array.isArray(product.colors) ? product.colors.join(', ') : '',
+          price: product.price,
+          size: product.size,
+          quantity: product.quantity,
+          stock: product.stock
+        });
+      });
+      
+      
+      worksheet.eachRow((row, rowNumber) => {
+        if (rowNumber > 1) { 
+          // Add two colors for data rows
+          row.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: rowNumber % 2 === 0 ? 'FFE6F0FF' : 'FFFFFFFF' }
+          };
+          
+          // Add borders to cells
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: 'thin', color: { argb: 'FFD3D3D3' } },
+              left: { style: 'thin', color: { argb: 'FFD3D3D3' } },
+              bottom: { style: 'thin', color: { argb: 'FFD3D3D3' } },
+              right: { style: 'thin', color: { argb: 'FFD3D3D3' } }
+            };
+            
+            // Add color coding for stock status
+            if (cell.col === 8) { // Stock status column
+              const stockStatus = cell.value;
+              if (stockStatus === 'Out of Stock') {
+                cell.font = { color: { argb: 'FFFF0000' } }; // Red 
+              } else if (stockStatus === 'Running Low') {
+                cell.font = { color: { argb: 'FFFF9900' } }; //yellow
+              } else if (stockStatus === 'In Stock') {
+                cell.font = { color: { argb: 'FF008000' } }; //green
+              }
+            }
+            
+            // Align  cells
+            cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+          });
+        }
+      });
+      
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveAs(blob, `Inventory_Report_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`);
+      
+      setMessage('Excel file exported successfully with styled headers');
+      setMessageType('success');
+      setIsError(false);
+      
+      // Auto-hide message after 3 seconds
+      setTimeout(() => setMessage(null), 3000);
+    } catch (error) {
+      console.error("Error exporting to Excel:", error);
+      setMessage('Failed to export Excel file: ' + error.message);
+      setMessageType('error');
+      setIsError(true);
+    }
+  };
 
   const createItem = async (item) => {
     try {
@@ -448,8 +564,8 @@ const InventoryManagement = () => {
             >
               Promotion codes
             </Button>
-            <Button kind="secondary" onClick={() => window.print()}>
-              Generate Report
+            <Button kind="secondary" onClick={exportToExcel}>
+              Export to Excel
             </Button>
             <Select
               items={["All", "In Stock", "Running Low", "Out of Stock"]}
