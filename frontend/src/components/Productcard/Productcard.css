@@ -6,6 +6,7 @@
   overflow: hidden;
   background: white;
   margin: 1rem;
+  transition: all 0.3s ease;
 }
 
 .product-card:hover {
