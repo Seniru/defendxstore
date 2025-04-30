@@ -12,11 +12,22 @@
 
 .order-body {
   display: flex;
+  position: relative;
 
   .order-details {
     margin-left: 20px;
     margin-right: 20px;
     width: -webkit-fill-available;
+    position: relative;
+
+    .location-details {
+      display: flex;
+      justify-content: space-between;
+
+      * {
+        cursor: pointer;
+      }
+    }
 
     .order-item {
       display: flex;
@@ -41,4 +52,13 @@
       }
     }
   }
+}
+
+.map-route-button {
+  position: absolute;
+  top: 400px;
+  right: 5px;
+  border-radius: 50px;
+  padding: 10px;
+  z-index: 90px;
 }
