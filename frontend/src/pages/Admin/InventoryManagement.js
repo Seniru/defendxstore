@@ -671,30 +671,6 @@ const InventoryManagement = () => {
       <div className="content">
         <div className="print-title">Inventory Report</div>
 
-        <div className="stock-dashboard">
-          <StockCard
-            title="Total Products"
-            count={stockCounts.total}
-            color="#27ae60"
-            backgroundColor="#e8f8f1"
-            icon={faBoxesStacked}
-          />
-          <StockCard
-            title="Running Low"
-            count={stockCounts.runningLow}
-            color="#f39c12"
-            backgroundColor="#fef5e7"
-            icon={faTriangleExclamation}
-          />
-          <StockCard
-            title="Out of Stock"
-            count={stockCounts.outOfStock}
-            color="#e74c3c"
-            backgroundColor="#fdedeb"
-            icon={faCircleExclamation}
-          />
-        </div>
-
         <div className="inventory-management-actions">
           <SearchBar
             placeholder={"Search items..."}
@@ -722,6 +698,31 @@ const InventoryManagement = () => {
           Showing {filteredProducts.length} products
           {searchQuery && ` matching "${searchQuery}"`}
           {selectedFilter !== "All" && ` with status "${selectedFilter}"`}
+        </div>
+
+        <br />
+        <div className="stock-dashboard">
+          <StockCard
+            title="Total Products"
+            count={stockCounts.total}
+            color="#27ae60"
+            backgroundColor="#e8f8f1"
+            icon={faBoxesStacked}
+          />
+          <StockCard
+            title="Running Low"
+            count={stockCounts.runningLow}
+            color="#f39c12"
+            backgroundColor="#fef5e7"
+            icon={faTriangleExclamation}
+          />
+          <StockCard
+            title="Out of Stock"
+            count={stockCounts.outOfStock}
+            color="#e74c3c"
+            backgroundColor="#fdedeb"
+            icon={faCircleExclamation}
+          />
         </div>
 
         <div className="table-container" id="inventory-table">
