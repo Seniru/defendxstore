@@ -15,7 +15,6 @@ function MessageComponent({ type, message, setMessage, position = "top" }) {
     }
   }, [message, setMessage])
 
-  // Determine which CSS class to use based on message type
   const getBoxClass = () => {
     switch (type) {
       case "error":
@@ -30,7 +29,6 @@ function MessageComponent({ type, message, setMessage, position = "top" }) {
     }
   }
 
-  // Determine position class
   const getPositionClass = () => {
     switch (position) {
       case "middle":
@@ -65,8 +63,7 @@ export default function MessageBox({
   setMessage,
   position,
 }) {
-  // For backward compatibility, if isError is true, use error type
-  const messageType = isError ? "error" : type || "info"
+  const messageType = isError ? "error" : type || "success"
 
   return (
     message && (
