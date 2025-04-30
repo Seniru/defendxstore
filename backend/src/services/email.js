@@ -13,6 +13,9 @@ if (!EMAIL_SERVICE || !EMAIL_ADDRESS || !EMAIL_PASSWORD)
 
 const transporter = nodemailer.createTransport({
     service: EMAIL_SERVICE,
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
         user: EMAIL_ADDRESS,
         pass: EMAIL_PASSWORD,
