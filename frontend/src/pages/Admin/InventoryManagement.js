@@ -29,13 +29,8 @@ const InventoryManagement = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [filteredProducts, setFilteredProducts] = useState([])
   const [selectedFilter, setSelectedFilter] = useState("All") // State for filter dropdown
-  const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState(null)
   const [messageType, setMessageType] = useState("info")
-  const [lowStockMessage, setLowStockMessage] = useState(null)
-  const [outOfStockMessage, setOutOfStockMessage] = useState(null)
-  const [showLowStockNotification, setShowLowStockNotification] =
-    useState(false)
   const [newProduct, setNewProduct] = useState({
     product: null,
     productPreview: null,
@@ -82,32 +77,23 @@ const InventoryManagement = () => {
 
       setFilteredProducts(results)
 
-      // Low stock items notification
+      // Check for low stock and out of stock items and show notifications
       const lowStockItems = productData.body.filter(
         (item) => item.stock === "Running Low",
       )
       if (lowStockItems.length > 0) {
         const itemNames = lowStockItems.map((item) => item.itemName).join(", ")
-        setLowStockMessage(
-          `Alert: ${lowStockItems.length} items are running low on stock: ${itemNames}`,
-        )
-      } else {
-        setLowStockMessage(null)
+        setMessage(`Alert: ${lowStockItems.length} items are running low on stock: ${itemNames}`)
+        setMessageType("warning")
       }
 
-      // Out of stock items notification
       const outOfStockItems = productData.body.filter(
         (item) => item.stock === "Out of Stock",
       )
-      if (outOfStockItems.length > 0) {
-        const itemNames = outOfStockItems
-          .map((item) => item.itemName)
-          .join(", ")
-        setOutOfStockMessage(
-          `Alert: ${outOfStockItems.length} items are out of stock: ${itemNames}`,
-        )
-      } else {
-        setOutOfStockMessage(null)
+      if (outOfStockItems.length > 0 && !lowStockItems.length) {
+        const itemNames = outOfStockItems.map((item) => item.itemName).join(", ")
+        setMessage(`Alert: ${outOfStockItems.length} items are out of stock: ${itemNames}`)
+        setMessageType("error")
       }
     }
   }, [productData.body, searchQuery, selectedFilter])
@@ -147,7 +133,6 @@ const InventoryManagement = () => {
         console.error("Error generating QR code:", error)
         setMessage("Failed to generate QR code: " + error.message)
         setMessageType("error")
-        setIsError(true)
       }
     }
 
@@ -337,7 +322,6 @@ const InventoryManagement = () => {
 
       setMessage("Excel file exported successfully")
       setMessageType("success")
-      setIsError(false)
 
       // Auto-hide message after 3 seconds
       setTimeout(() => setMessage(null), 3000)
@@ -345,7 +329,6 @@ const InventoryManagement = () => {
       console.error("Error exporting to Excel:", error)
       setMessage("Failed to export Excel file: " + error.message)
       setMessageType("error")
-      setIsError(true)
     }
   }
 
@@ -606,44 +589,21 @@ const InventoryManagement = () => {
 
       setMessage("QR code downloading...")
       setMessageType("success")
-      setIsError(false)
     } catch (error) {
       console.error("Error downloading QR code:", error)
       setMessage("Failed to download QR code: " + error.message)
       setMessageType("error")
-      setIsError(true)
     }
   }
 
   return (
     <>
-      {outOfStockMessage && (
-        <MessageBox
-          isError={true}
-          message={outOfStockMessage}
-          setMessage={setOutOfStockMessage}
-          type="error"
-          position="top"
-        />
-      )}
-
-      {lowStockMessage && (
-        <MessageBox
-          isError={false}
-          message={lowStockMessage}
-          setMessage={setLowStockMessage}
-          type="warning"
-          position="middle"
-        />
-      )}
-
       {message && (
         <MessageBox
-          isError={isError}
           message={message}
           setMessage={setMessage}
           type={messageType}
-          position="bottom"
+          position="top"
         />
       )}
       <OverlayWindow
