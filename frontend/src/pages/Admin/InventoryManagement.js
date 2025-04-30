@@ -12,12 +12,35 @@ import OverlayWindow from "../../components/OverlayWindow"
 import PromoCodes from "./promocodes"
 import Input from "../../components/Input"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons"
+import {
+  faEllipsisVertical,
+  faBoxesStacked,
+  faTriangleExclamation,
+  faCircleExclamation,
+} from "@fortawesome/free-solid-svg-icons"
 import Menu from "../../components/Menu"
 import MessageBox from "../../components/MessageBox"
 import * as ExcelJS from "exceljs"
 import { saveAs } from "file-saver"
 import QRCode from "react-qr-code"
+
+const StockCard = ({ title, count, color, backgroundColor, icon }) => {
+  return (
+    <div className="stock-card" style={{ backgroundColor }}>
+      <div className="stock-card-icon">
+        <FontAwesomeIcon icon={icon} size="2x" color={color} />
+      </div>
+      <div className="stock-card-content">
+        <h3 className="stock-card-title" style={{ color }}>
+          {title}
+        </h3>
+        <p className="stock-card-count" style={{ color }}>
+          {count}
+        </p>
+      </div>
+    </div>
+  )
+}
 
 const InventoryManagement = () => {
   const { token } = useAuth()
@@ -28,7 +51,7 @@ const InventoryManagement = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [filteredProducts, setFilteredProducts] = useState([])
-  const [selectedFilter, setSelectedFilter] = useState("All") // State for filter dropdown
+  const [selectedFilter, setSelectedFilter] = useState("All")
   const [message, setMessage] = useState(null)
   const [messageType, setMessageType] = useState("info")
   const [newProduct, setNewProduct] = useState({
@@ -46,6 +69,13 @@ const InventoryManagement = () => {
   const [selectedProductIndex, setSelectedProductIndex] = useState(null)
   const [qrCodeData, setQrCodeData] = useState(null)
   const [isQrModalOpen, setIsQrModalOpen] = useState(false)
+  // New state for stock counts
+  const [stockCounts, setStockCounts] = useState({
+    total: 0,
+    inStock: 0,
+    runningLow: 0,
+    outOfStock: 0,
+  })
 
   const [productData] = useFetch(
     `${process.env.REACT_APP_API_URL}/api/items`,
@@ -77,22 +107,48 @@ const InventoryManagement = () => {
 
       setFilteredProducts(results)
 
-      // Check for low stock and out of stock items and show notifications
+      // Calculate stock counts for dashboard cards
+      const totalItems = productData.body.length
+      const inStockItems = productData.body.filter(
+        (item) => item.stock === "In Stock",
+      ).length
       const lowStockItems = productData.body.filter(
         (item) => item.stock === "Running Low",
-      )
-      if (lowStockItems.length > 0) {
-        const itemNames = lowStockItems.map((item) => item.itemName).join(", ")
-        setMessage(`Alert: ${lowStockItems.length} items are running low on stock: ${itemNames}`)
+      ).length
+      const outOfStockItemsCard = productData.body.filter(
+        (item) => item.stock === "Out of Stock",
+      ).length
+
+      // Update stock counts
+      setStockCounts({
+        total: totalItems,
+        inStock: inStockItems,
+        runningLow: lowStockItems,
+        outOfStock: outOfStockItemsCard,
+      })
+
+      // show notifications
+      if (lowStockItems > 0) {
+        const itemNames = productData.body
+          .filter((item) => item.stock === "Running Low")
+          .map((item) => item.itemName)
+          .join(", ")
+        setMessage(
+          `Alert: ${lowStockItems} items are running low on stock: ${itemNames}`,
+        )
         setMessageType("warning")
       }
 
       const outOfStockItems = productData.body.filter(
         (item) => item.stock === "Out of Stock",
       )
-      if (outOfStockItems.length > 0 && !lowStockItems.length) {
-        const itemNames = outOfStockItems.map((item) => item.itemName).join(", ")
-        setMessage(`Alert: ${outOfStockItems.length} items are out of stock: ${itemNames}`)
+      if (outOfStockItems.length > 0 ) {
+        const itemNames = outOfStockItems
+          .map((item) => item.itemName)
+          .join(", ")
+        setMessage(
+          `Alert: ${outOfStockItems.length} items are out of stock: ${itemNames}`,
+        )
         setMessageType("error")
       }
     }
@@ -614,6 +670,31 @@ const InventoryManagement = () => {
       </OverlayWindow>
       <div className="content">
         <div className="print-title">Inventory Report</div>
+
+        <div className="stock-dashboard">
+          <StockCard
+            title="Total Products"
+            count={stockCounts.total}
+            color="#27ae60"
+            backgroundColor="#e8f8f1"
+            icon={faBoxesStacked}
+          />
+          <StockCard
+            title="Running Low"
+            count={stockCounts.runningLow}
+            color="#f39c12"
+            backgroundColor="#fef5e7"
+            icon={faTriangleExclamation}
+          />
+          <StockCard
+            title="Out of Stock"
+            count={stockCounts.outOfStock}
+            color="#e74c3c"
+            backgroundColor="#fdedeb"
+            icon={faCircleExclamation}
+          />
+        </div>
+
         <div className="inventory-management-actions">
           <SearchBar
             placeholder={"Search items..."}
@@ -636,11 +717,13 @@ const InventoryManagement = () => {
             <Button onClick={handleAddProductClick}>Add Product</Button>
           </span>
         </div>
+
         <div className="secondary-text">
           Showing {filteredProducts.length} products
           {searchQuery && ` matching "${searchQuery}"`}
           {selectedFilter !== "All" && ` with status "${selectedFilter}"`}
         </div>
+
         <div className="table-container" id="inventory-table">
           <Table
             headers={[
