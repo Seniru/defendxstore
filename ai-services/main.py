@@ -1,15 +1,29 @@
-from typing import Union
+import json
 
 from fastapi import FastAPI
+from dotenv import dotenv_values
+from pymongo import MongoClient
+
+from routers import trends, recommendations
+
+config = dotenv_values(".env")
 
 app = FastAPI()
 
+@app.on_event("startup")
+def startup_db_client():
+    app.mongodb_client = MongoClient(config["MONGO_URI"])
+    app.database = app.mongodb_client[config["DB_NAME"]]
+    print("Connected to the MongoDB database!")
+
+@app.on_event("shutdown")
+def shutdown_db_client():
+    app.mongodb_client.close()
+
+app.include_router(trends.router)
+app.include_router(recommendations.router)
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return json.dumps(app.database["items"].find().to_list(), default=str)
 
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
