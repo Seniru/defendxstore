@@ -55,19 +55,19 @@ const updateItem = async (req, res, next) => {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid id for item")
         }
-        
+
         const oldItem = await Item.findById(id)
         if (!oldItem) {
             return createResponse(res, StatusCodes.NOT_FOUND, "Item not found")
         }
-        
+
         const updatedItem = await Item.findByIdAndUpdate(id, item, { new: true })
-        
+
         if (oldItem.stock !== "Out of Stock" && updatedItem.stock === "Out of Stock") {
             // Find all admin users
             const adminUsers = await User.find({
-                role: { $bitsAllSet: roles.ADMIN }
-            });
+                role: { $bitsAllSet: roles.ADMIN },
+            })
 
             if (adminUsers && adminUsers.length > 0) {
                 //  table row for the email template
@@ -79,19 +79,19 @@ const updateItem = async (req, res, next) => {
                         <td style="padding: 12px; border: 1px solid #ddd; text-align: center; color: #ff0000; font-weight: bold;">Out of Stock</td>
                     </tr>
                 `
-                
+
                 // Send email to all admin users
                 for (const admin of adminUsers) {
                     sendMail(admin.email, "URGENT: Item Out of Stock Alert", "stock_alert", {
                         title: "Out of Stock Alert",
                         itemCount: "1",
                         items: itemRow,
-                        date: new Date().toLocaleDateString()
+                        date: new Date().toLocaleDateString(),
                     })
                 }
             }
         }
-        
+
         return createResponse(res, StatusCodes.OK, updatedItem)
     } catch (error) {
         next(error)
