@@ -142,7 +142,7 @@ const InventoryManagement = () => {
       const outOfStockItems = productData.body.filter(
         (item) => item.stock === "Out of Stock",
       )
-      if (outOfStockItems.length > 0 ) {
+      if (outOfStockItems.length > 0) {
         const itemNames = outOfStockItems
           .map((item) => item.itemName)
           .join(", ")
