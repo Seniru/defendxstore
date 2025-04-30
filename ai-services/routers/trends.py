@@ -1,4 +1,3 @@
-# routes/recommendations.py
 from fastapi import APIRouter, Request
 from services.trends import get_trending_items
 

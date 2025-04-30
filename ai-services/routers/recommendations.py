@@ -1,4 +1,3 @@
-# routes/recommendations.py
 from fastapi import APIRouter, Request
 from services.recommender import get_recommended_items
 
