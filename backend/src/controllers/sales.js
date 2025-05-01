@@ -47,7 +47,7 @@ const processSales = async (orders, frequency, metric) => {
     let currentCostData = []
     let currentExpectedSalesData = []
     let currentProfitData = []
-    if (orders.length == 0) return { code: StatusCodes.OK, body: [date, {}] }
+    if (orders.length == 0) return [ [], [] ]
 
     let currentDate = new Date(orders[0].orderdate)
     currentDate.setHours(0, 0, 0, 0)
