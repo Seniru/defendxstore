@@ -20,9 +20,9 @@ def get_recommended_items(request: Request, user_id):
 		for item in order["items"]:
 			item_index = items_index.get(str(item["product"]))
 			if item_index is None: continue
-			X[user_index][item_index] += 1
+			X[user_index][item_index] = 1
 
-	neigh = NearestNeighbors()
+	neigh = NearestNeighbors(metric="cosine")
 	neigh.fit(X)
 
 	user_vector = X[users_index[str(user_id)]].reshape(1, -1)

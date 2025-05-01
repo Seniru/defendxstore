@@ -14,11 +14,22 @@ import pro1 from "../../assets/images/pro1.png"
 import pro2 from "../../assets/images/pro2.png"
 import pro3 from "../../assets/images/pro3.png"
 import useFetch from "../../hooks/useFetch"
+import { useAuth } from "../../contexts/AuthProvider"
 
 const { REACT_APP_API_URL } = process.env
 
 const Home = () => {
+  const { user } = useAuth()
   const [items] = useFetch(`${REACT_APP_API_URL}/api/items`, { body: [] })
+  const [trendingItems] = useFetch(`${REACT_APP_API_URL}/api/items/trending`, {
+    body: [],
+  })
+  const [recommendedItems] = useFetch(
+    `${REACT_APP_API_URL}/api/items/recommended`,
+    {
+      body: [],
+    },
+  )
 
   useEffect(() => {
     const swiper = new window.Swiper(".mySwiper", {
@@ -99,12 +110,32 @@ const Home = () => {
         </div>
       </section>
 
+      {user && (
+        <div className="popular">
+          <h3>
+            Recommended <span className="secondary-text">Items</span>{" "}
+          </h3>
+          <div className="catalog">
+            {recommendedItems.body?.map((item, index) => (
+              <Productcard
+                itemName={item.itemName}
+                category={item.category}
+                price={item.price}
+                product={item.product}
+                id={item._id}
+                key={index}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="popular">
         <h3>
-          Popular <span className="secondary-text">Products</span>{" "}
+          Trending <span className="secondary-text">Products</span>
         </h3>
         <div className="catalog">
-          {items.body?.map((item, index) => (
+          {trendingItems?.body?.map((item, index) => (
             <Productcard
               itemName={item.itemName}
               category={item.category}
@@ -117,22 +148,7 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="popular">
-        <h3>Trending Products</h3>
-        <div className="catalog">
-          {items.body?.map((item, index) => (
-            <Productcard
-              itemName={item.itemName}
-              category={item.category}
-              price={item.price}
-              product={item.product}
-              id={item._id}
-              key={index}
-            />
-          ))}
-        </div>
-      </div>
-
+      <br />
       <div className="popular">
         <h3>Categories</h3>
         <div className="img-container">
@@ -168,6 +184,26 @@ const Home = () => {
             }}
             alt="shoes"
           />
+        </div>
+      </div>
+
+      <br />
+
+      <div className="popular">
+        <h3>
+          All <span className="secondary-text">Products</span>
+        </h3>
+        <div className="catalog">
+          {items?.body?.map((item, index) => (
+            <Productcard
+              itemName={item.itemName}
+              category={item.category}
+              price={item.price}
+              product={item.product}
+              id={item._id}
+              key={index}
+            />
+          ))}
         </div>
       </div>
 
