@@ -13,9 +13,6 @@ if (!EMAIL_SERVICE || !EMAIL_ADDRESS || !EMAIL_PASSWORD)
 
 const transporter = nodemailer.createTransport({
     service: EMAIL_SERVICE,
-    host: process.env.EMAIL_HOST,
-    port: parseInt(process.env.EMAIL_PORT, 10),
-    secure: process.env.EMAIL_SECURE === "true",
     auth: {
         user: EMAIL_ADDRESS,
         pass: EMAIL_PASSWORD,
