@@ -1,0 +1,8 @@
+.sales-management-actions {
+  display: flex;
+  flex-wrap: wrap;
+
+  .action {
+    margin: 5px;
+  }
+}
