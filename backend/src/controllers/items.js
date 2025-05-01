@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const Item = require("../models/Item")
+const User = require("../models/User")
 const createResponse = require("../utils/createResponse")
 const { StatusCodes } = require("http-status-codes")
 
@@ -25,6 +26,39 @@ const getItemById = async (req, res) => {
             return createResponse(res, StatusCodes.NOT_FOUND, "Item not found")
         }
         return createResponse(res, StatusCodes.OK, item)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getTrendingItems = async (req, res, next) => {
+    try {
+        const response = await fetch(`${process.env.AI_SERVICES_URI}/trending/items`)
+        if (!response.ok)
+            return createResponse(res, response.status, response.body || response.statusText)
+        const result = await response.json()
+        const items = await Item.find({ _id: { $in: result.map((item) => item[0]) } })
+            .limit(8)
+            .exec()
+        return createResponse(res, StatusCodes.OK, items)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getRecommendedItems = async (req, res, next) => {
+    try {
+        const user = await User.findOne({ username: req.user.username }).exec()
+        const response = await fetch(
+            `${process.env.AI_SERVICES_URI}/recommendations/items?user_id=${user._id}`,
+        )
+        if (!response.ok)
+            return createResponse(res, response.status, response.body || response.statusText)
+        const result = await response.json()
+        const items = await Item.find({ _id: { $in: result } })
+            .limit(8)
+            .exec()
+        return createResponse(res, StatusCodes.OK, items)
     } catch (error) {
         next(error)
     }
@@ -81,6 +115,8 @@ const deleteItem = async (req, res) => {
 module.exports = {
     getAllItems,
     getItemById,
+    getTrendingItems,
+    getRecommendedItems,
     createItem,
     updateItem,
     deleteItem,
