@@ -1,3 +1,5 @@
+require("dotenv").config()
+
 const { StatusCodes } = require("http-status-codes")
 const Order = require("../models/Order")
 const Item = require("../models/Item")
@@ -37,7 +39,7 @@ const validateAndGetQuery = async (res, dateFrom, dateTo, metric, period) => {
     return [query, frequency]
 }
 
-const processSales = async (orders, frequency, metric) => {
+const processSales = async (orders, frequency, metric, dateTo) => {
     let date = []
     let revenueData = []
     let costData = []
@@ -47,7 +49,9 @@ const processSales = async (orders, frequency, metric) => {
     let currentCostData = []
     let currentExpectedSalesData = []
     let currentProfitData = []
-    if (orders.length == 0) return [ [], [] ]
+    if (orders.length == 0) return [[], []]
+
+    dateTo = (dateTo || orders[orders.length - 1].orderdate).toISOString().split("T")[0]
 
     let currentDate = new Date(orders[0].orderdate)
     currentDate.setHours(0, 0, 0, 0)
@@ -89,8 +93,15 @@ const processSales = async (orders, frequency, metric) => {
     costData.push(currentCostData.reduce((t, v) => t + v, 0))
     //expectedSalesData.push(currentExpectedSalesData.reduce((t, v) => t + v, 0))
     // set the mean of sales to the expected sales
-    let avg = revenueData.reduce((t, v) => t + v, 0) / revenueData.length
-    expectedSalesData = Array.from({ length: revenueData.length }, () => avg)
+    // let avg = revenueData.reduce((t, v) => t + v, 0) / revenueData.length
+    //expectedSalesData = Array.from({ length: revenueData.length }, () => avg)
+
+    const fromDate = orders[0].orderdate.toISOString().split("T")[0]
+    const expectedSalesDataResponse = await fetch(
+        `${process.env.AI_SERVICES_URI}/predictions/items/?frequency=${frequency}&fromDate=${fromDate}&toDate=${dateTo}`,
+    )
+    let result = await expectedSalesDataResponse.json()
+    expectedSalesData = result.map((data) => data[1])
 
     let returnData = {}
     returnData = { revenueData, profitData, costData, expectedSalesData }
@@ -103,7 +114,7 @@ const processSales = async (orders, frequency, metric) => {
         }[metric]
     }
 
-    return [date, returnData]
+    return [result.length > date.length ? result.map((data) => data[0]) : date, returnData]
 }
 
 const getSales = async (req, res, next) => {
@@ -114,7 +125,7 @@ const getSales = async (req, res, next) => {
         const period = req.query.period || "7d" // defaults to weekly
         const [query, frequency] = await validateAndGetQuery(res, dateFrom, dateTo, metric, period)
         const orders = await Order.find(query).sort({ orderdate: 1 }).exec()
-        const processed = await processSales(orders, frequency, metric)
+        const processed = await processSales(orders, frequency, metric, dateTo)
         return createResponse(res, StatusCodes.OK, processed)
     } catch (error) {
         next(error)
@@ -129,7 +140,7 @@ const getMonthlySales = async (req, res, next) => {
         const period = "1m"
         const [query, frequency] = await validateAndGetQuery(res, dateFrom, dateTo, metric, period)
         const orders = await Order.find(query).sort({ orderdate: 1 }).exec()
-        const processed = await processSales(orders, frequency, metric)
+        const processed = await processSales(orders, frequency, metric, dateTo)
         return createResponse(res, StatusCodes.OK, processed)
     } catch (error) {
         next(error)
@@ -163,7 +174,7 @@ const compareItems = async (req, res, next) => {
             let filteredOrders = orders.filter((order) =>
                 order.items.some((item) => item.product.itemName == itemName),
             )
-            statistics[itemName] = await processSales(filteredOrders, frequency, metric)
+            statistics[itemName] = await processSales(filteredOrders, frequency, metric, dateTo)
             if (longest == "" || statistics[itemName][0].length > statistics[longest][0].length)
                 longest = itemName
         }
