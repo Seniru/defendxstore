@@ -1,5 +1,7 @@
 import { LineChart } from "@mui/x-charts/LineChart"
 import { PieChart } from "@mui/x-charts/PieChart"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faBolt } from "@fortawesome/free-solid-svg-icons"
 import {
   cheerfulFiestaPalette,
   mangoFusionPalette,
@@ -10,7 +12,7 @@ import useFetch from "../../hooks/useFetch"
 
 import "./SalesManagement.css"
 import Input from "../../components/Input"
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useState } from "react"
 
 const { REACT_APP_API_URL } = process.env
 
@@ -176,7 +178,20 @@ export default function SalesManagement() {
         </div>
       </div>
       <Table
-        headers={["Month ", "Expected Sales", "Revenue", "Cost", "Profit"]}
+        headers={[
+          "Month ",
+          <>
+            <FontAwesomeIcon
+              icon={faBolt}
+              color="#ffcc00"
+              title="AI-powered sales forecast"
+            />{" "}
+            Expected Saless
+          </>,
+          "Revenue",
+          "Cost",
+          "Profit",
+        ]}
         rows={(monthlySales?.body?.[1].revenueData || []).map((row, index) => [
           `${monthlySales?.body?.[0]?.[index] || ""}`,
           `LKR ${monthlySales?.body?.[1]?.expectedSalesData[index].toFixed(2) || ""}`,
