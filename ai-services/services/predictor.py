@@ -15,18 +15,27 @@ Features such as orderDate (date, month, year), price will be considered when tr
 
 After the training, we could simply make predictions to a given date or a date-range
 """
-def get_item_predictions(request: Request, frequency, fromDate, toDate):
+def get_item_predictions(request: Request, frequency, fromDate, toDate, item):
     db = request.app.database
     time_segments = {}
-    price_segments = {}
+    price_segments = { }
     orders = db.orders.find({}).sort("orderdate", 1).to_list()
 
     current_date = orders[0]["orderdate"].replace(hour=0, minute=0, second=0, microsecond=0)
+    current_date_timestamp = current_date.timestamp()
     upper_bound = current_date + timedelta(days=frequency)
-    time_segments[current_date.timestamp()] = []
-    price_segments[current_date.timestamp()] = 0
+    time_segments[current_date_timestamp] = []
+    price_segments[current_date_timestamp] = 0
+    
+    price_segments = { current_date_timestamp: 0 }
 
     index = 0
+
+    items_cache = {}
+    def get_item_from_cache(item_id):
+        if item_id not in items_cache:
+            items_cache[item_id] = db.items.find_one({ "_id": item_id })
+        return items_cache[item_id]
 
     while index < len(orders):
         order = orders[index]
@@ -38,35 +47,46 @@ def get_item_predictions(request: Request, frequency, fromDate, toDate):
             day = order["orderdate"].day
             weekday = order["orderdate"].weekday()
 
-            for i in order["items"]:
-                time_segments[current_date.timestamp()].append([
+            if item:
+                for item_info in order["items"]:
+                    time_segments[current_date_timestamp].append([
+                        # year,
+                        month,
+                        day,
+                        weekday,
+                    ])
+                    if str(item_info["product"]) == item:
+                        cached_item = get_item_from_cache(item_info["product"])
+                        price_segments[current_date_timestamp] += cached_item["price"]
+            else:
+                time_segments[current_date_timestamp].append([
                     # year,
                     month,
                     day,
                     weekday,
                 ])
-                price_segments[current_date.timestamp()] += order["price"]
+                price_segments[current_date_timestamp] += order["price"]
+                
             index += 1
         else:
             current_date = current_date + timedelta(days=frequency)
+            current_date_timestamp = current_date.timestamp()
             upper_bound = current_date + timedelta(days=frequency)
-            time_segments[current_date.timestamp()] = []
-            price_segments[current_date.timestamp()] = 0
+            time_segments[current_date_timestamp] = []
+            price_segments[current_date_timestamp] = 0
+
+    predictions = []
 
     # prepare the segments into proper matrices to train
     X = []
     y = []
-
     for segment_time, entries in time_segments.items():
         for entry in entries:
             X.append(entry)
             y.append(price_segments[segment_time])
-
     regr = RandomForestRegressor()
     regr.fit(X, y)
-    
     # make predictions
-    predictions = []
     current_date = fromDate
     while current_date <= toDate:
         input_features = [[

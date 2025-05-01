@@ -20,6 +20,7 @@ export default function SalesManagement() {
   const [metric, setMetric] = useState(null)
   const [compareMetric, setCompareMetric] = useState("sales")
   const [compareItems, setCompareItems] = useState([])
+  const chartWidth = (window.innerWidth - 50) / 3
 
   const changeCategory = (evt) => {
     if (evt.target.value === "all") return setMetric(null)
@@ -100,7 +101,7 @@ export default function SalesManagement() {
           <div>
             <LineChart
               height={300}
-              width={500}
+              width={chartWidth}
               series={chartData}
               xAxis={[
                 {
@@ -140,7 +141,7 @@ export default function SalesManagement() {
           <div>
             <LineChart
               height={300}
-              width={500}
+              width={chartWidth}
               series={compareChartData}
               xAxis={[
                 {

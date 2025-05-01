@@ -39,7 +39,7 @@ const validateAndGetQuery = async (res, dateFrom, dateTo, metric, period) => {
     return [query, frequency]
 }
 
-const processSales = async (orders, frequency, metric, dateTo) => {
+const processSales = async (orders, frequency, metric, dateTo, item) => {
     let date = []
     let revenueData = []
     let costData = []
@@ -98,7 +98,11 @@ const processSales = async (orders, frequency, metric, dateTo) => {
 
     const fromDate = orders[0].orderdate.toISOString().split("T")[0]
     const expectedSalesDataResponse = await fetch(
-        `${process.env.AI_SERVICES_URI}/predictions/items/?frequency=${frequency}&fromDate=${fromDate}&toDate=${dateTo}`,
+        `${process.env.AI_SERVICES_URI}/predictions/items/?frequency=${frequency}&fromDate=${fromDate}&toDate=${dateTo}` + (
+            item
+            ? `&item=${item}`
+            : ""
+        )
     )
     let result = await expectedSalesDataResponse.json()
     expectedSalesData = result.map((data) => data[1])
@@ -154,13 +158,15 @@ const compareItems = async (req, res, next) => {
         const metric = req.query.metric
         const period = "7d"
 
-        const items = req.query.items?.split(",")?.filter((item) => item)
-        if (!items || items.length == 0)
+        const itemNames = req.query.items?.split(",")?.filter((item) => item)
+        if (!itemNames || itemNames.length == 0)
             return createResponse(res, StatusCodes.BAD_REQUEST, "No items provided")
+
+        const items = await Item.find({ itemName: { $in: itemNames } }).distinct("_id").exec()
 
         const [query, frequency] = await validateAndGetQuery(res, dateFrom, dateTo, metric, period)
         query["items.product"] = {
-            $in: await Item.find({ itemName: { $in: items } }).distinct("_id"),
+            $in: items,
         }
 
         const orders = await Order.find(query)
@@ -170,11 +176,20 @@ const compareItems = async (req, res, next) => {
 
         let longest = ""
         let statistics = {}
-        for (let itemName of items) {
+        for (let i in itemNames) {
+            let itemName = itemNames[i]
+            let item = items[i]
+            
             let filteredOrders = orders.filter((order) =>
                 order.items.some((item) => item.product.itemName == itemName),
             )
-            statistics[itemName] = await processSales(filteredOrders, frequency, metric, dateTo)
+            statistics[itemName] = await processSales(
+                filteredOrders,
+                frequency,
+                metric,
+                dateTo,
+                item,
+            )
             if (longest == "" || statistics[itemName][0].length > statistics[longest][0].length)
                 longest = itemName
         }
