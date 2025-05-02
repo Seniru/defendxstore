@@ -4,12 +4,31 @@ import Select from "../../components/Select"
 import Table from "../../components/Table"
 import { PieChart } from "@mui/x-charts/PieChart"
 import * as React from "react"
+import { useState } from "react"
+import Button from "../../components/Button"
+import OverlayWindow from "../../components/OverlayWindow"
+import ExpensesForm from "../../forms/ExpensesForm"
 
 export default function SalesManagement() {
+  const [isExpensesFormOpen, setIsExpensesFormOpen] = useState(false);
+
+  const handleExpenseSubmit = (expenseData) => {
+    // Handle the expense data - send to API, update state, etc.
+    console.log("New expense:", expenseData);
+    setIsExpensesFormOpen(false);
+  };
+
   return (
     <div className="content">
       <div className="sales-management-actions">
-        View <Select items={["Expected Sales", "Revenue", "Costs", "Profit"]} />
+        <div className="actions-header">
+          <div>
+            View <Select items={["Expected Sales", "Revenue", "Costs", "Profit"]} />
+          </div>
+          <Button kind="primary" onClick={() => setIsExpensesFormOpen(true)}>
+            Add Expense
+          </Button>
+        </div>
         <br />
         <div style={{ display: "flex" }}>
           <div>
@@ -81,6 +100,13 @@ export default function SalesManagement() {
           ["April", "99", "99.9", "99.9", "99.9"],
         ]}
       />
+
+      <OverlayWindow isOpen={isExpensesFormOpen} setIsOpen={setIsExpensesFormOpen}>
+        <ExpensesForm 
+          onSubmit={handleExpenseSubmit}
+          onCancel={() => setIsExpensesFormOpen(false)}
+        />
+      </OverlayWindow>
     </div>
   )
 }
