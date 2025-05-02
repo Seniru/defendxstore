@@ -79,27 +79,29 @@ export default function SalesManagement() {
   const compareChartData = []
   for (let [k, v] of Object.entries(comparativeSales?.body?.[1] || {}))
     compareChartData.push({ data: v, label: k })
-  
+
   return (
     <div className="content">
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <div>
-          From{" "}
-          <Input
-            type="date"
-            onChange={(evt) => setDateFrom(evt.target.value)}
-          />
-        </div>
-        <div>
-          {" "}
-          To{" "}
-          <Input type="date" onChange={(evt) => setDateTo(evt.target.value)} />
+      <div className="actions-header">
+        <div className="actions-header">
+          <div>
+            From{" "}
+            <Input
+              type="date"
+              onChange={(evt) => setDateFrom(evt.target.value)}
+            />
+          </div>
+          <div>
+            &nbsp; To{" "}
+            <Input
+              type="date"
+              onChange={(evt) => setDateTo(evt.target.value)}
+            />
+          </div>
         </div>
         <Button kind="primary" onClick={() => setIsExpensesFormOpen(true)}>
           Add Expense
         </Button>
-
-        <hr />
       </div>
       <hr />
       <div className="sales-management-actions">

@@ -1,8 +1,4 @@
 .expenses-form {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 84%;
   max-width: 1200px; /* Increased from 1000px to 1200px */
   margin: 0 auto;
 }
@@ -11,6 +7,10 @@
   margin-top: 0;
   margin-bottom: 20px;
   text-align: center;
+}
+
+.expenses-form select {
+  width: 100%;
 }
 
 .form-group {
