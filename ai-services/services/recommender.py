@@ -3,6 +3,10 @@ import numpy as np
 from fastapi import Request
 from sklearn.neighbors import NearestNeighbors
 
+"""Get recommended items
+
+Based on collaborative filtering (https://www.geeksforgeeks.org/recommender-systems-using-knn/)
+"""
 def get_recommended_items(request: Request, user_id):
 	db = request.app.database
 	items = db.items.find({}).to_list()

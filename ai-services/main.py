@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from dotenv import dotenv_values
 from pymongo import MongoClient
 
-from routers import trends, recommendations
+from routers import trends, recommendations, predictions
 
 config = dotenv_values(".env")
 
@@ -22,6 +22,7 @@ def shutdown_db_client():
 
 app.include_router(trends.router)
 app.include_router(recommendations.router)
+app.include_router(predictions.router)
 
 @app.get("/")
 def read_root():
