@@ -9,15 +9,20 @@ import {
 import Select from "../../components/Select"
 import Table from "../../components/Table"
 import useFetch from "../../hooks/useFetch"
+import Input from "../../components/Input"
+import Button from "../../components/Button"
+import OverlayWindow from "../../components/OverlayWindow"
+import ExpensesForm from "../../forms/ExpensesForm"
+
+import { useMemo, useState } from "react"
 
 import "./SalesManagement.css"
-import Input from "../../components/Input"
-import { useMemo, useState } from "react"
 
 const { REACT_APP_API_URL } = process.env
 
 export default function SalesManagement() {
   const [dateFrom, setDateFrom] = useState(null)
+  const [isExpensesFormOpen, setIsExpensesFormOpen] = useState(false)
   const [dateTo, setDateTo] = useState(null)
   const [metric, setMetric] = useState(null)
   const [compareMetric, setCompareMetric] = useState("sales")
@@ -27,6 +32,12 @@ export default function SalesManagement() {
   const changeCategory = (evt) => {
     if (evt.target.value === "all") return setMetric(null)
     setMetric(evt.target.value)
+  }
+
+  const handleExpenseSubmit = (expenseData) => {
+    // Handle the expense data - send to API, update state, etc.
+    console.log("New expense:", expenseData)
+    setIsExpensesFormOpen(false)
   }
 
   const queryParams = useMemo(() => {
@@ -68,7 +79,7 @@ export default function SalesManagement() {
   const compareChartData = []
   for (let [k, v] of Object.entries(comparativeSales?.body?.[1] || {}))
     compareChartData.push({ data: v, label: k })
-
+  
   return (
     <div className="content">
       <div style={{ display: "flex", alignItems: "center" }}>
@@ -84,6 +95,10 @@ export default function SalesManagement() {
           To{" "}
           <Input type="date" onChange={(evt) => setDateTo(evt.target.value)} />
         </div>
+        <Button kind="primary" onClick={() => setIsExpensesFormOpen(true)}>
+          Add Expense
+        </Button>
+
         <hr />
       </div>
       <hr />
@@ -202,6 +217,16 @@ export default function SalesManagement() {
           `LKR ${monthlySales?.body?.[1]?.profitData[index].toFixed(2) || ""}`,
         ])}
       />
+
+      <OverlayWindow
+        isOpen={isExpensesFormOpen}
+        setIsOpen={setIsExpensesFormOpen}
+      >
+        <ExpensesForm
+          onSubmit={handleExpenseSubmit}
+          onCancel={() => setIsExpensesFormOpen(false)}
+        />
+      </OverlayWindow>
     </div>
   )
 }
