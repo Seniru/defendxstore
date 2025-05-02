@@ -98,11 +98,8 @@ const processSales = async (orders, frequency, metric, dateTo, item) => {
 
     const fromDate = orders[0].orderdate.toISOString().split("T")[0]
     const expectedSalesDataResponse = await fetch(
-        `${process.env.AI_SERVICES_URI}/predictions/items/?frequency=${frequency}&fromDate=${fromDate}&toDate=${dateTo}` + (
-            item
-            ? `&item=${item}`
-            : ""
-        )
+        `${process.env.AI_SERVICES_URI}/predictions/items/?frequency=${frequency}&fromDate=${fromDate}&toDate=${dateTo}` +
+            (item ? `&item=${item}` : ""),
     )
     let result = await expectedSalesDataResponse.json()
     expectedSalesData = result.map((data) => data[1])
@@ -162,7 +159,9 @@ const compareItems = async (req, res, next) => {
         if (!itemNames || itemNames.length == 0)
             return createResponse(res, StatusCodes.BAD_REQUEST, "No items provided")
 
-        const items = await Item.find({ itemName: { $in: itemNames } }).distinct("_id").exec()
+        const items = await Item.find({ itemName: { $in: itemNames } })
+            .distinct("_id")
+            .exec()
 
         const [query, frequency] = await validateAndGetQuery(res, dateFrom, dateTo, metric, period)
         query["items.product"] = {
@@ -179,7 +178,7 @@ const compareItems = async (req, res, next) => {
         for (let i in itemNames) {
             let itemName = itemNames[i]
             let item = items[i]
-            
+
             let filteredOrders = orders.filter((order) =>
                 order.items.some((item) => item.product.itemName == itemName),
             )
