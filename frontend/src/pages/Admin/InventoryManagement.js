@@ -12,8 +12,35 @@ import OverlayWindow from "../../components/OverlayWindow"
 import PromoCodes from "./promocodes"
 import Input from "../../components/Input"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons"
+import {
+  faEllipsisVertical,
+  faBoxesStacked,
+  faTriangleExclamation,
+  faCircleExclamation,
+} from "@fortawesome/free-solid-svg-icons"
 import Menu from "../../components/Menu"
+import MessageBox from "../../components/MessageBox"
+import * as ExcelJS from "exceljs"
+import { saveAs } from "file-saver"
+import QRCode from "react-qr-code"
+
+const StockCard = ({ title, count, color, backgroundColor, icon }) => {
+  return (
+    <div className="stock-card" style={{ backgroundColor }}>
+      <div className="stock-card-icon">
+        <FontAwesomeIcon icon={icon} size="2x" color={color} />
+      </div>
+      <div className="stock-card-content">
+        <h3 className="stock-card-title" style={{ color }}>
+          {title}
+        </h3>
+        <p className="stock-card-count" style={{ color }}>
+          {count}
+        </p>
+      </div>
+    </div>
+  )
+}
 
 const InventoryManagement = () => {
   const { token } = useAuth()
@@ -24,7 +51,9 @@ const InventoryManagement = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [filteredProducts, setFilteredProducts] = useState([])
-  const [selectedFilter, setSelectedFilter] = useState("All") // State for filter dropdown
+  const [selectedFilter, setSelectedFilter] = useState("All")
+  const [message, setMessage] = useState(null)
+  const [messageType, setMessageType] = useState("info")
   const [newProduct, setNewProduct] = useState({
     product: null,
     productPreview: null,
@@ -38,6 +67,15 @@ const InventoryManagement = () => {
     stock: "In Stock",
   })
   const [selectedProductIndex, setSelectedProductIndex] = useState(null)
+  const [qrCodeData, setQrCodeData] = useState(null)
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false)
+  // New state for stock counts
+  const [stockCounts, setStockCounts] = useState({
+    total: 0,
+    inStock: 0,
+    runningLow: 0,
+    outOfStock: 0,
+  })
 
   const [productData] = useFetch(
     `${process.env.REACT_APP_API_URL}/api/items`,
@@ -45,12 +83,10 @@ const InventoryManagement = () => {
     refreshFlag,
   )
 
-  // Filter products based on search query and dropdown filter
   useEffect(() => {
     if (productData.body) {
       let results = [...productData.body]
 
-      // Apply text search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase()
         results = results.filter(
@@ -65,16 +101,59 @@ const InventoryManagement = () => {
         )
       }
 
-      // Apply dropdown filter
       if (selectedFilter !== "All") {
         results = results.filter((product) => product.stock === selectedFilter)
       }
 
       setFilteredProducts(results)
+
+      // Calculate stock counts for dashboard cards
+      const totalItems = productData.body.length
+      const inStockItems = productData.body.filter(
+        (item) => item.stock === "In Stock",
+      ).length
+      const lowStockItems = productData.body.filter(
+        (item) => item.stock === "Running Low",
+      ).length
+      const outOfStockItemsCard = productData.body.filter(
+        (item) => item.stock === "Out of Stock",
+      ).length
+
+      // Update stock counts
+      setStockCounts({
+        total: totalItems,
+        inStock: inStockItems,
+        runningLow: lowStockItems,
+        outOfStock: outOfStockItemsCard,
+      })
+
+      // show notifications
+      if (lowStockItems > 0) {
+        const itemNames = productData.body
+          .filter((item) => item.stock === "Running Low")
+          .map((item) => item.itemName)
+          .join(", ")
+        setMessage(
+          `Alert: ${lowStockItems} items are running low on stock: ${itemNames}`,
+        )
+        setMessageType("warning")
+      }
+
+      const outOfStockItems = productData.body.filter(
+        (item) => item.stock === "Out of Stock",
+      )
+      if (outOfStockItems.length > 0) {
+        const itemNames = outOfStockItems
+          .map((item) => item.itemName)
+          .join(", ")
+        setMessage(
+          `Alert: ${outOfStockItems.length} items are out of stock: ${itemNames}`,
+        )
+        setMessageType("error")
+      }
     }
   }, [productData.body, searchQuery, selectedFilter])
 
-  // Handle search input change
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value)
   }
@@ -86,6 +165,32 @@ const InventoryManagement = () => {
 
   function ProductRow({ row, index }) {
     const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
+
+    const handleGetQrCode = () => {
+      try {
+        if (!row._id) {
+          throw new Error("Product ID is missing")
+        }
+
+        const baseUrl = window.location.origin
+        const productUrl = `${baseUrl}/product?id=${encodeURIComponent(row._id)}`
+
+        // Store product data for display
+        setQrCodeData({
+          id: row._id,
+          name: row.itemName || "Unknown Product",
+          price: row.price || "N/A",
+          category: row.category || "N/A",
+          url: productUrl,
+        })
+
+        setIsQrModalOpen(true)
+      } catch (error) {
+        console.error("Error generating QR code:", error)
+        setMessage("Failed to generate QR code: " + error.message)
+        setMessageType("error")
+      }
+    }
 
     return (
       <tr key={index}>
@@ -122,11 +227,16 @@ const InventoryManagement = () => {
             ))}
           </div>
         </td>
-        <td>{`$${row.price}`}</td>
+        <td>{`LKR ${row.price}`}</td>
         <td>{row.size}</td>
         <td>{row.quantity}</td>
         <td>
           <StockStatus stock={row.stock} />
+        </td>
+        <td>
+          <Button kind="secondary" onClick={() => handleGetQrCode()}>
+            Get QR
+          </Button>
         </td>
         <td>
           <FontAwesomeIcon
@@ -155,6 +265,128 @@ const InventoryManagement = () => {
       }
     }
   }, [newProduct.productPreview])
+
+  const exportToExcel = async () => {
+    try {
+      const workbook = new ExcelJS.Workbook()
+      const worksheet = workbook.addWorksheet("Inventory")
+
+      worksheet.columns = [
+        { header: "Item Name", key: "itemName", width: 25 },
+        { header: "Category", key: "category", width: 15 },
+        { header: "Description", key: "description", width: 30 },
+        { header: "Colors", key: "colors", width: 20 },
+        { header: "Price (LKR)", key: "price", width: 15 },
+        { header: "Size", key: "size", width: 10 },
+        { header: "Quantity", key: "quantity", width: 10 },
+        { header: "Stock Status", key: "stock", width: 15 },
+      ]
+
+      //header row  styling
+      const headerRow = worksheet.getRow(1)
+      headerRow.font = {
+        bold: true,
+        color: { argb: "FFFFFFFF" },
+        size: 12,
+      }
+      headerRow.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF000000" },
+      }
+      headerRow.alignment = {
+        vertical: "middle",
+        horizontal: "center",
+      }
+      headerRow.height = 25
+
+      // Apply borders to header cells
+      headerRow.eachCell((cell) => {
+        cell.border = {
+          top: { style: "thin", color: { argb: "FF000000" } },
+          left: { style: "thin", color: { argb: "FF000000" } },
+          bottom: { style: "thin", color: { argb: "FF000000" } },
+          right: { style: "thin", color: { argb: "FF000000" } },
+        }
+      })
+
+      // Add data rows
+      filteredProducts.forEach((product) => {
+        worksheet.addRow({
+          itemName: product.itemName,
+          category: product.category,
+          description: product.description,
+          colors: Array.isArray(product.colors)
+            ? product.colors.join(", ")
+            : "",
+          price: product.price,
+          size: product.size,
+          quantity: product.quantity,
+          stock: product.stock,
+        })
+      })
+
+      worksheet.eachRow((row, rowNumber) => {
+        if (rowNumber > 1) {
+          // Add two colors for data rows
+          row.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: rowNumber % 2 === 0 ? "FFE6F0FF" : "FFFFFFFF" },
+          }
+
+          // Add borders to cells
+          row.eachCell((cell, colNumber) => {
+            cell.border = {
+              top: { style: "thin", color: { argb: "FFD3D3D3" } },
+              left: { style: "thin", color: { argb: "FFD3D3D3" } },
+              bottom: { style: "thin", color: { argb: "FFD3D3D3" } },
+              right: { style: "thin", color: { argb: "FFD3D3D3" } },
+            }
+
+            // Add color coding for stock status
+            if (colNumber === 8) {
+              // Stock status column
+              const stockStatus = cell.value
+              if (stockStatus === "Out of Stock") {
+                cell.font = { color: { argb: "FFFF0000" } } // Red
+              } else if (stockStatus === "Running Low") {
+                cell.font = { color: { argb: "FFFF9900" } } //yellow
+              } else if (stockStatus === "In Stock") {
+                cell.font = { color: { argb: "FF008000" } } //green
+              }
+            }
+
+            // Align  cells
+            cell.alignment = {
+              vertical: "middle",
+              horizontal: "center",
+              wrapText: true,
+            }
+          })
+        }
+      })
+
+      const buffer = await workbook.xlsx.writeBuffer()
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      })
+      saveAs(
+        blob,
+        `Inventory_Report_${new Date().toLocaleDateString().replace(/\//g, "-")}.xlsx`,
+      )
+
+      setMessage("Excel file exported successfully")
+      setMessageType("success")
+
+      // Auto-hide message after 3 seconds
+      setTimeout(() => setMessage(null), 3000)
+    } catch (error) {
+      console.error("Error exporting to Excel:", error)
+      setMessage("Failed to export Excel file: " + error.message)
+      setMessageType("error")
+    }
+  }
 
   const createItem = async (item) => {
     try {
@@ -362,8 +594,74 @@ const InventoryManagement = () => {
     }
   }
 
+  //qr
+  const handleQrModalClose = () => {
+    setIsQrModalOpen(false)
+    setQrCodeData(null)
+  }
+  //qr download
+  const downloadQrCode = () => {
+    try {
+      const svgElement = document
+        .getElementById("product-qr-code")
+        .querySelector("svg")
+      if (!svgElement) {
+        throw new Error("QR code SVG element not found")
+      }
+      const canvas = document.createElement("canvas")
+      const ctx = canvas.getContext("2d")
+
+      canvas.width = 256
+      canvas.height = 256
+
+      // Create an image from the SVG
+      const img = new Image()
+      const svgData = new XMLSerializer().serializeToString(svgElement)
+      const svgBlob = new Blob([svgData], {
+        type: "image/svg+xml;charset=utf-8",
+      })
+      const url = URL.createObjectURL(svgBlob)
+
+      // Once the image loads, draw it to canvas and create download
+      img.onload = () => {
+        ctx.fillStyle = "white"
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+
+        const dataURL = canvas.toDataURL("image/png")
+
+        // Create download link
+        const link = document.createElement("a")
+        link.href = dataURL
+        link.download = `qr-${qrCodeData.name.replace(/\s+/g, "-")}.png`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+
+        URL.revokeObjectURL(url)
+      }
+
+      img.src = url
+
+      setMessage("QR code downloading...")
+      setMessageType("success")
+    } catch (error) {
+      console.error("Error downloading QR code:", error)
+      setMessage("Failed to download QR code: " + error.message)
+      setMessageType("error")
+    }
+  }
+
   return (
     <>
+      {message && (
+        <MessageBox
+          message={message}
+          setMessage={setMessage}
+          type={messageType}
+          position="top"
+        />
+      )}
       <OverlayWindow
         isOpen={isPromocodeWindowOpen}
         setIsOpen={setIsPromocodeWindowOpen}
@@ -372,6 +670,7 @@ const InventoryManagement = () => {
       </OverlayWindow>
       <div className="content">
         <div className="print-title">Inventory Report</div>
+
         <div className="inventory-management-actions">
           <SearchBar
             placeholder={"Search items..."}
@@ -384,8 +683,8 @@ const InventoryManagement = () => {
             >
               Promotion codes
             </Button>
-            <Button kind="secondary" onClick={() => window.print()}>
-              Generate Report
+            <Button kind="secondary" onClick={exportToExcel}>
+              Export to Excel
             </Button>
             <Select
               items={["All", "In Stock", "Running Low", "Out of Stock"]}
@@ -394,11 +693,38 @@ const InventoryManagement = () => {
             <Button onClick={handleAddProductClick}>Add Product</Button>
           </span>
         </div>
+
         <div className="secondary-text">
           Showing {filteredProducts.length} products
           {searchQuery && ` matching "${searchQuery}"`}
           {selectedFilter !== "All" && ` with status "${selectedFilter}"`}
         </div>
+
+        <br />
+        <div className="stock-dashboard">
+          <StockCard
+            title="Total Products"
+            count={stockCounts.total}
+            color="#27ae60"
+            backgroundColor="#e8f8f1"
+            icon={faBoxesStacked}
+          />
+          <StockCard
+            title="Running Low"
+            count={stockCounts.runningLow}
+            color="#f39c12"
+            backgroundColor="#fef5e7"
+            icon={faTriangleExclamation}
+          />
+          <StockCard
+            title="Out of Stock"
+            count={stockCounts.outOfStock}
+            color="#e74c3c"
+            backgroundColor="#fdedeb"
+            icon={faCircleExclamation}
+          />
+        </div>
+
         <div className="table-container" id="inventory-table">
           <Table
             headers={[
@@ -411,6 +737,7 @@ const InventoryManagement = () => {
               "Size",
               "Quantity",
               "Stock",
+              "QR Code",
               "",
             ]}
             rows={filteredProducts}
@@ -566,6 +893,39 @@ const InventoryManagement = () => {
                   </Button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* QR Code Modal */}
+        {isQrModalOpen && qrCodeData && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h2>QR Code for {qrCodeData.name}</h2>
+              <div className="qr-container" id="qr-code-container">
+                <div id="product-qr-code">
+                  <QRCode
+                    value={qrCodeData.url}
+                    size={256}
+                    level="H"
+                    style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                    viewBox={`0 0 256 256`}
+                  />
+                </div>
+              </div>
+              <p className="qr-info">
+                Scan this QR code to view the product details
+              </p>
+              <p className="qr-url">
+                <small>{qrCodeData.url}</small>
+              </p>
+
+              <div className="form-actions">
+                <Button onClick={downloadQrCode}>Download QR Code</Button>
+                <Button kind="secondary" onClick={handleQrModalClose}>
+                  Close
+                </Button>
+              </div>
             </div>
           </div>
         )}

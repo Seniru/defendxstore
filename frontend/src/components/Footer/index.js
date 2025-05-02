@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons"
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons"
+import { Link } from "react-router-dom"
 
 import "./Footer.css"
 
@@ -13,7 +14,9 @@ export default function Footer() {
       <nav>
         <ul>
           <li>About us</li>
-          <li>FAQ</li>
+          <li>
+            <Link to="/faq">FAQ</Link>
+          </li>
           <li>Privacy Policy</li>
         </ul>
       </nav>

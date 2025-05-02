@@ -5,4 +5,11 @@
   margin-bottom: 10px;
 }
 
-/* Add spacing after existing styles */
+.sales-management-actions {
+  display: flex;
+  flex-wrap: wrap;
+
+  .action {
+    margin: 5px;
+  }
+}

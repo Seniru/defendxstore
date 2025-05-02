@@ -1,4 +1,4 @@
-select {
+.select {
   background-color: #eee;
   color: var(--text-color);
   border-radius: 6px;
@@ -16,8 +16,53 @@ select {
   background-position: 95% center;
   transition-duration: 0.4s;
   transition-timing-function: ease-in-out;
+  display: inline-block;
 }
 
-select:active {
+.select:active {
   background-image: url("../../assets/images/angle-up-solid.svg");
+}
+
+.select-container {
+  position: relative;
+
+  .selected {
+    width: calc(100% - 55px);
+  }
+
+  .select-menu {
+    position: absolute;
+    z-index: 99;
+    padding: 3px;
+    width: max-content;
+    min-width: 200px;
+    overflow-y: scroll;
+    max-height: 500%;
+
+    ul {
+      list-style-type: none;
+      padding: 3px;
+      margin: 0px;
+      width: calc(100% - 10px);
+
+      input[type="checkbox"] {
+        display: none;
+      }
+
+      li {
+        width: 100%;
+
+        label {
+          display: inline-block;
+          width: 100%;
+          padding: 2px;
+        }
+      }
+
+      label:has(input[type="checkbox"]:checked) {
+        background-color: #ccc;
+        border-radius: 4px;
+      }
+    }
+  }
 }

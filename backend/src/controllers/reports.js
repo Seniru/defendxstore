@@ -1,6 +1,7 @@
 const { StatusCodes } = require("http-status-codes")
 const createResponse = require("../utils/createResponse")
 const UserReport = require("../models/reports/UserReport")
+const OrderReport = require("../models/reports/OrderReport")
 
 const getUsersReport = async (req, res, next) => {
     try {
@@ -35,4 +36,37 @@ const getUsersReport = async (req, res, next) => {
     }
 }
 
-module.exports = { getUsersReport }
+const getOrdersReport = async (req, res, next) => {
+    try {
+        const { action, searchUser } = req.query
+        const fromDate = req.query.fromDate ? new Date(req.query.fromDate) : null
+        const toDate = req.query.toDate ? new Date(req.query.toDate) : null
+
+        if (action && !Object.values(OrderReport.actions).includes(action))
+            return createResponse(res, StatusCodes.NOT_FOUND, "Action not found")
+
+        let query = {}
+        if (action) query.action = action
+        if (fromDate || toDate) {
+            query.timestamp = {}
+            if (fromDate) query.timestamp.$gte = fromDate
+            if (toDate) query.timestamp.$lte = toDate
+        }
+
+        let report = await OrderReport.find(query)
+            .populate({ path: "user", select: "username" })
+            .exec()
+
+        // filter users
+        if (searchUser) report = report.filter((l) => l.user.username.match(searchUser))
+
+        return createResponse(res, StatusCodes.OK, {
+            report,
+            actions: Object.values(OrderReport.actions),
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { getUsersReport, getOrdersReport }

@@ -5,17 +5,42 @@ import {
   faBoxesPacking,
   faCalendar,
   faCheckCircle,
+  faChevronDown,
   faChevronRight,
+  faChevronUp,
   faMap,
   faPhone,
+  faRoute,
   faTruck,
 } from "@fortawesome/free-solid-svg-icons"
 import Button from "../Button"
 import api from "../../utils/api"
 import { useAuth } from "../../contexts/AuthProvider"
 import MessageBox from "../MessageBox"
-import { useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import ProfileImage from "../ProfileImage"
+import View from "ol/View"
+import Map from "ol/Map"
+import TileLayer from "ol/layer/Tile"
+import { OSM } from "ol/source"
+import getLocation from "../../utils/getLocation"
+import { add } from "ol/coordinate"
+import { useGeographic } from "ol/proj"
+import VectorSource from "ol/source/Vector"
+import Feature from "ol/Feature"
+import { LineString, Point } from "ol/geom"
+import Style from "ol/style/Style"
+import Icon from "ol/style/Icon"
+import VectorLayer from "ol/layer/Vector"
+import Stroke from "ol/style/Stroke"
+import decodePolyline from "../../utils/decodedPolyline"
+
+const markerStyle = new Style({
+  image: new Icon({
+    src: "/images/pin.png",
+    anchor: [0.5, 1],
+  }),
+})
 
 export default function Order({
   order,
@@ -24,12 +49,92 @@ export default function Order({
   includeCompleteDeliveryButton,
   includeUser,
   includeAgent,
+  includeMap,
   refreshOrders,
   setRefreshOrders,
 }) {
+  useGeographic()
+
   const { token } = useAuth()
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState(false)
+  const [isMapOpen, setIsMapOpen] = useState(false)
+  const [coords, setCoords] = useState([0, 0])
+  const mapRef = useRef(null)
+
+  const address = order.deliveryAddress
+  const vectorSource = useMemo(() => new VectorSource({}), [])
+
+  const vectorLayer = useMemo(
+    () =>
+      new VectorLayer({
+        source: vectorSource,
+      }),
+    [vectorSource],
+  )
+
+  useEffect(() => {
+    if (!isMapOpen) return
+    ;(async () => {
+      const coordMatches = address.match(/\(([\d.-]+),\s*([\d.-]+)\)/)
+      if (coordMatches) {
+        setCoords([parseFloat(coordMatches[1]), parseFloat(coordMatches[2])])
+      } else {
+        let houseNo, street, city, postalCode
+        let addressFragments = (address || "").split("\n")
+        if (addressFragments[0]) {
+          let houseInfo = addressFragments[0].split(", ")
+          houseNo = houseInfo[0]
+          street = houseInfo[1]
+        }
+        if (addressFragments[1]) {
+          let cityInfo = addressFragments[1].split(", ")
+          postalCode = cityInfo[0]
+          city = cityInfo[1]
+        }
+        setCoords(
+          await getLocation(
+            houseNo || "",
+            street || "",
+            city || "",
+            postalCode || "",
+          ),
+        )
+      }
+    })()
+  }, [isMapOpen, address])
+
+  useEffect(() => {
+    if (!isMapOpen) return
+    const mapContainer = document.getElementById(`order-${order._id}`)
+    mapContainer.innerHTML = ""
+
+    const view = new View({
+      center: coords || [0, 0],
+      zoom: 16,
+    })
+
+    const map = new Map({
+      target: `order-${order._id}`,
+      layers: [
+        new TileLayer({
+          source: new OSM(),
+        }),
+      ],
+      view,
+    })
+
+    const marker = new Feature({
+      geometry: new Point(coords || [0, 0]),
+    })
+
+    marker.setStyle(markerStyle)
+
+    vectorSource.addFeature(marker)
+    map.addLayer(vectorLayer)
+
+    mapRef.current = map
+  }, [vectorLayer, vectorSource, coords, isMapOpen, order._id])
 
   const acquireDelivery = async () => {
     const response = await api.post(
@@ -67,6 +172,64 @@ export default function Order({
     if (setRefreshOrders) setRefreshOrders(!refreshOrders)
   }
 
+  const getDirections = async () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const start = [pos.coords.longitude, pos.coords.latitude]
+          const end = coords
+
+          const response = await fetch(
+            "https://api.openrouteservice.org/v2/directions/foot-walking/json",
+            {
+              method: "POST",
+              headers: {
+                Authorization: process.env.REACT_APP_OPEN_ROUTE_SERVICE_API_KEY,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                coordinates: [start, end],
+              }),
+            },
+          )
+
+          const data = await response.json()
+          const routeCoords = data.routes[0].geometry
+          const decodedCoords = decodePolyline(routeCoords)
+          const route = new Feature({
+            geometry: new LineString(decodedCoords),
+          })
+
+          route.setStyle(
+            new Style({
+              stroke: new Stroke({
+                color: "#000000",
+                width: 5,
+              }),
+            }),
+          )
+
+          const startMarker = new Feature({ geometry: new Point(start) })
+          const endMarker = new Feature({ geometry: new Point(end) })
+          startMarker.setStyle(markerStyle)
+          endMarker.setStyle(markerStyle)
+
+          vectorSource.clear()
+          vectorSource.addFeature(route)
+          vectorSource.addFeature(endMarker)
+
+          mapRef.current
+            .getView()
+            .fit(route.getGeometry(), { padding: [50, 50, 50, 50] })
+        },
+        (error) => {
+          setIsError(true)
+          setMessage(`Failed to get directions: ${error.message}`)
+        },
+      )
+    }
+  }
+
   return (
     <>
       <MessageBox isError={isError} message={message} setMessage={setMessage} />
@@ -100,16 +263,50 @@ export default function Order({
             src={order.items[0].product}
           />
           <div className="order-details">
-            <span className="secondary-text">
+            <div className="secondary-text">
               <FontAwesomeIcon icon={faCalendar} />{" "}
               {new Date(order.orderdate).toLocaleString()}
-            </span>
-            <span className="secondary-text"> | </span>
-            <span className="secondary-text">
-              <FontAwesomeIcon icon={faMap} /> {order.deliveryAddress}
-            </span>
+            </div>
+            <div
+              className="location-details"
+              onClick={() => setIsMapOpen(!isMapOpen)}
+            >
+              <div className="secondary-text">
+                <FontAwesomeIcon icon={faMap} /> {order.deliveryAddress}
+              </div>
+              {includeMap && (
+                <div className="secondary-text">
+                  {isMapOpen ? (
+                    <>
+                      Hide map <FontAwesomeIcon icon={faChevronUp} />
+                    </>
+                  ) : (
+                    <>
+                      Show map <FontAwesomeIcon icon={faChevronDown} />
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
             <br />
-            <br />
+
+            <div
+              id={`order-${order._id}`}
+              style={{ height: isMapOpen ? 400 : 0 }}
+            />
+            {isMapOpen && (
+              <>
+                <Button
+                  kind="primary"
+                  onClick={getDirections}
+                  className="map-route-button"
+                >
+                  <FontAwesomeIcon icon={faRoute} size="lg" />
+                </Button>
+                <br />
+                <hr />
+              </>
+            )}
             <div>
               {order.items.map((item) => (
                 <div className="order-item">

@@ -142,7 +142,7 @@ const createUser = async (req, res, next) => {
             await UserReport.create({
                 user: user._id,
                 action: UserReport.actions.referral,
-                data: { referredUser },
+                data: { referredUser: referredUser.username },
             })
             referredUser.pushNotification(
                 `You were referred by ${user.username}! Ask them to verify their account to enjoy special discounts.`,
