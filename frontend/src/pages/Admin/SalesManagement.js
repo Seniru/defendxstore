@@ -186,7 +186,7 @@ export default function SalesManagement() {
               color="#ffcc00"
               title="AI-powered sales forecast"
             />{" "}
-            Expected Saless
+            Expected Sales
           </>,
           "Revenue",
           "Cost",
