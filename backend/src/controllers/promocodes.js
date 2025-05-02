@@ -7,6 +7,8 @@ const Promocodes = require("../models/Promocodes")
 const getAllPromocodes = async (req, res, next) => {
     try {
         const promocodes = await Promocodes.find()
+            .populate({ path: "createdFor", select: "username" })
+            .exec()
         createResponse(res, StatusCodes.OK, promocodes)
     } catch (error) {
         next(error)

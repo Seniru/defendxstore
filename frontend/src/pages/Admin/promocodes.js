@@ -3,57 +3,160 @@ import SearchBar from "../../components/SearchBar"
 import Table from "../../components/Table"
 import Button from "../../components/Button"
 import Input from "../../components/Input"
+import MessageBox from "../../components/MessageBox"
+import ProfileImage from "../../components/ProfileImage"
+import useFetch from "../../hooks/useFetch"
+import api from "../../utils/api"
+import { useRef, useState } from "react"
+import { useAuth } from "../../contexts/AuthProvider"
+
+const { REACT_APP_API_URL } = process.env
 
 function PromoCodeRow({ row, index }) {
-  return row.code !== undefined ? (
+  const { token } = useAuth()
+  const [isEditting, setIsEditting] = useState(false)
+  const codeRef = useRef()
+  const validUntilRef = useRef()
+  const discountRef = useRef()
+
+  const upsertCode = async (evt, method) => {
+    evt.preventDefault()
+    const response = await api[method](
+      "/api/promo" + (method == "put" ? `/${row.code}` : ""),
+      {
+        promocode: codeRef.current.value,
+        validuntil: validUntilRef.current.value,
+        discount: discountRef.current.value,
+      },
+      token,
+    )
+    const result = await response.json()
+
+    if (response.ok) {
+      row.setRefreshList(!row.refreshList)
+    } else {
+      row.setIsError(true)
+      row.setMessage(result.body || response.statusText)
+    }
+    setIsEditting(false)
+  }
+
+  const deleteCode = async (evt) => {
+    evt.preventDefault()
+    const response = await api.delete(`/api/promo/${row.code}`, {}, token)
+    const result = await response.json()
+
+    if (response.ok) {
+      row.setRefreshList(!row.refreshList)
+    } else {
+      row.setIsError(true)
+      row.setMessage(result.body || response.statusText)
+    }
+  }
+
+  return row.code !== undefined && !isEditting ? (
     <tr key={index}>
       <td>{row.code}</td>
-      <td>{row.validUntil}</td>
+      <td>{row.validUntil.split("T")[0]}</td>
       <td>{row.discount}</td>
       <td>
-        <Button>Edit</Button>
-        <Button kind="danger">Delete</Button>
+        {row.createdFor ? (
+          <ProfileImage username={row.createdFor.username} size={30} />
+        ) : (
+          ""
+        )}
+      </td>
+      <td>
+        <Button onClick={() => setIsEditting(true)}>Edit</Button>
+        <Button kind="danger" onClick={deleteCode}>
+          Delete
+        </Button>
       </td>
     </tr>
   ) : (
     <tr key={index}>
       <td>
-        <Input placeholder="Promotion code" required />
+        <Input
+          placeholder="Promotion code"
+          defaultValue={row.code}
+          ref={codeRef}
+          required
+        />
       </td>
       <td>
-        <Input type="date" placeholder="Valid until" required />
+        <Input
+          type="date"
+          placeholder="Valid until"
+          defaultValue={row.validUntil?.split("T")?.[0]}
+          ref={validUntilRef}
+          required
+        />
       </td>
       <td>
-        <Input type="number" placeholder="Discount" required />
+        <Input
+          type="number"
+          placeholder="Discount"
+          defaultValue={row.discount}
+          ref={discountRef}
+          required
+        />
       </td>
+      <td></td>
       <td>
-        <Button kind="primary">Add code</Button>
+        {isEditting ? (
+          <>
+            <Button kind="primary" onClick={(evt) => upsertCode(evt, "put")}>
+              Done
+            </Button>
+            <Button kind="secondary" onClick={() => setIsEditting(false)}>
+              Cancel
+            </Button>
+          </>
+        ) : (
+          <Button kind="primary" onClick={(evt) => upsertCode(evt, "post")}>
+            Add code
+          </Button>
+        )}
       </td>
     </tr>
   )
 }
 
 export default function PromoCodes() {
-  return (
-    <div className="content">
-      <h1>Promotion codes</h1>
-      <div className="promocodes-actions">
-        <SearchBar placeholder={"Promocodes"} />
-      </div>
+  const [isError, setIsError] = useState(false)
+  const [message, setMessage] = useState(null)
+  const [refreshList, setRefreshList] = useState(false)
+  const [codes] = useFetch(
+    `${REACT_APP_API_URL}/api/promo`,
+    { body: [] },
+    refreshList,
+  )
 
-      <Table
-        headers={["Promocode", "Valid until", "Discount", ""]}
-        rows={[
-          {},
-          { code: "Summer20", validUntil: "2024-12-31", discount: "20%" },
-          { code: "Newuser15", validUntil: "2024-12-31", discount: "20%" },
-          { code: "BOGO50", validUntil: "2024-12-31", discount: "25%" },
-          { code: "FESTIVE30", validUntil: "2024-12-31", discount: "50%" },
-          { code: "Awrudu", validUntil: "2024-12-31", discount: "15%" },
-          { code: "Christmas", validUntil: "2024-12-24", discount: "30%" },
-        ]}
-        renderRowWith={PromoCodeRow}
-      />
-    </div>
+  return (
+    <>
+      <MessageBox isError={isError} message={message} setMessage={setMessage} />
+      <div className="content">
+        <h1>Promotion codes</h1>
+        <div className="promocodes-actions">
+          <SearchBar placeholder={"Promocodes"} />
+        </div>
+
+        <Table
+          headers={["Promocode", "Valid until", "Discount", "Created for", ""]}
+          rows={[{}, ...(codes?.body || [])].map((code) => ({
+            code: code.promocode,
+            validUntil: code.validuntil,
+            discount: code.discount,
+            createdFor: code.createdFor,
+            isError,
+            setIsError,
+            setMessage,
+            refreshList,
+            setRefreshList,
+          }))}
+          renderRowWith={PromoCodeRow}
+        />
+      </div>
+    </>
   )
 }
