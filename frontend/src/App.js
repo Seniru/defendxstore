@@ -41,6 +41,7 @@ function App() {
                 <Route path="forum">
                   <Route index element={<Forum />} />
                   <Route path="thread" element={<ForumThread />} />
+                  <Route path="thread/new" element={<CreateForum />} />
                 </Route>
                 <Route element={<PrivateRoute />}>
                   <Route path="profile" element={<Profile />} />
@@ -48,6 +49,7 @@ function App() {
                   <Route path="checkout" element={<Checkout />} />
                   <Route path="invoice" element={<Invoice />} />
                   <Route path="ticket" element={<Ticket />} />
+                  <Route path="ticket/new" element={<CreateTicket />} />
                   <Route path="support" element={<Support />} />
                   <Route path="verify" element={<Verify />} />
                   <Route path="*" element={<NotFound />} />

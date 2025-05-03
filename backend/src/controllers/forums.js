@@ -13,7 +13,7 @@ const createThread = async (req, res, next) => {
             createdDate: Date.now(),
             edittedDate: null,
             category,
-            createdUser: user.username
+            createdUser: user.username,
         })
         await thread.save()
         return createResponse(res, StatusCodes.CREATED, thread)
@@ -35,7 +35,7 @@ const getAllThreads = async (req, res, next) => {
 const getThread = async (req, res, next) => {
     try {
         const { threadId } = req.params
-        const thread = await ForumThread.find({ _id: threadId }).exec()
+        const thread = await ForumThread.findOne({ _id: threadId }).exec()
         if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
         return createResponse(res, StatusCodes.OK, thread)
     } catch (error) {

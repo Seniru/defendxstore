@@ -1,15 +1,9 @@
+import { useState } from "react"
 import { useSearchParams } from "react-router-dom"
 import Button from "../../components/Button"
 import ProfileImage from "../../components/ProfileImage"
 import useFetch from "../../hooks/useFetch"
 import "./ForumThread.css"
-
-const data = [
-  { username: "User1", createdDate: "20/02/2023", content: "Reply 1" },
-  { username: "User1", createdDate: "20/02/2023", content: "Reply 2" },
-  { username: "User1", createdDate: "20/02/2023", content: "Reply 3" },
-  { username: "User1", createdDate: "20/02/2023", content: "Reply 4" },
-]
 
 function ForumThreadReply({ username, createdDate, content }) {
   return (
