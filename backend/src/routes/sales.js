@@ -11,7 +11,7 @@ const { requireRole, roles } = require("../middlewares/auth")
 
 router.get("/", requireRole(roles.ADMIN), getSales)
 router.get("/monthly", requireRole(roles.ADMIN), getMonthlySales)
-router.get("/compare", requireRole(roles.ADMINc), compareItems)
+router.get("/compare", requireRole(roles.ADMIN), compareItems)
 router.get("/supplyMetrics", requireRole(roles.ADMIN), getSupplyMetrics)
 
 module.exports = router
