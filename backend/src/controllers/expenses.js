@@ -15,7 +15,7 @@ const getExpenses = async (req, res, next) => {
             if (dateTo) query.date.$lte = dateTo
         }
 
-        const expenses = await Expense.find(query).exec()
+        const expenses = await Expense.find(query).sort({ date: -1 }).exec()
 
         if (categories) {
             const categoricalExpenses = {}
