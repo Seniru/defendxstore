@@ -65,8 +65,7 @@ export default function CreateTicket() {
             minLength={10}
             ref={contentRef}
             id="ticket-content_box"
-            place
-            holder="Describr your issue in detail..."
+            placeholder="Describe your issue in detail..."
           ></textarea>
           <br />
         </div>
