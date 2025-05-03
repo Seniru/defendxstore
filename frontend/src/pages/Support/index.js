@@ -56,7 +56,7 @@ export default function Support() {
         </div>
       </div>
       <div className="secondary-text">
-        Showing{tickets?.body?.lenght || 0} items...
+        Showing{tickets?.body?.length || 0} items...
       </div>
       <br></br>
       <div>
