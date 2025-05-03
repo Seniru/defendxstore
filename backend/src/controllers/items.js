@@ -141,6 +141,7 @@ const restockItem = async (req, res, next) => {
         if (!amount) return createResponse(res, StatusCodes.BAD_REQUEST, "amount is not provided")
 
         const item = await Item.findByIdAndUpdate(id, { quantity: amount }).exec()
+        if (!item) return createResponse(res, StatusCodes.NOT_FOUND, "Item not found")
         const restockedAmount = amount - item.quantity
         const sellingPrice = item.price * restockedAmount
         const cost = sellingPrice * 0.85
