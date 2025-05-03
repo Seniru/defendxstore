@@ -24,6 +24,7 @@ const notificationsRoute = require("./routes/notifications")
 const perksRoute = require("./routes/perks")
 const reportsRoute = require("./routes/reports")
 const salesRoute = require("./routes/sales")
+const expensesRoute = require("./routes/expenses")
 
 // middlewares
 app.use(cors())
@@ -48,6 +49,7 @@ app.use("/api/promo", promocodesRoute)
 app.use("/api/notifications", notificationsRoute)
 app.use("/api/perks", perksRoute)
 app.use("/api/reports", reportsRoute)
+app.use("/api/sales/expenses", expensesRoute)
 app.use("/api/sales", salesRoute)
 
 app.use((err, req, res, next) => {
