@@ -1,46 +1,39 @@
 import "./SupplyManagement.css"
-import SearchBar from "../../components/SearchBar"
-import Select from "../../components/Select"
 import Table from "../../components/Table"
+import useFetch from "../../hooks/useFetch"
+
+const { REACT_APP_API_URL } = process.env
 
 export default function SupplyManagement() {
+  const [supplies] = useFetch(`${REACT_APP_API_URL}/api/sales/supplyMetrics`, {
+    body: [],
+  })
+
   return (
     <div className="content">
-      <div className="supply-management-actions">
-        <SearchBar placeholder={"Search items"} />
+      <div className="supply-management-actions"></div>
+      <div className="secondary-text">
+        Showing {supplies.body?.length || 0} supply orders...
       </div>
-      <div className="secondary-text">Showing 999 products...</div>
       <Table
         headers={[
           " ",
+          "Date",
           "Item",
           "Quantity",
-          "Estimated Cost",
           "Estimated Selling Price",
+          "Estimated Cost",
           "Expected Profit",
         ]}
-        rows={[
-          ["Order #1", "Item #1", "99", "99.9", "99.9", "99.9"],
-          ["Order #2", "Item #2", "99", "99.9", "99.9", "99.9"],
-          ["Order #3", "Item #3", "99", "99.9", "99.9", "99.9"],
-          ["Order #4", "Item #4", "99", "99.9", "99.9", "99.9"],
-          ["Order #5", "Item #1", "99", "99.9", "99.9", "99.9"],
-          ["Order #6", "Item #2", "99", "99.9", "99.9", "99.9"],
-          ["Order #7", "Item #3", "99", "99.9", "99.9", "99.9"],
-          ["Order #8", "Item #4", "99", "99.9", "99.9", "99.9"],
-          ["Order #9", "Item #1", "99", "99.9", "99.9", "99.9"],
-          ["Order #10", "Item #2", "99", "99.9", "99.9", "99.9"],
-          ["Order #11", "Item #3", "99", "99.9", "99.9", "99.9"],
-          ["Order #12", "Item #4", "99", "99.9", "99.9", "99.9"],
-          ["Order #1", "Item #1", "99", "99.9", "99.9", "99.9"],
-          ["Order #2", "Item #2", "99", "99.9", "99.9", "99.9"],
-          ["Order #3", "Item #3", "99", "99.9", "99.9", "99.9"],
-          ["Order #4", "Item #4", "99", "99.9", "99.9", "99.9"],
-          ["Order #5", "Item #1", "99", "99.9", "99.9", "99.9"],
-          ["Order #6", "Item #2", "99", "99.9", "99.9", "99.9"],
-          ["Order #7", "Item #3", "99", "99.9", "99.9", "99.9"],
-          ["Order #8", "Item #4", "99", "99.9", "99.9", "99.9"],
-        ]}
+        rows={(supplies?.body || []).map((supply) => [
+          `Order #${supply._id}`,
+          supply.date.split("T")[0],
+          supply.item.itemName,
+          supply.orderedQuantity,
+          supply.estimatedSellingPrice,
+          <span className="error-text">( {supply.estimatedCost} )</span>,
+          supply.estimatedProfit,
+        ])}
       />
     </div>
   )

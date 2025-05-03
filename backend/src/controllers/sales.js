@@ -4,6 +4,8 @@ const { StatusCodes } = require("http-status-codes")
 const Order = require("../models/Order")
 const Item = require("../models/Item")
 const createResponse = require("../utils/createResponse")
+const Supply = require("../models/Supply")
+const Expense = require("../models/Expense")
 
 // helper function
 
@@ -39,13 +41,13 @@ const validateAndGetQuery = async (res, dateFrom, dateTo, metric, period) => {
     return [query, frequency]
 }
 
-const processSales = async (orders, frequency, metric, dateTo, item) => {
+const processSales = async (orders, frequency, metric, dateTo, item, expenses) => {
     let date = []
-    let revenueData = []
+    let salesData = []
     let costData = []
     let expectedSalesData = []
     let profitData = []
-    let currentRevenueData = []
+    let currentSalesData = []
     let currentCostData = []
     let currentExpectedSalesData = []
     let currentProfitData = []
@@ -67,28 +69,34 @@ const processSales = async (orders, frequency, metric, dateTo, item) => {
         orderDate.setHours(0, 0, 0, 0)
 
         if (orderDate.getTime() < upperBound.getTime()) {
-            currentRevenueData.push(order.price)
+            currentSalesData.push(order.price)
             currentProfitData.push(0)
-            currentCostData.push(0)
+            //currentCostData.push(0)
             // currentExpectedSalesData.push(0)
             index++
         } else {
-            revenueData.push(currentRevenueData.reduce((t, v) => t + v, 0))
-            profitData.push(currentProfitData.reduce((t, v) => t + v, 0))
-            costData.push(currentCostData.reduce((t, v) => t + v, 0))
+            const salesTotal = currentSalesData.reduce((t, v) => t + v, 0)
+            const expenseTotal = expenses
+                .filter((expense) => expense.date >= currentDate && expense.date <= upperBound)
+                .map((expense) => expense.amount)
+                .reduce((t, v) => t + v, 0)
+
+            salesData.push(salesTotal)
+            costData.push(expenseTotal)
+            profitData.push(salesTotal - expenseTotal)
             // expectedSalesData.push(currentExpectedSalesData.reduce((t, v) => t + v, 0))
-            currentRevenueData = []
+            currentSalesData = []
             currentProfitData = []
             currentCostData = []
             // currentExpectedSalesData = []
 
-            currentDate = new Date(currentDate.getTime() + frequency * 1000 * 60 * 60 * 24)
+            currentDate = upperBound
             upperBound = new Date(currentDate.getTime() + frequency * 1000 * 60 * 60 * 24)
-            date.push(new Date(currentDate))
+            date.push(new Date(upperBound))
         }
     }
 
-    revenueData.push(currentRevenueData.reduce((t, v) => t + v, 0))
+    salesData.push(currentSalesData.reduce((t, v) => t + v, 0))
     profitData.push(currentProfitData.reduce((t, v) => t + v, 0))
     costData.push(currentCostData.reduce((t, v) => t + v, 0))
     //expectedSalesData.push(currentExpectedSalesData.reduce((t, v) => t + v, 0))
@@ -105,12 +113,12 @@ const processSales = async (orders, frequency, metric, dateTo, item) => {
     expectedSalesData = result.map((data) => data[1])
 
     let returnData = {}
-    returnData = { revenueData, profitData, costData, expectedSalesData }
+    returnData = { salesData, profitData, costData, expectedSalesData }
     if (metric) {
         returnData = {
             expenses: { costData },
-            sales: { profitData },
-            revenue: { revenueData },
+            sales: { salesData },
+            revenue: { profitData },
             expected_sales: { expectedSalesData },
         }[metric]
     }
@@ -125,8 +133,16 @@ const getSales = async (req, res, next) => {
         const metric = req.query.metric
         const period = req.query.period || "7d" // defaults to weekly
         const [query, frequency] = await validateAndGetQuery(res, dateFrom, dateTo, metric, period)
+        const expensesQuery = {}
+        if (dateFrom || dateTo) {
+            expensesQuery.date = {}
+            if (dateFrom) expensesQuery.date.$gte = dateFrom
+            if (dateTo) expensesQuery.date.$lte = dateTo
+        }
+
         const orders = await Order.find(query).sort({ orderdate: 1 }).exec()
-        const processed = await processSales(orders, frequency, metric, dateTo)
+        const expenses = await Expense.find(expensesQuery).sort({ date: 1 }).exec()
+        const processed = await processSales(orders, frequency, metric, dateTo, null, expenses)
         return createResponse(res, StatusCodes.OK, processed)
     } catch (error) {
         next(error)
@@ -140,8 +156,16 @@ const getMonthlySales = async (req, res, next) => {
         const metric = req.query.metric
         const period = "1m"
         const [query, frequency] = await validateAndGetQuery(res, dateFrom, dateTo, metric, period)
+        const expensesQuery = {}
+        if (dateFrom || dateTo) {
+            expensesQuery.date = {}
+            if (dateFrom) expensesQuery.date.$gte = dateFrom
+            if (dateTo) expensesQuery.date.$lte = dateTo
+        }
+
         const orders = await Order.find(query).sort({ orderdate: 1 }).exec()
-        const processed = await processSales(orders, frequency, metric, dateTo)
+        const expenses = await Expense.find(expensesQuery).sort({ date: 1 }).exec()
+        const processed = await processSales(orders, frequency, metric, dateTo, null, expenses)
         return createResponse(res, StatusCodes.OK, processed)
     } catch (error) {
         next(error)
@@ -167,11 +191,19 @@ const compareItems = async (req, res, next) => {
         query["items.product"] = {
             $in: items,
         }
+        const expensesQuery = {}
+        if (dateFrom || dateTo) {
+            expensesQuery.date = {}
+            if (dateFrom) expensesQuery.date.$gte = dateFrom
+            if (dateTo) expensesQuery.date.$lte = dateTo
+        }
 
         const orders = await Order.find(query)
             .sort({ orderdate: 1 })
             .populate({ path: "items.product", select: "itemName price" })
             .exec()
+
+        const expenses = await Expense.find(expensesQuery).sort({ date: 1 }).exec()
 
         let longest = ""
         let statistics = {}
@@ -188,6 +220,7 @@ const compareItems = async (req, res, next) => {
                 metric,
                 dateTo,
                 item,
+                expenses,
             )
             if (longest == "" || statistics[itemName][0].length > statistics[longest][0].length)
                 longest = itemName
@@ -205,4 +238,13 @@ const compareItems = async (req, res, next) => {
     }
 }
 
-module.exports = { getSales, getMonthlySales, compareItems }
+const getSupplyMetrics = async (req, res, next) => {
+    try {
+        const supplies = await Supply.find({}).populate("item").sort({ date: -1 }).exec()
+        return createResponse(res, StatusCodes.OK, supplies)
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { getSales, getMonthlySales, compareItems, getSupplyMetrics }
