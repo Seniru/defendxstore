@@ -42,7 +42,7 @@ export default function CreateForum() {
       category
       <Select
         items={{
-          suggessions: "Suggessions",
+          suggestions: "Suggestions",
           tips: "Tips",
           questions: " Questions",
           other: "Others",
