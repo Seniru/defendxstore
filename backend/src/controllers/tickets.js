@@ -63,8 +63,8 @@ const deleteTicket = async (req, res, next) => {
     try {
         const user = req.user
         console.log(user)
-
-        const ticket = await Ticket.findOneAndDelete({ _id: id }).exec()
+        const { ticketId } = req.params
+        const ticket = await Ticket.findOneAndDelete({ _id: ticketId }).exec()
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
         return createResponse(res, StatusCodes.OK, "Ticket deleted")
         return createResponse(res, StatusCodes.OK, ticket)
