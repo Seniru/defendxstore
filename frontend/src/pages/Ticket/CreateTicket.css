@@ -1,0 +1,39 @@
+.create-ticket-container {
+  background-color: gray;
+  color: #333;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  line-height: 1.6;
+}
+
+.ticket_content {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+.ticket_type {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.ticket_content_box {
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
