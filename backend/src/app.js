@@ -14,6 +14,7 @@ const usersRoute = require("./routes/users")
 const authRoute = require("./routes/auth")
 const ticketsRoute = require("./routes/tickets")
 const forumRoute = require("./routes/forums")
+const itemRoute = require("./routes/items")
 
 // middlewares
 app.use(cors())
@@ -29,6 +30,7 @@ app.use("/api/auth", authRoute)
 app.use("/api/users", usersRoute)
 app.use("/api/tickets", ticketsRoute)
 app.use("/api/forums", forumRoute)
+app.use("/api/items", itemRoute)
 
 app.use((err, req, res, next) => {
     logger.error(err.stack)

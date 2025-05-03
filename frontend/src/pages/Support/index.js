@@ -8,8 +8,11 @@ import ProfileImage from "../../components/ProfileImage"
 import "./Support.css"
 import useFetch from "../../hooks/useFetch"
 
+<<<<<<< HEAD
 const { REACT_APP_API_URL } = process.env
 
+=======
+>>>>>>> 70a4c6f1821f1dbb615e3199457f66e5af8b5612
 function TicketRow({ username, id, title, type, status, date }) {
   return (
     <div className="container ticket-container">
@@ -62,6 +65,7 @@ export default function Support() {
       <div>
         <h2>Open</h2>
 
+<<<<<<< HEAD
         {tickets?.body?.map((ticket) => (
           <TicketRow
             className="ticket-row"
@@ -73,10 +77,64 @@ export default function Support() {
             type={ticket.type}
           />
         ))}
+=======
+        <TicketRow
+          id={1}
+          username={"User"}
+          date={"2022-01-01"}
+          status={"Open"}
+          title={"Ticket title"}
+          type={"Ticket type"}
+        />
+        <TicketRow
+          id={1}
+          username={"User"}
+          date={"2022-01-01"}
+          status={"Open"}
+          title={"Ticket title"}
+          type={"Ticket type"}
+        />
+        <TicketRow
+          id={1}
+          username={"User"}
+          date={"2022-01-01"}
+          status={"Open"}
+          title={"Ticket title"}
+          type={"Ticket type"}
+        />
+
+>>>>>>> 70a4c6f1821f1dbb615e3199457f66e5af8b5612
       </div>
 
       <div>
         <h2>Closed</h2>
+<<<<<<< HEAD
+=======
+        <TicketRow
+          id={1}
+          username={"User"}
+          date={"2022-01-01"}
+          status={"Closed"}
+          title={"Ticket title"}
+          type={"Ticket type"}
+        />
+        <TicketRow
+          id={1}
+          username={"User"}
+          date={"2022-01-01"}
+          status={"Closed"}
+          title={"Ticket title"}
+          type={"Ticket type"}
+        />
+        <TicketRow
+          id={1}
+          username={"User"}
+          date={"2022-01-01"}
+          status={"Closed"}
+          title={"Ticket title"}
+          type={"Ticket type"}
+        />
+>>>>>>> 70a4c6f1821f1dbb615e3199457f66e5af8b5612
       </div>
     </div>
   )

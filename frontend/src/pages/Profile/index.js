@@ -17,6 +17,7 @@ import "./Profile.css"
 import TabMenu from "../../components/TabMenu"
 import TabItem from "../../components/TabMenu/TabItem"
 import Reviews from "./Reviews"
+import OrderMenu from "./OrderMenu"
 import { useRef, useState } from "react"
 import api from "../../utils/api"
 import OverlayWindow from "../../components/OverlayWindow"
@@ -180,7 +181,7 @@ export default function Profile() {
         </aside>
         <div className="profile-content">
           <TabMenu>
-            <TabItem name="Orders" />
+            <TabItem name="Orders" element={<OrderMenu />} />
             <TabItem name="Reviews" element={<Reviews />} />
           </TabMenu>
         </div>

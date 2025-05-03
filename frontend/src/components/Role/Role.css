@@ -1,0 +1,11 @@
+.role {
+  padding: 2px 10px;
+  border-radius: 100px;
+  display: inline-block;
+  margin-left: 3px;
+  margin-right: 3px;
+
+  span {
+    margin-right: 8px;
+  }
+}

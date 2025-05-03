@@ -67,8 +67,13 @@ export default function ForumThread() {
 
   return (
     <div className="content">
+<<<<<<< HEAD
       <h1>{thread?.body?.title}</h1>
       <div className="forum-thread-main-content">
+=======
+      <h1>Title</h1>
+      <div className="forum-thread-main-content container">
+>>>>>>> 70a4c6f1821f1dbb615e3199457f66e5af8b5612
         <div className="forum-thread-main-information">
           <div>
             <ProfileImage username={thread?.body?.createdUser} size={50} />
@@ -80,6 +85,7 @@ export default function ForumThread() {
         </div>
         <p>{thread?.body?.content}</p>
       </div>
+      <br />
       <hr />
       <h3>Replies</h3>
       {replies?.body?.length > 0 ? (
