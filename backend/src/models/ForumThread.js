@@ -29,6 +29,13 @@ const ForumThreadSchema = new mongoose.Schema({
         minlength: 3,
         maxlength: 20,
     },
+
+    createdUser: {
+        type: String,
+        required: true,
+        minlength: 3,
+        maxlength: 10,
+    },
 })
 const ForumThread = mongoose.model("ForumThread", ForumThreadSchema)
 

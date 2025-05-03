@@ -6,16 +6,17 @@ const createThread = async (req, res, next) => {
     try {
         const { title, content, category } = req.body
         const user = req.user
+        console.log(user)
         const thread = new ForumThread({
             title,
-            category,
             content,
             createdDate: Date.now(),
-            date: Date.now(),
-            username: user.username,
-        })
+            edittedDate: null,
+            category,
+            createdUser: user.username
+    })
         await thread.save()
-        return createResponse(res, StatusCodes.CREATED, "Created")
+        return createResponse(res, StatusCodes.CREATED, thread)
     } catch (error) {
         next(error)
     }
