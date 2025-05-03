@@ -6,6 +6,7 @@ const createResponse = require("../utils/createResponse")
 const { StatusCodes } = require("http-status-codes")
 const { sendMail } = require("../services/email")
 const { roles } = require("../utils/getRoles")
+const Supply = require("../models/Supply")
 require("dotenv").config()
 
 // Get All Items
@@ -140,13 +141,24 @@ const restockItem = async (req, res, next) => {
         if (!amount) return createResponse(res, StatusCodes.BAD_REQUEST, "amount is not provided")
 
         const item = await Item.findByIdAndUpdate(id, { quantity: amount }).exec()
-        const restockedAmount = item.quantity - amount
+        const restockedAmount = amount - item.quantity
+        const sellingPrice = item.price * restockedAmount
+        const cost = sellingPrice * 0.85
 
         await Expense.create({
             date: Date.now(),
-            amount: (item.price - 650) * restockedAmount,
+            amount: cost,
             description: `Restock ${item.itemName}`,
             category: "Supply costs",
+        })
+
+        await Supply.create({
+            item: id,
+            date: Date.now(),
+            orderedQuantity: restockedAmount,
+            estimatedCost: cost,
+            estimatedSellingPrice: sellingPrice,
+            estimatedProfit: sellingPrice - cost,
         })
 
         if (!item) return createResponse(res, StatusCodes.NOT_FOUND, "Item not found")

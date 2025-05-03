@@ -4,6 +4,7 @@ const { StatusCodes } = require("http-status-codes")
 const Order = require("../models/Order")
 const Item = require("../models/Item")
 const createResponse = require("../utils/createResponse")
+const Supply = require("../models/Supply")
 
 // helper function
 
@@ -205,4 +206,13 @@ const compareItems = async (req, res, next) => {
     }
 }
 
-module.exports = { getSales, getMonthlySales, compareItems }
+const getSupplyMetrics = async (req, res, next) => {
+    try {
+        const supplies = await Supply.find({}).populate("item").sort({ date: -1 }).exec()
+        return createResponse(res, StatusCodes.OK, supplies)
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { getSales, getMonthlySales, compareItems, getSupplyMetrics }
