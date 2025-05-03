@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
 const Item = require("../models/Item")
 const User = require("../models/User")
+const Expense = require("../models/Expense")
 const createResponse = require("../utils/createResponse")
 const { StatusCodes } = require("http-status-codes")
 const { sendMail } = require("../services/email")
@@ -131,6 +132,30 @@ const updateItem = async (req, res, next) => {
     }
 }
 
+const restockItem = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const { amount } = req.body
+
+        if (!amount) return createResponse(res, StatusCodes.BAD_REQUEST, "amount is not provided")
+
+        const item = await Item.findByIdAndUpdate(id, { quantity: amount }).exec()
+        const restockedAmount = item.quantity - amount
+
+        await Expense.create({
+            date: Date.now(),
+            amount: (item.price - 650) * restockedAmount,
+            description: `Restock ${item.itemName}`,
+            category: "Supply costs",
+        })
+
+        if (!item) return createResponse(res, StatusCodes.NOT_FOUND, "Item not found")
+        return createResponse(res, StatusCodes.OK, "Restocked")
+    } catch (error) {
+        next(error)
+    }
+}
+
 // Delete Item
 const deleteItem = async (req, res) => {
     const { id } = req.params
@@ -155,5 +180,6 @@ module.exports = {
     getRecommendedItems,
     createItem,
     updateItem,
+    restockItem,
     deleteItem,
 }

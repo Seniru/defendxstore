@@ -22,6 +22,9 @@ router.post("/", requireRole(roles.ADMIN), ItemController.createItem)
 // Update Item - Admin Only
 router.put("/:id", requireRole(roles.ADMIN), ItemController.updateItem)
 
+// Restock Item - Admin Only
+router.post("/:id/restock", requireRole(roles.ADMIN), ItemController.restockItem)
+
 // Delete Item - Admin Only
 router.delete("/:id", requireRole(roles.ADMIN), ItemController.deleteItem)
 

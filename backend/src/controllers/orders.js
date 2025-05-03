@@ -8,6 +8,7 @@ const PromoCode = require("../models/Promocodes")
 const logger = require("../utils/logger")
 const { sendMail } = require("../services/email")
 const OrderReport = require("../models/reports/OrderReport")
+const Expense = require("../models/Expense")
 
 const getOrders = async (req, res, next) => {
     try {
@@ -303,6 +304,14 @@ const updateOrderStatus = async (req, res, next) => {
             default:
                 break
         }
+
+        if (order.status == "delivered")
+            await Expense.create({
+                date: Date.now(),
+                amount: 200,
+                description: `Delivery of order #${order._id}`,
+                category: "Delivery cost",
+            })
 
         await OrderReport.create({
             user: user._id,

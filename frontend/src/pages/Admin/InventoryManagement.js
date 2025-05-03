@@ -450,6 +450,11 @@ const InventoryManagement = () => {
     }
   }
 
+  const restockItem = async (id, amount) => {
+    await api.post(`/api/items/${id}/restock`, { amount }, token)
+    setRefreshFlag(!refreshFlag)
+  }
+
   const deleteItem = async (id) => {
     try {
       const response = await api.delete(`/api/items/${id}`, {}, token)
@@ -566,9 +571,10 @@ const InventoryManagement = () => {
         await createItem(newProduct)
       } else if (formMode === "restock") {
         const selectedProduct = productData.body[selectedProductIndex]
-        await updateItem(selectedProduct._id, {
+        /*await updateItem(selectedProduct._id, {
           quantity: newProduct.quantity,
-        })
+        })*/
+        await restockItem(selectedProduct._id, newProduct.quantity)
       } else if (formMode === "edit") {
         const selectedProduct = productData.body[selectedProductIndex]
         await updateItem(selectedProduct._id, newProduct)
