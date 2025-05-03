@@ -1,0 +1,31 @@
+.expenses-form {
+  max-width: 1200px; /* Increased from 1000px to 1200px */
+  margin: 0 auto;
+}
+
+.expenses-form h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.expenses-form select {
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}

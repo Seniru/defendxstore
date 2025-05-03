@@ -9,24 +9,44 @@ import {
 import Select from "../../components/Select"
 import Table from "../../components/Table"
 import useFetch from "../../hooks/useFetch"
+import Input from "../../components/Input"
+import Button from "../../components/Button"
+import OverlayWindow from "../../components/OverlayWindow"
+import ExpensesForm from "../../forms/ExpensesForm"
+
+import { useMemo, useState } from "react"
 
 import "./SalesManagement.css"
-import Input from "../../components/Input"
-import { useMemo, useState } from "react"
+import api from "../../utils/api"
+import { useAuth } from "../../contexts/AuthProvider"
+import MessageBox from "../../components/MessageBox"
 
 const { REACT_APP_API_URL } = process.env
 
 export default function SalesManagement() {
+  const { token } = useAuth()
   const [dateFrom, setDateFrom] = useState(null)
+  const [isExpensesFormOpen, setIsExpensesFormOpen] = useState(false)
+  const [isExpensesListOpen, setIsExpensesListOpen] = useState(false)
   const [dateTo, setDateTo] = useState(null)
   const [metric, setMetric] = useState(null)
   const [compareMetric, setCompareMetric] = useState("sales")
   const [compareItems, setCompareItems] = useState([])
+  const [isError, setIsError] = useState(false)
+  const [message, setMessage] = useState(null)
   const chartWidth = (window.innerWidth - 50) / 3
 
   const changeCategory = (evt) => {
     if (evt.target.value === "all") return setMetric(null)
     setMetric(evt.target.value)
+  }
+
+  const handleExpenseSubmit = async (expenseData) => {
+    const response = await api.post("/api/sales/expenses", expenseData, token)
+    const result = await response.json()
+    setIsError(!response.ok)
+    setMessage(result.body || response.statusText)
+    setIsExpensesFormOpen(false)
   }
 
   const queryParams = useMemo(() => {
@@ -51,6 +71,14 @@ export default function SalesManagement() {
     `${REACT_APP_API_URL}/api/sales/compare?${compareQueryParams}`,
   )
   const [items] = useFetch(`${REACT_APP_API_URL}/api/items`)
+  const [expenses] = useFetch(
+    `${REACT_APP_API_URL}/api/sales/expenses`,
+    { body: [] },
+    isExpensesListOpen,
+  )
+  const [categoricalExpenses] = useFetch(
+    `${REACT_APP_API_URL}/api/sales/expenses?categories=true&${queryParams}`,
+  )
 
   const chartData = []
   if (sales?.body?.[1]?.revenueData)
@@ -70,138 +98,188 @@ export default function SalesManagement() {
     compareChartData.push({ data: v, label: k })
 
   return (
-    <div className="content">
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <div>
-          From{" "}
-          <Input
-            type="date"
-            onChange={(evt) => setDateFrom(evt.target.value)}
-          />
-        </div>
-        <div>
-          {" "}
-          To{" "}
-          <Input type="date" onChange={(evt) => setDateTo(evt.target.value)} />
-        </div>
+    <>
+      <OverlayWindow
+        isOpen={isExpensesListOpen}
+        setIsOpen={setIsExpensesListOpen}
+      >
+        <h3>Expenses</h3>
         <hr />
-      </div>
-      <hr />
-      <div className="sales-management-actions">
-        <div className="container">
-          View{" "}
-          <Select
-            items={{
-              all: "All",
-              expected_sales: "Expected Sales",
-              revenue: "Revenue",
-              expenses: "Costs",
-              sales: "Sales",
-            }}
-            onChange={changeCategory}
-          />
-          <div>
-            <LineChart
-              height={300}
-              width={chartWidth}
-              series={chartData}
-              xAxis={[
-                {
-                  scaleType: "point",
-                  data: sales?.body?.[0] || [],
-                },
-              ]}
-              colors={mangoFusionPalette}
-            />
-          </div>
-        </div>
-        <div className="container">
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <Table
+          headers={["Date", "Amount", "Category", "Description"]}
+          rows={(expenses?.body || []).map((expense) => [
+            expense.date.split("T")[0],
+            "LKR " + expense.amount.toFixed(2),
+            expense.category,
+            expense.description,
+          ])}
+        />
+      </OverlayWindow>
+      <MessageBox isError={isError} message={message} setMessage={setMessage} />
+      <div className="content">
+        <div className="actions-header">
+          <div className="actions-header">
             <div>
-              <span>Compare items...</span>
-              <div style={{ width: "max-content" }}>
-                <Select
-                  items={(items?.body || []).map((item) => item.itemName)}
-                  multiple
-                  onMultiChange={setCompareItems}
-                />
-              </div>
+              From{" "}
+              <Input
+                type="date"
+                onChange={(evt) => setDateFrom(evt.target.value)}
+              />
             </div>
             <div>
-              View{" "}
-              <Select
-                items={{
-                  sales: "Sales",
-                  expected_sales: "Expected Sales",
-                  revenue: "Revenue",
-                  expenses: "Costs",
-                }}
-                onChange={(evt) => setCompareMetric(evt.target.value)}
+              &nbsp; To{" "}
+              <Input
+                type="date"
+                onChange={(evt) => setDateTo(evt.target.value)}
               />
             </div>
           </div>
           <div>
-            <LineChart
-              height={300}
-              width={chartWidth}
-              series={compareChartData}
-              xAxis={[
-                {
-                  scaleType: "point",
-                  data: comparativeSales?.body?.[0] || [],
-                },
-              ]}
-              colors={mangoFusionPalette}
-            />
+            <Button kind="primary" onClick={() => setIsExpensesListOpen(true)}>
+              View Expenses
+            </Button>
+            <Button kind="primary" onClick={() => setIsExpensesFormOpen(true)}>
+              Add Expense
+            </Button>
           </div>
         </div>
-        <div className="container">
-          <h3>Monthly costs Breakdown</h3>
-          <div>
-            <PieChart
-              series={[
-                {
-                  data: [
-                    { id: 0, value: 15000, label: "Supply costs" },
-                    { id: 1, value: 10000, label: "Electricity" },
-                    { id: 2, value: 10000, label: "Delivery cost" },
-                    { id: 3, value: 45000, label: "Salaries" },
-                    { id: 4, value: 3000, label: "Other costs" },
-                  ],
-                },
-              ]}
-              width={400}
-              height={200}
-              colors={cheerfulFiestaPalette}
+        <hr />
+        <div className="sales-management-actions">
+          <div className="container">
+            View{" "}
+            <Select
+              items={{
+                all: "All",
+                expected_sales: "Expected Sales",
+                revenue: "Revenue",
+                expenses: "Costs",
+                sales: "Sales",
+              }}
+              onChange={changeCategory}
             />
+            <div>
+              <LineChart
+                height={300}
+                width={chartWidth}
+                series={chartData}
+                xAxis={[
+                  {
+                    scaleType: "point",
+                    data: sales?.body?.[0] || [],
+                  },
+                ]}
+                colors={mangoFusionPalette}
+              />
+            </div>
+          </div>
+          <div className="container">
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div>
+                <span>Compare items...</span>
+                <div style={{ width: "max-content" }}>
+                  <Select
+                    items={(items?.body || []).map((item) => item.itemName)}
+                    multiple
+                    onMultiChange={setCompareItems}
+                  />
+                </div>
+              </div>
+              <div>
+                View{" "}
+                <Select
+                  items={{
+                    sales: "Sales",
+                    expected_sales: "Expected Sales",
+                    revenue: "Revenue",
+                    expenses: "Costs",
+                  }}
+                  onChange={(evt) => setCompareMetric(evt.target.value)}
+                />
+              </div>
+            </div>
+            <div>
+              <LineChart
+                height={300}
+                width={chartWidth}
+                series={compareChartData}
+                xAxis={[
+                  {
+                    scaleType: "point",
+                    data: comparativeSales?.body?.[0] || [],
+                  },
+                ]}
+                colors={mangoFusionPalette}
+              />
+            </div>
+          </div>
+          <div className="container">
+            <h3>Costs Breakdown</h3>
+            <div>
+              <PieChart
+                series={[
+                  {
+                    /*data: [
+                      { id: 0, value: 15000, label: "Supply costs" },
+                      { id: 1, value: 10000, label: "Electricity" },
+                      { id: 2, value: 10000, label: "Delivery cost" },
+                      { id: 3, value: 45000, label: "Salaries" },
+                      { id: 4, value: 3000, label: "Other costs" },
+                    ],*/
+                    data: (categoricalExpenses?.body?.categories || []).map(
+                      (category, index) => ({
+                        id: index,
+                        value: categoricalExpenses?.body?.expenses[index],
+                        label: category,
+                      }),
+                    ),
+                  },
+                ]}
+                width={400}
+                height={200}
+                colors={cheerfulFiestaPalette}
+              />
+            </div>
           </div>
         </div>
+        <Table
+          headers={[
+            "Month ",
+            <>
+              <FontAwesomeIcon
+                icon={faBolt}
+                color="#ffcc00"
+                title="AI-powered sales forecast"
+              />{" "}
+              Expected Sales
+            </>,
+            "Revenue",
+            "Cost",
+            "Profit",
+          ]}
+          rows={(monthlySales?.body?.[1].revenueData || []).map(
+            (row, index) => [
+              `${monthlySales?.body?.[0]?.[index] || ""}`,
+              `LKR ${monthlySales?.body?.[1]?.expectedSalesData[index].toFixed(2) || ""}`,
+              `LKR ${monthlySales?.body?.[1]?.revenueData[index].toFixed(2) || ""}`,
+              <span className="error-text">
+                ( LKR $
+                {monthlySales?.body?.[1]?.costData[index].toFixed(2) || ""} )
+              </span>,
+              `LKR ${monthlySales?.body?.[1]?.profitData[index].toFixed(2) || ""}`,
+            ],
+          )}
+        />
+
+        <OverlayWindow
+          isOpen={isExpensesFormOpen}
+          setIsOpen={setIsExpensesFormOpen}
+        >
+          <ExpensesForm
+            onSubmit={handleExpenseSubmit}
+            onCancel={() => setIsExpensesFormOpen(false)}
+          />
+        </OverlayWindow>
       </div>
-      <Table
-        headers={[
-          "Month ",
-          <>
-            <FontAwesomeIcon
-              icon={faBolt}
-              color="#ffcc00"
-              title="AI-powered sales forecast"
-            />{" "}
-            Expected Sales
-          </>,
-          "Revenue",
-          "Cost",
-          "Profit",
-        ]}
-        rows={(monthlySales?.body?.[1].revenueData || []).map((row, index) => [
-          `${monthlySales?.body?.[0]?.[index] || ""}`,
-          `LKR ${monthlySales?.body?.[1]?.expectedSalesData[index].toFixed(2) || ""}`,
-          `LKR ${monthlySales?.body?.[1]?.revenueData[index].toFixed(2) || ""}`,
-          <span className="error-text">
-            ( LKR ${monthlySales?.body?.[1]?.costData[index].toFixed(2) || ""} )
-          </span>,
-          `LKR ${monthlySales?.body?.[1]?.profitData[index].toFixed(2) || ""}`,
-        ])}
-      />
-    </div>
+    </>
   )
 }
