@@ -14,7 +14,7 @@ const createThread = async (req, res, next) => {
             edittedDate: null,
             category,
             createdUser: user.username
-    })
+        })
         await thread.save()
         return createResponse(res, StatusCodes.CREATED, thread)
     } catch (error) {
