@@ -40,6 +40,7 @@ function TicketRow({ username, id, title, type, status, date }) {
 
 export default function Support() {
   const [tickets] = useFetch(`${REACT_APP_API_URL}/api/tickets/`, { body: [] })
+  const selectOptions = tickets?.body?.map((ticket) => ticket.title)
 
   return (
     <div className="content">
@@ -50,18 +51,21 @@ export default function Support() {
       <div className="box">
         <SearchBar width="75%" />
         <div>
-          <Select items={["Item 1", "Item 2", "Item 3", "Item 4"]} />
+          <Select items={selectOptions || []} />
           <Button kind="primary">New Ticket</Button>{" "}
         </div>
       </div>
-      <div className="secondary-text">Showing 999 items....</div>
+      <div className="secondary-text">
+        Showing{tickets?.body?.lenght || 0} items...
+      </div>
       <br></br>
       <div>
         <h2>Open</h2>
 
         {tickets?.body?.map((ticket) => (
           <TicketRow
-            id={1}
+            className="ticket-row"
+            id={ticket.id}
             username={ticket.username}
             date={ticket.date}
             status={ticket.ticketstatus}

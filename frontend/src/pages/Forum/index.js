@@ -2,7 +2,10 @@ import Button from "../../components/Button"
 import ProfileImage from "../../components/ProfileImage"
 import SearchBar from "../../components/SearchBar"
 import Select from "../../components/Select"
+import useFetch from "../../hooks/useFetch"
 import "./Forum.css"
+
+const { REACT_APP_API_URL } = process.env
 
 const data = [
   {
@@ -80,6 +83,8 @@ function ThreadLink({ username, title, messageCount, createdDate }) {
 }
 
 export default function Forum() {
+  const [threads] = useFetch(`${REACT_APP_API_URL}/api/forums/`, { body: [] })
+  const data = threads?.body
   return (
     <div className="content">
       <div className="forum-actions">
@@ -94,7 +99,7 @@ export default function Forum() {
       </div>
       {data.map((thread) => (
         <ThreadLink
-          username={thread.username}
+          username={thread.createdUser}
           title={thread.title}
           messageCount={thread.messageCount}
           createdDate={thread.createdDate}

@@ -1,5 +1,6 @@
 const express = require("express")
 const router = express.Router()
+const ForumThreadReply = require("../models/ForumThreadReply")
 
 const { requireRole, roles } = require("../middlewares/auth")
 const {
@@ -13,6 +14,6 @@ const {
 router.post("/", requireRole(roles.USER), createThread)
 router.get("/", getAllThreads)
 router.get("/:threadId", getThread)
-router.put("/:threadId", editThread)
-router.delete("/:threadId", deleteThread)
+router.put("/:threadId", requireRole(roles.USER),editThread)
+router.delete("/:threadId", requireRole(roles.USER),deleteThread)
 module.exports = router

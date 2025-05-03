@@ -9,15 +9,14 @@ const createThread = async (req, res, next) => {
         console.log(user)
         const thread = new ForumThread({
             title,
-            createdDate,
-            editedDate,
+            content,
+            createdDate: Date.now(),
+            edittedDate: null,
             category,
-            createdUser,
-            date: Date.now(),
-            username: user.username,
-        })
+            createdUser: user.username
+    })
         await thread.save()
-        return createResponse(res, StatusCodes.CREATED, "Created")
+        return createResponse(res, StatusCodes.CREATED, thread)
     } catch (error) {
         next(error)
     }
@@ -38,8 +37,8 @@ const getThread = async (req, res, next) => {
         const user = req.user
         console.log(user)
 
-        const { id } = req.params
-        const thread = await ForumThread.find({ id }).exec()
+        const { threadId } = req.params
+        const thread = await ForumThread.findOne( { _id: threadId }).exec()
         if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
         return createResponse(res, StatusCodes.OK, thread)
     } catch (error) {
@@ -51,9 +50,9 @@ const editThread = async (req, res, next) => {
     try {
         const user = req.user
         console.log(user)
-        const { id } = req.params
+        const { threadId } = req.params
         const thread = await ForumThread.findOneAndUpdate(
-            { _id: id },
+            { _id: threadId },
             { title, content, category },
         ).exec()
         if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
@@ -68,7 +67,7 @@ const deleteThread = async (req, res, next) => {
         const user = req.user
         console.log(user)
 
-        const forumThread = await ForumThread.findOneAndDelete({ _id: id }).exec()
+        const forumThread = await ForumThread.findOneAndDelete({ _id: threadId }).exec()
         if (!forumThread) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
         return createResponse(res, StatusCodes.OK, "FOrumThread deleted")
     } catch (error) {

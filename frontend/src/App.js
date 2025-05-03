@@ -16,6 +16,7 @@ import Product from "./pages/Product"
 import Forum from "./pages/Forum"
 import ForumThread from "./pages/ForumThread"
 import CreateTicket from "./pages/Ticket/CreateTicket"
+import CreateForum from "./pages/Forum/createForum"
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
               <Route path="product" element={<Product />} />
               <Route path="forum">
                 <Route index element={<Forum />} />
+                <Route path="new" element={<CreateForum />} />
                 <Route path="thread" element={<ForumThread />} />
               </Route>
               <Route element={<PrivateRoute />}>
