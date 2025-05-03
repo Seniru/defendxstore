@@ -26,7 +26,7 @@ const getExpenses = async (req, res, next) => {
             }
             return createResponse(res, StatusCodes.OK, {
                 categories: Object.keys(categoricalExpenses),
-                expenses: Object.values(categoricalExpenses)
+                expenses: Object.values(categoricalExpenses),
             })
         }
         return createResponse(res, StatusCodes.OK, expenses)

@@ -31,8 +31,10 @@ export default function ExpensesForm({ onSubmit, onCancel }) {
     <div className="expenses-form">
       <h2>Add New Expense</h2>
       <hr />
-      <FontAwesomeIcon icon={faWarning} /> Make sure to double check the date and amount
-      <br /><br />
+      <FontAwesomeIcon icon={faWarning} /> Make sure to double check the date
+      and amount
+      <br />
+      <br />
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="date">Date</label>
@@ -48,6 +50,19 @@ export default function ExpensesForm({ onSubmit, onCancel }) {
         </div>
 
         <div className="form-group">
+          <label htmlFor="description">Description</label>
+          <Input
+            type="text"
+            id="description"
+            name="description"
+            placeholder="Enter description here"
+            width={"100%"}
+            value={formData.description}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="form-group">
           <label htmlFor="amount">Amount</label>
           <Input
             type="number"
@@ -56,7 +71,6 @@ export default function ExpensesForm({ onSubmit, onCancel }) {
             width={"100%"}
             value={formData.amount}
             onChange={handleChange}
-            placeholder="0.00"
             step="0.01"
             min="0"
             required
