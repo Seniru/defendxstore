@@ -81,8 +81,8 @@ export default function SalesManagement() {
   )
 
   const chartData = []
-  if (sales?.body?.[1]?.revenueData)
-    chartData.push({ data: sales.body[1].revenueData, label: "Revenue" })
+  if (sales?.body?.[1]?.salesData)
+    chartData.push({ data: sales.body[1].salesData, label: "Sales" })
   if (sales?.body?.[1]?.costData)
     chartData.push({ data: sales.body[1].costData, label: "Cost" })
   if (sales?.body?.[1]?.expectedSalesData)
@@ -91,7 +91,7 @@ export default function SalesManagement() {
       label: "Expected Sales",
     })
   if (sales?.body?.[1]?.profitData)
-    chartData.push({ data: sales.body[1].profitData, label: "Sales" })
+    chartData.push({ data: sales.body[1].profitData, label: "Revenue" })
 
   const compareChartData = []
   for (let [k, v] of Object.entries(comparativeSales?.body?.[1] || {}))
@@ -256,18 +256,16 @@ export default function SalesManagement() {
             "Cost",
             "Profit",
           ]}
-          rows={(monthlySales?.body?.[1].revenueData || []).map(
-            (row, index) => [
-              `${monthlySales?.body?.[0]?.[index] || ""}`,
-              `LKR ${monthlySales?.body?.[1]?.expectedSalesData[index].toFixed(2) || ""}`,
-              `LKR ${monthlySales?.body?.[1]?.revenueData[index].toFixed(2) || ""}`,
-              <span className="error-text">
-                ( LKR $
-                {monthlySales?.body?.[1]?.costData[index].toFixed(2) || ""} )
-              </span>,
-              `LKR ${monthlySales?.body?.[1]?.profitData[index].toFixed(2) || ""}`,
-            ],
-          )}
+          rows={(monthlySales?.body?.[1].salesData || []).map((row, index) => [
+            `${monthlySales?.body?.[0]?.[index] || ""}`,
+            `LKR ${monthlySales?.body?.[1]?.expectedSalesData[index].toFixed(2) || ""}`,
+            `LKR ${monthlySales?.body?.[1]?.salesData[index].toFixed(2) || ""}`,
+            <span className="error-text">
+              ( LKR ${monthlySales?.body?.[1]?.costData[index].toFixed(2) || ""}{" "}
+              )
+            </span>,
+            `LKR ${monthlySales?.body?.[1]?.profitData[index].toFixed(2) || ""}`,
+          ])}
         />
 
         <OverlayWindow
