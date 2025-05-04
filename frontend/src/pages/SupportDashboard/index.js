@@ -9,6 +9,7 @@ import TabItem from "../../components/TabMenu/TabItem"
 
 import "./SupportDashboard.css"
 import TicketView from "./TicketView"
+import SupportReport from "./SupportReport"
 
 const { REACT_APP_API_URL } = process.env
 
@@ -64,7 +65,7 @@ export default function SupportDashboard() {
               />
             }
           />
-          <TabItem name="Report" element={<div />} />
+          <TabItem name="Report" element={<SupportReport />} />
         </TabMenu>
       </div>
     </div>
