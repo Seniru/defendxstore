@@ -120,6 +120,12 @@ const resolveTicket = async (req, res, next) => {
         const { ticketId } = req.params
         const ticket = await Ticket.findByIdAndUpdate(ticketId, { ticketstatus: "closed" }).exec()
         if (!ticket) return createResponse(res, StatusCodes.NOT_FOUND, "Ticket not found")
+
+        const ticketOwner = await User.findById(ticket.user).exec()
+        await ticketOwner.pushNotification(
+            `Your ticket (#${ticketId}) has been successfully resolved by our support team.`,
+        )
+
         await SupportReport.create({
             user: user._id,
             action: SupportReport.actions.resolveTicket,
