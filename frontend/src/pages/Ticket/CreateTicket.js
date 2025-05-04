@@ -1,4 +1,5 @@
 import { useRef } from "react"
+import { useNavigate } from "react-router-dom"
 import Button from "../../components/Button"
 import Input from "../../components/Input"
 import Select from "../../components/Select"
@@ -10,11 +11,12 @@ export default function CreateTicket() {
   const contentRef = useRef()
   const typeRef = useRef()
   const { token } = useAuth()
+  const navigate = useNavigate()
 
   const handleSubmit = async (evt) => {
     evt.preventDefault()
 
-    await api.post(
+    const response = await api.post(
       "/api/tickets",
       {
         title: titleRef.current.value,
@@ -23,14 +25,19 @@ export default function CreateTicket() {
       },
       token,
     )
+
+    if (response.ok) {
+      const result = await response.json()
+      navigate(`/ticket?id=${result?.body?._id}`)
+    }
   }
 
   return (
-    <div className="create-ticket-container">
+    <div className="container create-ticket-container">
       <h2>Create New Ticket</h2>
 
       <form onSubmit={handleSubmit} className="form">
-        <div className="content">
+        <div>
           <div className="title">Title</div>
           <Input
             type="text"
@@ -40,8 +47,9 @@ export default function CreateTicket() {
             required
           />{" "}
         </div>
+        <br />
 
-        <div className="ticket_type">
+        <div>
           Ticket Type
           <br />
           <Select
@@ -58,17 +66,21 @@ export default function CreateTicket() {
         </div>
         <br />
 
-        <div className="ticket_content">
-          <label className="ticket_content_name">Ticket content</label>
+        <div>
+          <label className="ticket_content_name">Content</label>
+          <br />
           <br />
           <textarea
             minLength={10}
             ref={contentRef}
+            rows={8}
+            cols={100}
             id="ticket-content_box"
             placeholder="Describe your issue in detail..."
           ></textarea>
           <br />
         </div>
+        <br />
 
         <div className="Button_newticket">
           <Button kind="primary" className="button_primary">

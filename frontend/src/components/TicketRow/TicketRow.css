@@ -1,5 +1,6 @@
 .ticket-container {
   display: grid;
+  margin-bottom: 10px;
 
   .ticket-container-header {
     justify-content: space-between;
