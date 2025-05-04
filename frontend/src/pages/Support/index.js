@@ -37,7 +37,7 @@ export default function Support() {
         {tickets?.body?.map((ticket) => (
           <TicketRow
             id={ticket._id}
-            username={ticket.username}
+            username={ticket.user.username}
             date={ticket.date}
             status={ticket.ticketstatus}
             title={ticket.title}
