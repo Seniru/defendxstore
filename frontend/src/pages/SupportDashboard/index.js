@@ -14,7 +14,7 @@ const { REACT_APP_API_URL } = process.env
 
 export default function SupportDashboard() {
   const { user } = useAuth()
-  const [refreshTickets, setRrefreshTickets] = useState(false)
+  const [refreshTickets, setRefreshTickets] = useState(false)
   const [openTickets] = useFetch(
     `${REACT_APP_API_URL}/api/tickets?status=open`,
     {
@@ -55,7 +55,15 @@ export default function SupportDashboard() {
       </aside>
       <div className="dashboard-content">
         <TabMenu>
-          <TabItem name="Tickets" element={<TicketView />} />
+          <TabItem
+            name="Tickets"
+            element={
+              <TicketView
+                refreshTickets={refreshTickets}
+                setRefreshTickets={setRefreshTickets}
+              />
+            }
+          />
           <TabItem name="Report" element={<div />} />
         </TabMenu>
       </div>

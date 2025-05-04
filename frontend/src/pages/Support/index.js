@@ -17,6 +17,7 @@ export default function Support() {
   const { user } = useAuth()
   const [category, setCategory] = useState("all")
   const [query, setQuery] = useState("")
+  const [refreshTickets, setRefreshTickets] = useState(false)
 
   const searchRef = useRef()
   const queryParams = useMemo(() => {
@@ -31,12 +32,14 @@ export default function Support() {
     {
       body: [],
     },
+    refreshTickets,
   )
   const [closedTickets] = useFetch(
     `${REACT_APP_API_URL}/api/tickets?status=closed&${queryParams}`,
     {
       body: [],
     },
+    refreshTickets,
   )
 
   return (
@@ -94,6 +97,8 @@ export default function Support() {
                 status={ticket.ticketstatus}
                 title={ticket.title}
                 type={ticket.type}
+                refreshList={refreshTickets}
+                setRefreshList={setRefreshTickets}
               />
             ))}
           </>
@@ -118,6 +123,8 @@ export default function Support() {
                 status={ticket.ticketstatus}
                 title={ticket.title}
                 type={ticket.type}
+                refreshList={refreshTickets}
+                setRefreshList={setRefreshTickets}
               />
             ))}
           </>

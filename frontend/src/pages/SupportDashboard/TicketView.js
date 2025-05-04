@@ -9,7 +9,7 @@ import { useMemo, useRef, useState } from "react"
 
 const { REACT_APP_API_URL } = process.env
 
-export default function TicketView({}) {
+export default function TicketView({ refreshTickets, setRefreshTickets }) {
   const [category, setCategory] = useState("all")
   const [query, setQuery] = useState("")
 
@@ -26,12 +26,14 @@ export default function TicketView({}) {
     {
       body: [],
     },
+    refreshTickets,
   )
   const [closedTickets] = useFetch(
     `${REACT_APP_API_URL}/api/tickets?status=closed&${queryParams}`,
     {
       body: [],
     },
+    refreshTickets,
   )
 
   return (
@@ -80,6 +82,8 @@ export default function TicketView({}) {
                 status={ticket.ticketstatus}
                 title={ticket.title}
                 type={ticket.type}
+                refreshList={refreshTickets}
+                setRefreshList={setRefreshTickets}
               />
             ))}
           </>
@@ -104,6 +108,8 @@ export default function TicketView({}) {
                 status={ticket.ticketstatus}
                 title={ticket.title}
                 type={ticket.type}
+                refreshList={refreshTickets}
+                setRefreshList={setRefreshTickets}
               />
             ))}
           </>
