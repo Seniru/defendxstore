@@ -1,27 +1,21 @@
-import { faHeadset, faPen, faTrash } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import SearchBar from "../../components/SearchBar"
 import Select from "../../components/Select"
 import Button from "../../components/Button"
 import TicketRow from "../../components/TicketRow"
 
-import "./Support.css"
 import useFetch from "../../hooks/useFetch"
 import { Link } from "react-router-dom"
 import { useMemo, useRef, useState } from "react"
-import { useAuth } from "../../contexts/AuthProvider"
 
 const { REACT_APP_API_URL } = process.env
 
-export default function Support() {
-  const { user } = useAuth()
+export default function TicketView({ refreshTickets, setRefreshTickets }) {
   const [category, setCategory] = useState("all")
   const [query, setQuery] = useState("")
-  const [refreshTickets, setRefreshTickets] = useState(false)
 
   const searchRef = useRef()
   const queryParams = useMemo(() => {
-    const params = { fromUser: user.username }
+    const params = {}
     if (category !== "all") params.category = category
     if (query) params.q = query
     return new URLSearchParams(params).toString()
@@ -44,15 +38,6 @@ export default function Support() {
 
   return (
     <div className="content">
-      <h1>
-        {" "}
-        <FontAwesomeIcon icon={faHeadset} /> Customer Support
-      </h1>
-      <Link to="/ticket/new">
-        <Button kind="primary">Open a New Ticket</Button>
-      </Link>
-      <hr />
-      <br />
       <div className="support-top-action-bar">
         <div>
           <SearchBar

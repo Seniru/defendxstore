@@ -11,7 +11,7 @@ const ForumThreadSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 10,
-        maxlength: 100,
+        maxlength: 2048,
     },
 
     createdDate: {
@@ -31,10 +31,15 @@ const ForumThreadSchema = new mongoose.Schema({
     },
 
     createdUser: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true,
-        minlength: 3,
-        maxlength: 10,
+    },
+
+    replies: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "ForumThreadReply",
+        default: [],
     },
 })
 const ForumThread = mongoose.model("ForumThread", ForumThreadSchema)
