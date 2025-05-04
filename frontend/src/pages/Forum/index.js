@@ -93,9 +93,9 @@ export default function Forum() {
           createdDate={thread.createdDate}
         />
       ))}
-      <Button className="new-thread-button">
-        <Link to="thread/new">+</Link>
-      </Button>
+      <Link to="thread/new">
+        <Button className="new-thread-button">+</Button>
+      </Link>
     </div>
   )
 }

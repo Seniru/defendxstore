@@ -8,7 +8,7 @@ import useFetch from "../../hooks/useFetch"
 import "./ForumThread.css"
 import api from "../../utils/api"
 import { useAuth } from "../../contexts/AuthProvider"
-import TextEditor from "../../components/TextEditor/index."
+import TextEditor from "../../components/TextEditor"
 
 function ForumThreadReply({ index, username, createdDate, content }) {
   return (
