@@ -12,7 +12,7 @@ require("dotenv").config()
 // Get All Items
 const getAllItems = async (req, res) => {
     try {
-        const items = await Item.find()
+        const items = await Item.find().sort({ _id: -1 }).exec()
         createResponse(res, StatusCodes.OK, items)
     } catch (error) {
         next(error)
@@ -41,11 +41,15 @@ const getTrendingItems = async (req, res, next) => {
         const response = await fetch(`${process.env.AI_SERVICES_URI}/trending/items`)
         if (!response.ok)
             return createResponse(res, response.status, response.body || response.statusText)
-        const result = await response.json()
-        const items = await Item.find({ _id: { $in: result.map((item) => item[0]) } })
-            .limit(8)
-            .exec()
-        return createResponse(res, StatusCodes.OK, items)
+
+        let result = await response.json()
+        result = result.slice(0, 8)
+
+        const items = await Item.find({ _id: { $in: result.map((item) => item[0]) } }).exec()
+        const itemMap = new Map(items.map((item) => [item._id.toString(), item]))
+        const sortedItems = result.map((item) => itemMap.get(item[0]))
+
+        return createResponse(res, StatusCodes.OK, sortedItems)
     } catch (error) {
         next(error)
     }
@@ -59,11 +63,15 @@ const getRecommendedItems = async (req, res, next) => {
         )
         if (!response.ok)
             return createResponse(res, response.status, response.body || response.statusText)
-        const result = await response.json()
-        const items = await Item.find({ _id: { $in: result } })
-            .limit(8)
-            .exec()
-        return createResponse(res, StatusCodes.OK, items)
+        
+        let result = await response.json()
+        result = result.slice(0, 8)
+        
+        const items = await Item.find({ _id: { $in: result } }).exec()
+        const itemMap = new Map(items.map((item) => [item._id.toString(), item]))
+        const sortedItems = result.map((item) => itemMap.get(item))
+
+        return createResponse(res, StatusCodes.OK, sortedItems)
     } catch (error) {
         next(error)
     }
