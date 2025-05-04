@@ -1,5 +1,5 @@
 import { useRef, useState } from "react"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import Markdown from "react-markdown"
 
 import Button from "../../components/Button"
@@ -123,10 +123,15 @@ export default function ForumThread() {
             <br />
             {user && thread?.body?.createdUser?.username === user.username && (
               <div style={{ display: "grid" }}>
-                <Button kind="secondary">
-                  <FontAwesomeIcon icon={faPencil} cursor="pointer" /> Edit
-                  thread
-                </Button>
+                <Link to={`/forum/thread/edit?id=${thread?.body?._id}`}>
+                  <Button
+                    kind="secondary"
+                    style={{ width: "-webkit-fill-available" }}
+                  >
+                    <FontAwesomeIcon icon={faPencil} cursor="pointer" /> Edit
+                    thread
+                  </Button>
+                </Link>
                 <Button
                   kind="danger"
                   onClick={() => setIsDeleteThreadWindowOpen(true)}

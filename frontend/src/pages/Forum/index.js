@@ -20,7 +20,7 @@ function ThreadLink({
   return (
     <div className="container thread-link-container">
       <div className="thread-link-main">
-        <div>
+        <div className="thread-profile-information">
           <ProfileImage username={username} size={40} />
           <div>{username}</div>
         </div>

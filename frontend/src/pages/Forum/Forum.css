@@ -15,6 +15,13 @@
   display: flex;
   align-items: center;
 
+  .thread-profile-information {
+    display: grid;
+    min-width: 90px;
+    max-width: 90px;
+    justify-items: center;
+  }
+
   h3 {
     margin-left: 30px;
     margin-right: 10px;

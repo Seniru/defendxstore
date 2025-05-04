@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Button from "../../components/Button"
 import Input from "../../components/Input"
 import Select from "../../components/Select"
@@ -6,7 +6,11 @@ import TextEditor from "../../components/TextEditor"
 import api from "../../utils/api"
 import { useAuth } from "../../contexts/AuthProvider"
 import Markdown from "react-markdown"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import useFetch from "../../hooks/useFetch"
+import Forbidden from "../errors/Forbidden"
+
+const { REACT_APP_API_URL } = process.env
 
 export default function CreateForum() {
   const [isPreviewing, setIsPreviewing] = useState(false)
@@ -14,32 +18,63 @@ export default function CreateForum() {
   const titleRef = useRef()
   const contentRef = useRef()
   const categoryRef = useRef()
-  const { token } = useAuth()
+  const { user, token } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const id = searchParams.get("id")
+  const [thread] = useFetch(`${REACT_APP_API_URL}/api/forums/${id}`)
+  const isEditting = thread?.body?._id === id
+
+  useEffect(() => {
+    if (!isEditting) return
+    titleRef.current.value = thread?.body?.title
+    categoryRef.current.value = thread?.body?.category
+    setContent(thread?.body?.content)
+  }, [id, thread, isEditting])
 
   const handleSubmit = async (evt) => {
     evt.preventDefault()
 
-    const response = await api.post(
-      "/api/forums",
-      {
-        title: titleRef.current.value,
-        content: content,
-        category: categoryRef.current.value,
-      },
-      token,
-    )
+    if (isEditting) {
+      const response = await api.put(
+        `/api/forums/${id}`,
+        {
+          title: titleRef.current.value,
+          content: content,
+          category: categoryRef.current.value,
+        },
+        token,
+      )
 
-    if (response.ok) {
-      const result = await response.json()
-      navigate(`/forum/thread?id=${result?.body?._id}`)
+      if (response.ok) navigate(`/forum/thread?id=${id}`)
+    } else {
+      const response = await api.post(
+        "/api/forums",
+        {
+          title: titleRef.current.value,
+          content: content,
+          category: categoryRef.current.value,
+        },
+        token,
+      )
+
+      if (response.ok) {
+        const result = await response.json()
+        navigate(`/forum/thread?id=${result?.body?._id}`)
+      }
     }
   }
+
+  if (
+    thread?.body?.createdUser &&
+    thread.body.createdUser.username !== user.username
+  )
+    return <Forbidden />
 
   return (
     <form onSubmit={handleSubmit}>
       <div className="content">
-        <h3>Create a new thread</h3>
+        <h3>{isEditting ? "Edit thread" : "Create a new thread"}</h3>
         <hr />
         <br />
         <div>
