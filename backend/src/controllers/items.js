@@ -63,10 +63,10 @@ const getRecommendedItems = async (req, res, next) => {
         )
         if (!response.ok)
             return createResponse(res, response.status, response.body || response.statusText)
-        
+
         let result = await response.json()
         result = result.slice(0, 8)
-        
+
         const items = await Item.find({ _id: { $in: result } }).exec()
         const itemMap = new Map(items.map((item) => [item._id.toString(), item]))
         const sortedItems = result.map((item) => itemMap.get(item))
