@@ -45,12 +45,16 @@ export default function Ticket() {
 
   const editTicket = async (evt, titleRef, typeRef, contentRef) => {
     evt.preventDefault()
-    
-    const response = await api.put(`/api/tickets/${id}`, {
-      title: titleRef.current.value,
-      type: typeRef.current.value,
-      content: contentRef.current.value
-    }, token)
+
+    const response = await api.put(
+      `/api/tickets/${id}`,
+      {
+        title: titleRef.current.value,
+        type: typeRef.current.value,
+        content: contentRef.current.value,
+      },
+      token,
+    )
 
     if (response.ok) {
       setIsEditTicketWindowOpen(false)

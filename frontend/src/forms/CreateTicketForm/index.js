@@ -3,7 +3,12 @@ import Input from "../../components/Input"
 import Select from "../../components/Select"
 import Button from "../../components/Button"
 
-export default function CreateTicketForm({ handleSubmit, title, type, content }) {
+export default function CreateTicketForm({
+  handleSubmit,
+  title,
+  type,
+  content,
+}) {
   const titleRef = useRef()
   const typeRef = useRef()
   const contentRef = useRef()

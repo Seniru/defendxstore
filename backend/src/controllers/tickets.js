@@ -72,7 +72,10 @@ const editTicket = async (req, res, next) => {
         const { title, content, type } = req.body
         const user = req.user
         const { ticketId } = req.params
-        const ticket = await Ticket.findOneAndUpdate({ _id: ticketId }, { title, content, type }).exec()
+        const ticket = await Ticket.findOneAndUpdate(
+            { _id: ticketId },
+            { title, content, type },
+        ).exec()
         if (!ticket) return createResponse(res, StatusCodes.NOT_FOUND, "Ticket not found")
         return createResponse(res, StatusCodes.OK, ticket)
     } catch (error) {
