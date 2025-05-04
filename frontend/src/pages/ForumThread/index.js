@@ -189,7 +189,7 @@ export default function ForumThread() {
             <hr />
             <div className="container">
               {reply.length == 0 ? (
-                <p className="secondary-text">Nothing to preivew...</p>
+                <p className="secondary-text">Nothing to preview...</p>
               ) : (
                 <Markdown>{reply}</Markdown>
               )}

@@ -132,7 +132,7 @@ export default function CreateForum() {
             <hr />
             <div className="container">
               {content.length == 0 ? (
-                <p className="secondary-text">Nothing to preivew...</p>
+                <p className="secondary-text">Nothing to preview...</p>
               ) : (
                 <Markdown>{content}</Markdown>
               )}
