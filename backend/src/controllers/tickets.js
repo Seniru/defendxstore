@@ -6,7 +6,16 @@ const User = require("../models/User")
 //get all tickets
 const getAllTickets = async (req, res, next) => {
     try {
-        const tickets = await Ticket.find({})
+        const { status, q, category } = req.query
+
+        if (status && !["open", "closed"].includes(status))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid status")
+
+        const query = { title: { $regex: q || "", $options: "i" } }
+        if (category) query.type = category
+        if (status) query.ticketstatus = status
+
+        const tickets = await Ticket.find(query)
             .populate({ path: "user", select: "username email contactNumber" })
             .exec()
         return createResponse(res, StatusCodes.OK, tickets)
