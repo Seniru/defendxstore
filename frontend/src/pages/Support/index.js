@@ -9,16 +9,18 @@ import "./Support.css"
 import useFetch from "../../hooks/useFetch"
 import { Link } from "react-router-dom"
 import { useMemo, useRef, useState } from "react"
+import { useAuth } from "../../contexts/AuthProvider"
 
 const { REACT_APP_API_URL } = process.env
 
 export default function Support() {
+  const { user } = useAuth()
   const [category, setCategory] = useState("all")
   const [query, setQuery] = useState("")
 
   const searchRef = useRef()
   const queryParams = useMemo(() => {
-    const params = {}
+    const params = { fromUser: user.username }
     if (category !== "all") params.category = category
     if (query) params.q = query
     return new URLSearchParams(params).toString()

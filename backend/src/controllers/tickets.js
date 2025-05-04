@@ -7,6 +7,8 @@ const User = require("../models/User")
 const getAllTickets = async (req, res, next) => {
     try {
         const { status, q, category } = req.query
+        const user = req.user
+        const fromUser = req.query.fromUser || "all"
 
         if (status && !["open", "closed"].includes(status))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid status")
@@ -14,6 +16,15 @@ const getAllTickets = async (req, res, next) => {
         const query = { title: { $regex: q || "", $options: "i" } }
         if (category) query.type = category
         if (status) query.ticketstatus = status
+
+        if (fromUser == "all" && !user.roles.includes("SUPPORT_AGENT"))
+            return createResponse(
+                res,
+                StatusCodes.FORBIDDEN,
+                "You are not authorized to view all tickets",
+            )
+
+        if (fromUser != "all") query.user = (await User.findOne({ username: fromUser }).exec())._id
 
         const tickets = await Ticket.find(query)
             .populate({ path: "user", select: "username email contactNumber" })
