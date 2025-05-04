@@ -2,6 +2,7 @@ const { StatusCodes } = require("http-status-codes")
 const createResponse = require("../utils/createResponse")
 const Ticket = require("../models/Ticket")
 const User = require("../models/User")
+const SupportReport = require("../models/reports/SupportReport")
 
 //get all tickets
 const getAllTickets = async (req, res, next) => {
@@ -49,6 +50,13 @@ const createTickets = async (req, res, next) => {
             user: user._id,
         })
         await ticket.save()
+
+        await SupportReport.create({
+            user: user._id,
+            action: SupportReport.actions.createTicket,
+            data: { ticketId: ticket._id },
+        })
+
         return createResponse(res, StatusCodes.CREATED, ticket)
     } catch (error) {
         next(error)
@@ -70,13 +78,19 @@ const getTicket = async (req, res, next) => {
 const editTicket = async (req, res, next) => {
     try {
         const { title, content, type } = req.body
-        const user = req.user
+        const user = await User.findOne({ username: req.user.username }).exec()
         const { ticketId } = req.params
         const ticket = await Ticket.findOneAndUpdate(
             { _id: ticketId },
             { title, content, type },
         ).exec()
         if (!ticket) return createResponse(res, StatusCodes.NOT_FOUND, "Ticket not found")
+
+        await SupportReport.create({
+            user: user._id,
+            action: SupportReport.actions.editTicket,
+            data: { ticketId: ticket._id },
+        })
         return createResponse(res, StatusCodes.OK, ticket)
     } catch (error) {
         next(error)
@@ -85,10 +99,15 @@ const editTicket = async (req, res, next) => {
 //delete ticket
 const deleteTicket = async (req, res, next) => {
     try {
-        const user = req.user
+        const user = await User.findOne({ username: req.user.username }).exec()
         const { ticketId } = req.params
         const ticket = await Ticket.findOneAndDelete({ _id: ticketId }).exec()
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+        await SupportReport.create({
+            user: user._id,
+            action: SupportReport.actions.deleteTicket,
+            data: { ticketId: ticket._id },
+        })
         return createResponse(res, StatusCodes.OK, ticket)
     } catch (error) {
         next(error)
@@ -97,9 +116,15 @@ const deleteTicket = async (req, res, next) => {
 
 const resolveTicket = async (req, res, next) => {
     try {
+        const user = await User.findOne({ username: req.user.username }).exec()
         const { ticketId } = req.params
         const ticket = await Ticket.findByIdAndUpdate(ticketId, { ticketstatus: "closed" }).exec()
         if (!ticket) return createResponse(res, StatusCodes.NOT_FOUND, "Ticket not found")
+        await SupportReport.create({
+            user: user._id,
+            action: SupportReport.actions.resolveTicket,
+            data: { ticketId: ticket._id },
+        })
         return createResponse(res, StatusCodes.OK, "Ticket resolved")
     } catch (error) {
         next(error)
