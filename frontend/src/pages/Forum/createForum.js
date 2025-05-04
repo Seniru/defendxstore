@@ -25,7 +25,7 @@ export default function CreateForum() {
       {
         title: titleRef.current.value,
         content: content,
-        category: categoryRef.current.value
+        category: categoryRef.current.value,
       },
       token,
     )

@@ -3,40 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import SearchBar from "../../components/SearchBar"
 import Select from "../../components/Select"
 import Button from "../../components/Button"
-import ProfileImage from "../../components/ProfileImage"
+import TicketRow from "../../components/TicketRow"
 
 import "./Support.css"
 import useFetch from "../../hooks/useFetch"
 
 const { REACT_APP_API_URL } = process.env
-
-function TicketRow({ username, id, title, type, status, date }) {
-  return (
-    <div className="container ticket-container">
-      <div style={{ display: "flex" }}>
-        <div className="box2">
-          <div className="userprofile">
-            <ProfileImage username={username} size={30} /> {username}
-          </div>
-          <b>Ticket #{id}</b>
-        </div>
-        <h2>{title}</h2>
-      </div>
-      <div style={{ display: "grid", justifyItems: "end" }}>
-        <div>
-          <span className="tickettype">{type}</span>
-          <span className={status}>{status}</span>{" "}
-          <FontAwesomeIcon icon={faPen} />{" "}
-          <FontAwesomeIcon icon={faTrash} color="red" />
-        </div>
-        <span className="secondary-text">
-          <br />
-          {date}
-        </span>
-      </div>
-    </div>
-  )
-}
 
 export default function Support() {
   const [tickets] = useFetch(`${REACT_APP_API_URL}/api/tickets/`, { body: [] })
@@ -56,7 +28,7 @@ export default function Support() {
         </div>
       </div>
       <div className="secondary-text">
-        Showing{tickets?.body?.length || 0} items...
+        Showing {tickets?.body?.length || 0} items...
       </div>
       <br></br>
       <div>
@@ -64,7 +36,7 @@ export default function Support() {
 
         {tickets?.body?.map((ticket) => (
           <TicketRow
-            id={ticket.id}
+            id={ticket._id}
             username={ticket.username}
             date={ticket.date}
             status={ticket.ticketstatus}
