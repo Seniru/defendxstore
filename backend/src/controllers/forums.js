@@ -25,7 +25,12 @@ const createThread = async (req, res, next) => {
 
 const getAllThreads = async (req, res, next) => {
     try {
-        const forums = await ForumThread.find({})
+        const { q, category } = req.query
+
+        const query = { title: { $regex: q || "", $options: "i" } }
+        if (category) query.category = category
+
+        const forums = await ForumThread.find(query)
             .populate({ path: "createdUser", select: "username" })
             .exec()
         return createResponse(res, StatusCodes.OK, forums)
@@ -41,9 +46,9 @@ const getThread = async (req, res, next) => {
             .populate({ path: "createdUser", select: "username" })
             .populate({
                 path: "replies",
-                populate: { path: "createdUser", select: "username" }
-              })
-                        .exec()
+                populate: { path: "createdUser", select: "username" },
+            })
+            .exec()
         if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
         return createResponse(res, StatusCodes.OK, thread)
     } catch (error) {
@@ -92,7 +97,7 @@ const createReply = async (req, res, next) => {
         })
 
         await ForumThread.findByIdAndUpdate(threadId, {
-            $push: { replies: reply._id }
+            $push: { replies: reply._id },
         }).exec()
 
         return createResponse(res, StatusCodes.CREATED, reply)

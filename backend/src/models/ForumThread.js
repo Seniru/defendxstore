@@ -39,8 +39,8 @@ const ForumThreadSchema = new mongoose.Schema({
     replies: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: "ForumThreadReply",
-        default: []
-    }
+        default: [],
+    },
 })
 const ForumThread = mongoose.model("ForumThread", ForumThreadSchema)
 
