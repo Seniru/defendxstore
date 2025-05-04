@@ -16,7 +16,7 @@ const TicketSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 10,
-        maxlength: 30,
+        maxlength: 50,
     },
 
     content: {

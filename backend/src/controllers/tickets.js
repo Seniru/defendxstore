@@ -57,8 +57,6 @@ const createTickets = async (req, res, next) => {
 //get ticket by Id
 const getTicket = async (req, res, next) => {
     try {
-        const user = req.user
-
         const { ticketId } = req.params
         const ticket = await Ticket.findById(ticketId)
             .populate({ path: "user", select: "username email contactNumber" })
@@ -73,9 +71,8 @@ const editTicket = async (req, res, next) => {
     try {
         const { title, content, type } = req.body
         const user = req.user
-        console.log(user)
-        const { id } = req.params
-        const ticket = await Ticket.findOneAndUpdate({ _id: id }, { title, content, type }).exec()
+        const { ticketId } = req.params
+        const ticket = await Ticket.findOneAndUpdate({ _id: ticketId }, { title, content, type }).exec()
         if (!ticket) return createResponse(res, StatusCodes.NOT_FOUND, "Ticket not found")
         return createResponse(res, StatusCodes.OK, ticket)
     } catch (error) {
@@ -86,11 +83,21 @@ const editTicket = async (req, res, next) => {
 const deleteTicket = async (req, res, next) => {
     try {
         const user = req.user
-        console.log(user)
         const { ticketId } = req.params
         const ticket = await Ticket.findOneAndDelete({ _id: ticketId }).exec()
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
         return createResponse(res, StatusCodes.OK, ticket)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const resolveTicket = async (req, res, next) => {
+    try {
+        const { ticketId } = req.params
+        const ticket = await Ticket.findByIdAndUpdate(ticketId, { ticketstatus: "closed" }).exec()
+        if (!ticket) return createResponse(res, StatusCodes.NOT_FOUND, "Ticket not found")
+        return createResponse(res, StatusCodes.OK, "Ticket resolved")
     } catch (error) {
         next(error)
     }
@@ -102,4 +109,5 @@ module.exports = {
     getTicket,
     editTicket,
     deleteTicket,
+    resolveTicket,
 }
