@@ -1,0 +1,114 @@
+import SearchBar from "../../components/SearchBar"
+import Select from "../../components/Select"
+import Button from "../../components/Button"
+import TicketRow from "../../components/TicketRow"
+
+import useFetch from "../../hooks/useFetch"
+import { Link } from "react-router-dom"
+import { useMemo, useRef, useState } from "react"
+
+const { REACT_APP_API_URL } = process.env
+
+export default function TicketView({}) {
+  const [category, setCategory] = useState("all")
+  const [query, setQuery] = useState("")
+
+  const searchRef = useRef()
+  const queryParams = useMemo(() => {
+    const params = {}
+    if (category !== "all") params.category = category
+    if (query) params.q = query
+    return new URLSearchParams(params).toString()
+  }, [category, query])
+
+  const [openTickets] = useFetch(
+    `${REACT_APP_API_URL}/api/tickets?status=open&${queryParams}`,
+    {
+      body: [],
+    },
+  )
+  const [closedTickets] = useFetch(
+    `${REACT_APP_API_URL}/api/tickets?status=closed&${queryParams}`,
+    {
+      body: [],
+    },
+  )
+
+  return (
+    <div className="content">
+      <div className="support-top-action-bar">
+        <div>
+          <SearchBar
+            width={400}
+            placeholder="Search tickets..."
+            ref={searchRef}
+          />{" "}
+          <Button
+            kind="primary"
+            onClick={() => setQuery(searchRef.current.value)}
+          >
+            Go
+          </Button>
+        </div>
+        <Select
+          items={{
+            all: "All",
+            inquiry: "Inquiry",
+            payment: "Payment",
+            return: "Return Order",
+            complaints: "Complaints",
+          }}
+          onChange={(evt) => setCategory(evt.target.value)}
+        />
+      </div>
+      <div>
+        <h2>Open tickets</h2>
+        {(openTickets?.body?.length || 0) === 0 ? (
+          <div className="secondary-text">No tickets to display...</div>
+        ) : (
+          <>
+            <div className="secondary-text">
+              Showing {openTickets?.body?.length || 0} items...
+            </div>
+            <br />
+
+            {openTickets?.body?.map((ticket) => (
+              <TicketRow
+                id={ticket._id}
+                username={ticket.user.username}
+                date={ticket.date}
+                status={ticket.ticketstatus}
+                title={ticket.title}
+                type={ticket.type}
+              />
+            ))}
+          </>
+        )}
+      </div>
+      <div>
+        <h2>Closed tickets</h2>
+        {(closedTickets?.body?.length || 0) === 0 ? (
+          <div className="secondary-text">No tickets to display...</div>
+        ) : (
+          <>
+            <div className="secondary-text">
+              Showing {closedTickets?.body?.length || 0} items...
+            </div>
+            <br />
+
+            {closedTickets?.body?.map((ticket) => (
+              <TicketRow
+                id={ticket._id}
+                username={ticket.user.username}
+                date={ticket.date}
+                status={ticket.ticketstatus}
+                title={ticket.title}
+                type={ticket.type}
+              />
+            ))}
+          </>
+        )}
+      </div>
+    </div>
+  )
+}

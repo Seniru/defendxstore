@@ -25,6 +25,7 @@ import { CartProvider } from "./contexts/CartProvider"
 import Verify from "./pages/Verify"
 import FAQ from "./pages/FAQ"
 import DeliveryDashboard from "./pages/DeliveryDashboard"
+import SupportDashboard from "./pages/SupportDashboard"
 
 function App() {
   return (
@@ -55,6 +56,10 @@ function App() {
                   <Route path="*" element={<NotFound />} />
                 </Route>
                 <Route element={<PrivateRoute requiredRole="SUPPORT_AGENT" />}>
+                  <Route
+                    path="support/dashboard"
+                    element={<SupportDashboard />}
+                  />
                   <Route path="*" element={<NotFound />} />
                 </Route>
                 <Route element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}>
