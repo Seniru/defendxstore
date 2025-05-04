@@ -19,6 +19,8 @@
     margin-right: 20px;
     margin-top: 20px;
     justify-items: center;
+    min-width: 120px;
+    max-width: 120px;
   }
 }
 
@@ -44,6 +46,8 @@
     display: grid;
     margin-right: 20px;
     margin-top: 20px;
+    min-width: 120px;
+    max-width: 120px;
     justify-items: center;
   }
 }
