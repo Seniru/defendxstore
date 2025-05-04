@@ -1,19 +1,32 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { useSearchParams } from "react-router-dom"
+import Markdown from "react-markdown"
+
 import Button from "../../components/Button"
 import ProfileImage from "../../components/ProfileImage"
 import useFetch from "../../hooks/useFetch"
 import "./ForumThread.css"
+import api from "../../utils/api"
+import { useAuth } from "../../contexts/AuthProvider"
+import TextEditor from "../../components/TextEditor/index."
 
-function ForumThreadReply({ username, createdDate, content }) {
+function ForumThreadReply({ index, username, createdDate, content }) {
   return (
-    <div className="container thread-reply-container">
-      <div>
-        <ProfileImage username="User" size={50} />
-        {username}
-        <div className="secondary-text">{createdDate}</div>
+    <div className="container" style={{ marginTop: 10, marginBottom: 10 }}>
+      <div className="thread-reply-index secondary-text">#{index + 1}</div>
+      <div className="thread-reply-container">
+        <div className="thread-reply-main-information">
+          <ProfileImage username={username} size={50} />
+          <div>{username}</div>
+          <div className="secondary-text">
+            <br />
+            {new Date(createdDate).toLocaleDateString()}{" "}
+          </div>
+        </div>
+        <div>
+          <Markdown>{content}</Markdown>
+        </div>
       </div>
-      <p>{content}</p>
     </div>
   )
 }
@@ -22,81 +35,105 @@ const { REACT_APP_API_URL } = process.env
 
 export default function ForumThread() {
   const [searchParams] = useSearchParams()
+  const { token } = useAuth()
   const id = searchParams.get("id")
-  const [replyContent, setReplyContent] = useState("")
+  const [reply, setReply] = useState("")
+  const [isPreviewing, setIsPreviewing] = useState(false)
+  const [refreshFlag, setRefreshFlag] = useState(false)
 
-  const [thread] = useFetch(`${REACT_APP_API_URL}/api/forums/${id}`, {
-    body: [],
-  })
-
-  const [replies, refetchReplies] = useFetch(
-    `${REACT_APP_API_URL}/api/forums/${id}/replies`,
-    { body: [] },
+  const [thread] = useFetch(
+    `${REACT_APP_API_URL}/api/forums/${id}`,
+    {
+      body: [],
+    },
+    refreshFlag,
   )
 
   const handleSubmitReply = async () => {
-    try {
-      const response = await fetch(
-        `${REACT_APP_API_URL}/api/forums/${id}/replies`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            content: replyContent,
-            username: "currentUser",
-          }),
-        },
-      )
+    const response = await api.post(
+      `/api/forums/${id}/replies`,
+      { content: reply },
+      token,
+    )
 
-      if (response.ok) {
-        setReplyContent("")
-        refetchReplies()
-      }
-    } catch (error) {
-      console.error("Error submiting reply:", error)
+    if (response.ok) {
+      setReply("")
+      setRefreshFlag(!refreshFlag)
     }
   }
 
   return (
-    <div className="content">
-      <h1>{thread?.body?.title}</h1>
-      <div className="forum-thread-main-content">
+    <div className="forum-thread-content content">
+      <div className="forum-thread-header">
+        <h1>{thread?.body?.title}</h1>
+        <div className="forum-thread-category"># {thread?.body?.category}</div>
+      </div>
+      <div className="forum-thread-main-content container">
         <div className="forum-thread-main-information">
-          <div>
-            <ProfileImage username={thread?.body?.createdUser} size={50} />
-            {thread?.body?.createdUser}
-            <div className="secondary-text">
-              {new Date(thread?.body?.createdDate).toLocaleDateString()}{" "}
-            </div>
+          <ProfileImage
+            username={thread?.body?.createdUser?.username || ""}
+            size={50}
+          />
+          <div>{thread?.body?.createdUser?.username}</div>
+          <div className="secondary-text">
+            <br />
+            {new Date(thread?.body?.createdDate).toLocaleDateString()}{" "}
           </div>
         </div>
-        <p>{thread?.body?.content}</p>
+        <div>
+          <Markdown>{thread?.body?.content}</Markdown>
+        </div>
       </div>
       <br />
-      <hr />
       <h3>Replies</h3>
-      {replies?.body?.length > 0 ? (
-        replies.body.map((reply) => (
+      {thread?.body?.replies?.length > 0 ? (
+        thread?.body?.replies?.map((reply, index) => (
           <ForumThreadReply
+            index={index}
             content={reply.content}
-            username={reply.username}
+            username={reply.createdUser.username || ""}
             createdDate={reply.createdDate}
           />
         ))
       ) : (
         <p>No replies yet.</p>
       )}
-
+      <br />
       <hr />
       <h3>Answer</h3>
-      <textarea rows={5} cols={100} value={replyContent}></textarea>
-      <hr />
+      <TextEditor
+        rows={8}
+        cols={150}
+        setText={setReply}
+        text={reply}
+        extraTools={
+          <Button
+            kind="secondary"
+            onClick={() => setIsPreviewing(!isPreviewing)}
+          >
+            {isPreviewing ? "Hide Preview" : "Show Preview"}
+          </Button>
+        }
+        onChange={(evt) => setReply(evt.target.value)}
+      />
       <br />
       <Button kind="primary" onClick={handleSubmitReply}>
         Submit
       </Button>
+      <br />
+      {isPreviewing && (
+        <>
+          <h3>Preview</h3>
+          <hr />
+          <div className="container">
+            {reply.length == 0 ? (
+              <p className="secondary-text">Nothing to preivew...</p>
+            ) : (
+              <Markdown>{reply}</Markdown>
+            )}
+          </div>
+        </>
+      )}
     </div>
   )
 }

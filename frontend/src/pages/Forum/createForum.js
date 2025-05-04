@@ -15,7 +15,7 @@ export default function CreateForum() {
     evt.preventDefault()
 
     api.post(
-      "/api/Forums",
+      "/api/forums",
 
       {
         title: titleRef.current.value,
@@ -42,10 +42,11 @@ export default function CreateForum() {
       category
       <Select
         items={{
-          suggestions: "Suggestions",
-          tips: "Tips",
-          questions: " Questions",
-          other: "Others",
+          suggestion: "Suggestion",
+          tip: "Tip",
+          question: " Questions",
+          discussion: "Discussion",
+          other: "Other",
         }}
         ref={categoryRef}
       />{" "}

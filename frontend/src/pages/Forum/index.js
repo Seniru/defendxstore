@@ -90,7 +90,9 @@ export default function Forum() {
       <div className="forum-actions">
         <div>
           Categories
-          <Select items={["All", "Suggestions", "Tips", "Insights"]} />
+          <Select
+            items={["All", "Suggestions", "Tips", "Insights", "Discussion"]}
+          />
         </div>
         <div>
           <SearchBar placeholder="Search" />
@@ -99,7 +101,7 @@ export default function Forum() {
       </div>
       {data.map((thread) => (
         <ThreadLink
-          username={thread.createdUser}
+          username={thread.createdUser?.usernameb || ""}
           title={thread.title}
           messageCount={thread.messageCount}
           createdDate={thread.createdDate}

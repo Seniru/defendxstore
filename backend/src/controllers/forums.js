@@ -1,19 +1,20 @@
 const { StatusCodes } = require("http-status-codes")
 const createResponse = require("../utils/createResponse")
 const ForumThread = require("../models/ForumThread")
+const ForumThreadReply = require("../models/ForumThreadReply")
+const User = require("../models/User")
 
 const createThread = async (req, res, next) => {
     try {
         const { title, content, category } = req.body
-        const user = req.user
-        console.log(user)
+        const user = await User.findOne({ username: req.user.username }).exec()
         const thread = new ForumThread({
             title,
             content,
             createdDate: Date.now(),
             edittedDate: null,
             category,
-            createdUser: user.username,
+            createdUser: user._id,
         })
         await thread.save()
         return createResponse(res, StatusCodes.CREATED, thread)
@@ -24,8 +25,9 @@ const createThread = async (req, res, next) => {
 
 const getAllThreads = async (req, res, next) => {
     try {
-        const user = req.user
-        const forums = await ForumThread.find({}).exec()
+        const forums = await ForumThread.find({})
+            .populate({ path: "createdUser", select: "username" })
+            .exec()
         return createResponse(res, StatusCodes.OK, forums)
     } catch (error) {
         next(error)
@@ -35,7 +37,13 @@ const getAllThreads = async (req, res, next) => {
 const getThread = async (req, res, next) => {
     try {
         const { threadId } = req.params
-        const thread = await ForumThread.findOne({ _id: threadId }).exec()
+        const thread = await ForumThread.findOne({ _id: threadId })
+            .populate({ path: "createdUser", select: "username" })
+            .populate({
+                path: "replies",
+                populate: { path: "createdUser", select: "username" }
+              })
+                        .exec()
         if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
         return createResponse(res, StatusCodes.OK, thread)
     } catch (error) {
@@ -69,10 +77,35 @@ const deleteThread = async (req, res, next) => {
     }
 }
 
+const createReply = async (req, res, next) => {
+    try {
+        const { threadId } = req.params
+        const { content } = req.body
+        if (!content) return createResponse(res, StatusCodes.BAD_REQUEST, "Missing content")
+
+        const user = await User.findOne({ username: req.user.username }).exec()
+        const reply = await ForumThreadReply.create({
+            threadId,
+            content,
+            createdDate: Date.now(),
+            createdUser: user._id,
+        })
+
+        await ForumThread.findByIdAndUpdate(threadId, {
+            $push: { replies: reply._id }
+        }).exec()
+
+        return createResponse(res, StatusCodes.CREATED, reply)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     createThread,
     getAllThreads,
     getThread,
     editThread,
     deleteThread,
+    createReply,
 }

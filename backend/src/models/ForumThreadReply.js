@@ -6,24 +6,21 @@ const ForumThreadReplySchema = new mongoose.Schema({
         ref: "ForumThread",
         required: true,
     },
-
     content: {
         type: String,
         required: true,
-        minlength: 5,
-        maxlength: 500,
+        minlength: 10,
+        maxlength: 2048,
     },
-
     createdDate: {
         type: Date,
         required: true,
         default: Date.now,
     },
     createdUser: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true,
-        minlength: 3,
-        maxlength: 10,
     },
 })
 
