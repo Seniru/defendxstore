@@ -322,7 +322,7 @@ export default function Header() {
               <Link to="faq">FAQ</Link>
             </li>
             <li>
-              <Link to="PrivacyPolicy">Privacy policy</Link>
+              <Link to="privacy-policy">Privacy policy</Link>
             </li>
             <li>
               <FontAwesomeIcon icon={faInstagram} size="lg" />{" "}
