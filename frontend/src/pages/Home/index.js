@@ -31,22 +31,21 @@ const Home = () => {
       body: [],
     },
   )
-  
+
   const [searchParams] = useSearchParams()
   const searchQuery = searchParams.get("search")
-  
+
   const filteredItems = useMemo(() => {
     if (!searchQuery || !items?.body) return []
-    
+
     const query = searchQuery.toLowerCase()
-    return items.body.filter(item => 
-      item.itemName?.toLowerCase().includes(query) ||
-      item.description?.toLowerCase().includes(query) ||
-      item.category?.toLowerCase().includes(query) ||
-      (Array.isArray(item.colors) &&
-        item.colors.some((color) =>
-          color.toLowerCase().includes(query)
-        ))
+    return items.body.filter(
+      (item) =>
+        item.itemName?.toLowerCase().includes(query) ||
+        item.description?.toLowerCase().includes(query) ||
+        item.category?.toLowerCase().includes(query) ||
+        (Array.isArray(item.colors) &&
+          item.colors.some((color) => color.toLowerCase().includes(query))),
     )
   }, [items?.body, searchQuery])
 
@@ -212,7 +211,10 @@ const Home = () => {
         <h3>
           All <span className="secondary-text">Products</span>
           {searchQuery && (
-            <span className="secondary-text"> - Search results for "{searchQuery}"</span>
+            <span className="secondary-text">
+              {" "}
+              - Search results for "{searchQuery}"
+            </span>
           )}
         </h3>
         <div className="catalog">
@@ -229,7 +231,9 @@ const Home = () => {
             ))
           ) : searchQuery && filteredItems.length === 0 ? (
             <div className="no-results">
-              <p>No products found matching your search. Try different keywords.</p>
+              <p>
+                No products found matching your search. Try different keywords.
+              </p>
             </div>
           ) : (
             items?.body?.map((item, index) => (

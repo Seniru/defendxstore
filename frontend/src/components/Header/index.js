@@ -1,4 +1,9 @@
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom"
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faAt,
@@ -77,14 +82,16 @@ export default function Header() {
   const handleSearch = (e) => {
     const value = e.target.value
     setSearchTerm(value)
-    
+
     if (value.trim()) {
-      navigate(`/?search=${encodeURIComponent(value.trim())}`, { replace: true })
+      navigate(`/?search=${encodeURIComponent(value.trim())}`, {
+        replace: true,
+      })
     } else {
-      navigate('/', { replace: true })
+      navigate("/", { replace: true })
     }
   }
-  
+
   const handleSearchSubmit = (e) => {
     e.preventDefault()
   }
