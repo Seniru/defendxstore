@@ -128,7 +128,7 @@ const Home = () => {
         </div>
       </section>
 
-      {user && (
+      {user && !searchQuery && (
         <div className="popular">
           <h3>
             Recommended <span className="secondary-text">Items</span>{" "}
@@ -148,23 +148,25 @@ const Home = () => {
         </div>
       )}
 
-      <div className="popular">
-        <h3>
-          Trending <span className="secondary-text">Products</span>
-        </h3>
-        <div className="catalog">
-          {trendingItems?.body?.map((item, index) => (
-            <Productcard
-              itemName={item.itemName}
-              category={item.category}
-              price={item.price}
-              product={item.product}
-              id={item._id}
-              key={index}
-            />
-          ))}
+      {!searchQuery && (
+        <div className="popular">
+          <h3>
+            Trending <span className="secondary-text">Products</span>
+          </h3>
+          <div className="catalog">
+            {trendingItems?.body?.map((item, index) => (
+              <Productcard
+                itemName={item.itemName}
+                category={item.category}
+                price={item.price}
+                product={item.product}
+                id={item._id}
+                key={index}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <br />
       <div className="popular">
