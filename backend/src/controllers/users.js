@@ -93,12 +93,13 @@ const createUser = async (req, res, next) => {
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid referredBy ID")
 
         const [isPassValid, invalidReason] = isValidPassword(password)
-        if (!isPassValid) return createResponse(res, StatusCodes.BAD_REQUEST, [
-            {
-                field: "password",
-                message: invalidReason
-            }
-        ])
+        if (!isPassValid)
+            return createResponse(res, StatusCodes.BAD_REQUEST, [
+                {
+                    field: "password",
+                    message: invalidReason,
+                },
+            ])
 
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
@@ -241,9 +242,7 @@ const changePassword = async (req, res, next) => {
             return createResponse(res, StatusCodes.BAD_REQUEST, "You must provide the password")
 
         const [isPassValid, invalidReason] = isValidPassword(password)
-        if (!isPassValid)
-            return createResponse(res, StatusCodes.BAD_REQUEST, invalidReason)
-
+        if (!isPassValid) return createResponse(res, StatusCodes.BAD_REQUEST, invalidReason)
 
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
