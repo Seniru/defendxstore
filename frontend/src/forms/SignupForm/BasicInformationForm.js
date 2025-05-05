@@ -11,6 +11,7 @@ import {
 import Input from "../../components/Input"
 import Button from "../../components/Button"
 import { usePagination } from "../../contexts/PaginationProvider"
+import isValidPassword from "../../utils/isValidPassword.ts"
 
 export default function BasicInformationForm({
   data,
@@ -56,6 +57,11 @@ export default function BasicInformationForm({
       return setConfPasswordError(
         "Password and confirmation password should match",
       )
+
+    const [isPassValid, passwordInvalidReason] = isValidPassword(
+      passwordRef.current.value,
+    )
+    if (!isPassValid) return setPasswordError(passwordInvalidReason)
 
     if (
       isUsernameValid &&

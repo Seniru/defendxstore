@@ -7,6 +7,7 @@ import "./ChangePasswordForm.css"
 import { useRef, useState } from "react"
 import { useAuth } from "../../contexts/AuthProvider"
 import api from "../../utils/api"
+import isValidPassword from "../../utils/isValidPassword.ts"
 
 export default function ChangePasswordForm({
   setIsOpen,
@@ -38,6 +39,11 @@ export default function ChangePasswordForm({
       return setConfPasswordError(
         "Password and confirmation password should match",
       )
+
+    const [isPassValid, passwordInvalidReason] = isValidPassword(
+      passwordRef.current.value,
+    )
+    if (!isPassValid) return setPasswordError(passwordInvalidReason)
 
     if (isPasswordValid) {
       const response = await api.put(
