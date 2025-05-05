@@ -13,6 +13,8 @@ export default function ChangePasswordForm({
   setIsOpen,
   setIsError,
   setMessage,
+  resetToken,
+  resetUsername,
 }) {
   const { user, token } = useAuth()
 
@@ -47,13 +49,15 @@ export default function ChangePasswordForm({
 
     if (isPasswordValid) {
       const response = await api.put(
-        `/api/users/${user.username}/password`,
+        `/api/users/${resetUsername || user.username}/password`,
         { password: passwordRef.current.value },
-        token,
+        resetToken || token,
       )
+
       const result = await response.json()
       setIsError(!response.ok)
       setMessage(result.body)
+      if (resetToken) return
       setIsOpen(false)
     }
   }

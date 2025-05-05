@@ -133,8 +133,29 @@ const login = async (req, res, next) => {
     }
 }
 
+const forgotPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body
+        if (!email) return createResponse(res, StatusCodes.BAD_REQUEST, "email is required")
+
+        const user = await User.findOne({ email }).exec()
+        if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "Email not found")
+        if (!user.verified) return createResponse(res, StatusCodes.FORBIDDEN, "Email not verified")
+
+        const token = createToken(user)
+        sendMail(email, "Defendxstore password reset", "forgot-password", {
+            username: user.username,
+            url: `${process.env.FRONTEND_URL}/reset-password?token=${token}&username=${user.username}`,
+        })
+        return createResponse(res, StatusCodes.OK, "Email sent")
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     verify,
     initiateVerification,
     login,
+    forgotPassword,
 }
