@@ -28,4 +28,8 @@ form.login-form {
     width: 50%;
     border-radius: 6px;
   }
+
+  .forgot-pass-link {
+    text-align: right;
+  }
 }

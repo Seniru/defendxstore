@@ -1,5 +1,5 @@
 import { useRef, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faAt, faEyeSlash } from "@fortawesome/free-solid-svg-icons"
 
@@ -85,6 +85,9 @@ export default function LoginForm({ className, ...props }) {
             required
           />
         </div>
+        <Link to="/forgot-password" className="forgot-pass-link">
+          Forgot password?
+        </Link>
         <div className="login-form-actions">
           <Button kind="primary" type="submit">
             Login

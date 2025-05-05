@@ -26,6 +26,8 @@ import Verify from "./pages/Verify"
 import FAQ from "./pages/FAQ"
 import DeliveryDashboard from "./pages/DeliveryDashboard"
 import SupportDashboard from "./pages/SupportDashboard"
+import ForgotPassword from "./pages/ForgotPassword"
+import ResetPassword from "./pages/ResetPassword"
 
 function App() {
   return (
@@ -38,6 +40,8 @@ function App() {
                 <Route index element={<Home />} />
                 <Route path="components" element={<Components />} />
                 <Route path="product" element={<Product />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="reset-password" element={<ResetPassword />} />
                 <Route path="faq" element={<FAQ />} />
                 <Route path="forum">
                   <Route index element={<Forum />} />
@@ -81,6 +85,7 @@ function App() {
                 <Route path="login" element={<Login />} />
                 <Route path="signup" element={<Signup />} />
               </Route>
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
         </CartProvider>
