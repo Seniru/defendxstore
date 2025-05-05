@@ -1,4 +1,5 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useMemo } from "react"
+import { useSearchParams } from "react-router-dom"
 import "./slider.css"
 import "./home.css"
 import Productcard from "../../components/Productcard"
@@ -30,6 +31,24 @@ const Home = () => {
       body: [],
     },
   )
+  
+  const [searchParams] = useSearchParams()
+  const searchQuery = searchParams.get("search")
+  
+  const filteredItems = useMemo(() => {
+    if (!searchQuery || !items?.body) return []
+    
+    const query = searchQuery.toLowerCase()
+    return items.body.filter(item => 
+      item.itemName?.toLowerCase().includes(query) ||
+      item.description?.toLowerCase().includes(query) ||
+      item.category?.toLowerCase().includes(query) ||
+      (Array.isArray(item.colors) &&
+        item.colors.some((color) =>
+          color.toLowerCase().includes(query)
+        ))
+    )
+  }, [items?.body, searchQuery])
 
   useEffect(() => {
     const swiper = new window.Swiper(".mySwiper", {
@@ -97,10 +116,10 @@ const Home = () => {
               <img src={pic3} alt="Slide 3" />
             </div>
             <div className="swiper-slide">
-              <img src={pic4} alt="Slide 3" />
+              <img src={pic4} alt="Slide 4" />
             </div>
             <div className="swiper-slide">
-              <img src={pic5} alt="Slide 3" />
+              <img src={pic5} alt="Slide 5" />
             </div>
           </div>
 
@@ -160,7 +179,7 @@ const Home = () => {
               borderRadius: "20px",
               cursor: "pointer",
             }}
-            alt="shoes"
+            alt="Shoes category"
           />
           <img
             src={last}
@@ -171,7 +190,7 @@ const Home = () => {
               cursor: "pointer",
               marginLeft: "50px",
             }}
-            alt="shoes"
+            alt="Last category"
           />
           <img
             src={white}
@@ -182,7 +201,7 @@ const Home = () => {
               cursor: "pointer",
               marginLeft: "50px",
             }}
-            alt="shoes"
+            alt="White category"
           />
         </div>
       </div>
@@ -192,18 +211,38 @@ const Home = () => {
       <div className="popular">
         <h3>
           All <span className="secondary-text">Products</span>
+          {searchQuery && (
+            <span className="secondary-text"> - Search results for "{searchQuery}"</span>
+          )}
         </h3>
         <div className="catalog">
-          {items?.body?.map((item, index) => (
-            <Productcard
-              itemName={item.itemName}
-              category={item.category}
-              price={item.price}
-              product={item.product}
-              id={item._id}
-              key={index}
-            />
-          ))}
+          {searchQuery && filteredItems.length > 0 ? (
+            filteredItems.map((item, index) => (
+              <Productcard
+                itemName={item.itemName}
+                category={item.category}
+                price={item.price}
+                product={item.product}
+                id={item._id}
+                key={index}
+              />
+            ))
+          ) : searchQuery && filteredItems.length === 0 ? (
+            <div className="no-results">
+              <p>No products found matching your search. Try different keywords.</p>
+            </div>
+          ) : (
+            items?.body?.map((item, index) => (
+              <Productcard
+                itemName={item.itemName}
+                category={item.category}
+                price={item.price}
+                product={item.product}
+                id={item._id}
+                key={index}
+              />
+            ))
+          )}
         </div>
       </div>
 
@@ -215,7 +254,7 @@ const Home = () => {
           <div className="feedback-card">
             <div className="profile">
               <div className="profile-pic">
-                <img src={pro1} alt="Profile 3" />
+                <img src={pro1} alt="Profile 1" />
               </div>
               <h3>Malindu Pabasara</h3>
             </div>
@@ -233,7 +272,7 @@ const Home = () => {
           <div className="feedback-card">
             <div className="profile">
               <div className="profile-pic">
-                <img src={pro2} alt="Profile 3" />
+                <img src={pro2} alt="Profile 2" />
               </div>
               <h3>Seniru Pasan</h3>
             </div>
