@@ -57,6 +57,8 @@ const createTickets = async (req, res, next) => {
             data: { ticketId: ticket._id },
         })
 
+        await user.incrementProgress("supportSeeker")
+
         return createResponse(res, StatusCodes.CREATED, ticket)
     } catch (error) {
         next(error)

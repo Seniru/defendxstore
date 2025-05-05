@@ -17,6 +17,10 @@ const createThread = async (req, res, next) => {
             createdUser: user._id,
         })
         await thread.save()
+
+        await user.incrementProgress("forumNewbie")
+        await user.incrementProgress("threadMaster")
+
         return createResponse(res, StatusCodes.CREATED, thread)
     } catch (error) {
         next(error)
@@ -99,6 +103,8 @@ const createReply = async (req, res, next) => {
         await ForumThread.findByIdAndUpdate(threadId, {
             $push: { replies: reply._id },
         }).exec()
+
+        await user.incrementProgress("communityHelper")
 
         return createResponse(res, StatusCodes.CREATED, reply)
     } catch (error) {

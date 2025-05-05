@@ -71,10 +71,23 @@ module.exports = {
     supportSeeker: {
         image: "images/support_seeker.png",
         title: "Support Seeker",
-        description: "Submit 1 support tickets",
+        description: "Submit 3 support tickets",
         maxProgress: 3,
         rewardText: "3% OFF promotion code",
-        rewardFunction: async (user) => {},
+        rewardFunction: async (user) => {
+            const promocode = await PromoCode.generateRandomCode(
+                new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+                3,
+                user,
+            )
+            await user.pushNotification(
+                `You've earned a perk! Use code ${promocode.promocode} at checkout.`,
+            )
+            return {
+                type: "promocode",
+                promocode: { code: promocode.promocode, validUntil: promocode.validuntil },
+            }
+        },
     },
     forumNewbie: {
         image: "images/forum_newbie.png",
@@ -82,7 +95,20 @@ module.exports = {
         description: "Create your first forum thread",
         maxProgress: 1,
         rewardText: "3% OFF promotion code",
-        rewardFunction: async (user) => {},
+        rewardFunction: async (user) => {
+            const promocode = await PromoCode.generateRandomCode(
+                new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+                3,
+                user,
+            )
+            await user.pushNotification(
+                `You've earned a perk! Use code ${promocode.promocode} at checkout.`,
+            )
+            return {
+                type: "promocode",
+                promocode: { code: promocode.promocode, validUntil: promocode.validuntil },
+            }
+        },
     },
     threadMaster: {
         image: "images/thread_master.png",
@@ -90,7 +116,20 @@ module.exports = {
         description: "Create 5 forum threads",
         maxProgress: 5,
         rewardText: "3% OFF promotion code",
-        rewardFunction: async (user) => {},
+        rewardFunction: async (user) => {
+            const promocode = await PromoCode.generateRandomCode(
+                new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+                3,
+                user,
+            )
+            await user.pushNotification(
+                `You've earned a perk! Use code ${promocode.promocode} at checkout.`,
+            )
+            return {
+                type: "promocode",
+                promocode: { code: promocode.promocode, validUntil: promocode.validuntil },
+            }
+        },
     },
     communityHelper: {
         image: "images/community_helper.png",
@@ -98,7 +137,20 @@ module.exports = {
         description: "Reply to 20 forum threads",
         maxProgress: 10,
         rewardText: "5% OFF promotion code",
-        rewardFunction: async (user) => {},
+        rewardFunction: async (user) => {
+            const promocode = await PromoCode.generateRandomCode(
+                new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+                5,
+                user,
+            )
+            await user.pushNotification(
+                `You've earned a perk! Use code ${promocode.promocode} at checkout.`,
+            )
+            return {
+                type: "promocode",
+                promocode: { code: promocode.promocode, validUntil: promocode.validuntil },
+            }
+        },
     },
     test: {
         image: "",
