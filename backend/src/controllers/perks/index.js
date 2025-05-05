@@ -15,7 +15,7 @@ const getPerks = async (req, res, next) => {
                 image: perk.image,
                 title: perk.title,
                 description: perk.description,
-                progress: user.perks.get(perkKey)?.progress || 0,
+                progress: Math.min(perk.maxProgress, user.perks.get(perkKey)?.progress || 0),
                 claimed: !!user.perks.get(perkKey)?.claimed,
                 maxProgress: perk.maxProgress,
                 rewardText: perk.rewardText,
