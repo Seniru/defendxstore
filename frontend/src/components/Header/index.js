@@ -1,4 +1,9 @@
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import {
   faAt,
@@ -40,6 +45,8 @@ export default function Header() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const [refreshNotifications, setRefreshNotifications] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const location = useLocation()
   const [cartItems] = useFetch(
@@ -72,6 +79,30 @@ export default function Header() {
     setTimeout(() => setCopied(false), 3500)
   }
 
+  const handleSearch = (e) => {
+    const value = e.target.value
+    setSearchTerm(value)
+
+    if (value.trim()) {
+      navigate(`/?search=${encodeURIComponent(value.trim())}`, {
+        replace: true,
+      })
+    } else {
+      navigate("/", { replace: true })
+    }
+  }
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+  }
+
+  useEffect(() => {
+    const searchQuery = searchParams.get("search")
+    if (searchQuery) {
+      setSearchTerm(searchQuery)
+    }
+  }, [searchParams])
+
   return (
     <>
       <header>
@@ -100,7 +131,14 @@ export default function Header() {
           </ul>
         </nav>
         <div className="header-searchbar">
-          <SearchBar placeholder="Search items..." width={300} />
+          <form onSubmit={handleSearchSubmit}>
+            <SearchBar
+              placeholder="Search items..."
+              width={300}
+              value={searchTerm}
+              onChange={handleSearch}
+            />
+          </form>
         </div>
         {user ? (
           <div className="header-user-information">
