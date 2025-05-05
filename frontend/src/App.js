@@ -25,6 +25,7 @@ import { CartProvider } from "./contexts/CartProvider"
 import Verify from "./pages/Verify"
 import FAQ from "./pages/FAQ"
 import DeliveryDashboard from "./pages/DeliveryDashboard"
+import PrivacyPolicy from "./pages/PrivacyPolicy"
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
                 <Route path="components" element={<Components />} />
                 <Route path="product" element={<Product />} />
                 <Route path="faq" element={<FAQ />} />
+                <Route path="privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="forum">
                   <Route index element={<Forum />} />
                   <Route path="thread" element={<ForumThread />} />
