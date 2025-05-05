@@ -43,7 +43,7 @@ function OrderLog({ row }) {
     <tr>
       <td>{row.timestamp}</td>
       <td>
-        <ProfileImage username={row.user.username} size={35} />
+        <ProfileImage username={row.user?.username || "!"} size={35} />
       </td>
       <td>
         <span
@@ -58,7 +58,7 @@ function OrderLog({ row }) {
       <td>
         {actionMessages[row.action]
           ? actionMessages[row.action]({
-              actionUser: row.user.username,
+              actionUser: row.user?.username || "Deleted account",
               ...row.data,
             })
           : Object.entries(row.action)}
