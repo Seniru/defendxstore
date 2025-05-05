@@ -110,7 +110,6 @@ module.exports = {
                 type: "promocode",
                 promocode: { code: promocode.promocode, validUntil: promocode.validuntil },
             }
-
         },
     },
     influencer: {
