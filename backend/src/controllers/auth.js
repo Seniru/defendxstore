@@ -52,7 +52,7 @@ const verify = async (req, res, next) => {
         user.pushNotification("You are successfully verified!")
         await user.incrementProgress("verified")
 
-        const referredBy = user.referredBy
+        const referredBy = await User.findById(user.referredBy).exec()
         if (referredBy) {
             const promocode = await Promocodes.generateRandomCode(
                 new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days from now
@@ -62,6 +62,9 @@ const verify = async (req, res, next) => {
             referredBy.pushNotification(
                 `You've earned a reward for referring someone! Use code ${promocode.promocode} at checkout.`,
             )
+
+            await referredBy.incrementProgress("referralRookie")
+            await referredBy.incrementProgress("influencer")
         }
         await UserReport.create({
             user: user._id,
