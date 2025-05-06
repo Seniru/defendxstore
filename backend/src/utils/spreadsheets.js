@@ -34,13 +34,16 @@ const columns = {
         { width: 25 },
     ],
     usersLogs: [{ width: 25 }, { width: 25 }, { width: 25 }, { width: 30 }],
-    monthlySales: [
+    monthlySales: [{ width: 25 }, { width: 25 }, { width: 25 }, { width: 25 }, { width: 25 }],
+    supplies: [
+        { width: 30 },
+        { width: 25 },
+        { width: 25 },
+        { width: 10 },
         { width: 25 },
         { width: 25 },
         { width: 25 },
-        { width: 25 },
-        { width: 25 }
-    ]
+    ],
 }
 
 const addTable = (worksheet, header, rows) => {

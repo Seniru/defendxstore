@@ -172,6 +172,37 @@ const getMonthlySalesSpreadsheet = (res, days, data) => {
     return createAttachment(workbook, res)
 }
 
+const getSuppliesReportSpreadsheet = (res, supplies) => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet("Supplies report")
+
+    worksheet.columns = columns.supplies
+
+    addTable(
+        worksheet,
+        [
+            "",
+            "Date",
+            "Item",
+            "Quantity",
+            "Estimated selling price",
+            "Estimated cost",
+            "Estimated profit",
+        ],
+        supplies.map((supply) => [
+            `Order #${supply._id}`,
+            supply.date.toLocaleString(),
+            supply.item.itemName,
+            supply.orderedQuantity,
+            "LKR " + supply.estimatedSellingPrice.toFixed(2),
+            "LKR " + supply.estimatedCost.toFixed(2),
+            "LKR " + supply.estimatedProfit.toFixed(2),
+        ]),
+    )
+
+    return createAttachment(workbook, res)
+}
+
 const getMonthlySales = async (req, res, next) => {
     try {
         const dateFrom = req.query.dateFrom ? new Date(req.query.dateFrom) : null
@@ -268,7 +299,9 @@ const compareItems = async (req, res, next) => {
 
 const getSupplyMetrics = async (req, res, next) => {
     try {
+        const { downloadSheet } = req.query
         const supplies = await Supply.find({}).populate("item").sort({ date: -1 }).exec()
+        if (downloadSheet) return getSuppliesReportSpreadsheet(res, supplies)
         return createResponse(res, StatusCodes.OK, supplies)
     } catch (error) {
         next(error)
