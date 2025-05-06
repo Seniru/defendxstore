@@ -236,7 +236,7 @@ export default function Order({
       <div className="profile-order-container container">
         <div className="order-header">
           <div>
-            <a href={`invoice?id=${order._id}`}>
+            <a href={`/invoice?id=${order._id}`}>
               #{order._id} <FontAwesomeIcon icon={faChevronRight} />
             </a>
           </div>
