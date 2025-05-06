@@ -1,7 +1,7 @@
 import { LineChart } from "@mui/x-charts/LineChart"
 import { PieChart } from "@mui/x-charts/PieChart"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faBolt } from "@fortawesome/free-solid-svg-icons"
+import { faBolt, faFileExcel } from "@fortawesome/free-solid-svg-icons"
 import {
   cheerfulFiestaPalette,
   mangoFusionPalette,
@@ -20,6 +20,7 @@ import "./SalesManagement.css"
 import api from "../../utils/api"
 import { useAuth } from "../../contexts/AuthProvider"
 import MessageBox from "../../components/MessageBox"
+import { saveAs } from "file-saver"
 
 const { REACT_APP_API_URL } = process.env
 
@@ -96,6 +97,29 @@ export default function SalesManagement() {
   const compareChartData = []
   for (let [k, v] of Object.entries(comparativeSales?.body?.[1] || {}))
     compareChartData.push({ data: v, label: k })
+
+  const exportToExcel = async () => {
+    try {
+      const response = await fetch(
+        `${REACT_APP_API_URL}/api/sales/monthly?downloadSheet=true`,
+        {
+          headers: {
+            "Content-Type":
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            Authorization: "Bearer " + token,
+          },
+        },
+      )
+
+      const blob = await response.blob()
+      saveAs(
+        blob,
+        `Monthly-Sales-Report-${new Date().toLocaleDateString().replace(/\//g, "-")}.xlsx`,
+      )
+    } catch (error) {
+      console.error("Error exporting to Excel:", error)
+    }
+  }
 
   return (
     <>
@@ -241,6 +265,12 @@ export default function SalesManagement() {
             </div>
           </div>
         </div>
+        <h3 style={{ display: "flex", alignItems: "center" }}>
+          Monthly sales breakdown{" "}
+          <Button kind="secondary" onClick={exportToExcel}>
+            <FontAwesomeIcon icon={faFileExcel} /> Export to Excel
+          </Button>
+        </h3>
         <Table
           headers={[
             "Month ",
@@ -257,7 +287,7 @@ export default function SalesManagement() {
             "Profit",
           ]}
           rows={(monthlySales?.body?.[1].salesData || []).map((row, index) => [
-            `${monthlySales?.body?.[0]?.[index] || ""}`,
+            `${new Date(monthlySales?.body?.[0]?.[index]).toLocaleDateString() || ""}`,
             `LKR ${monthlySales?.body?.[1]?.expectedSalesData[index].toFixed(2) || ""}`,
             `LKR ${monthlySales?.body?.[1]?.salesData[index].toFixed(2) || ""}`,
             <span className="error-text">

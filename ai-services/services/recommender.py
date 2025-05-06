@@ -1,5 +1,6 @@
 import numpy as np
 
+from collections import defaultdict
 from fastapi import Request
 from sklearn.neighbors import NearestNeighbors
 
@@ -30,15 +31,18 @@ def get_recommended_items(request: Request, user_id):
 	neigh.fit(X)
 
 	user_vector = X[users_index[str(user_id)]].reshape(1, -1)
-	_, neighbours = neigh.kneighbors(user_vector, n_neighbors=3)
+	_, neighbours = neigh.kneighbors(user_vector, n_neighbors=4)
 
-	recommended_items = set()
-	# now we have the neighbours (similar users)
-	# next step is to find the items they prefer
+	item_scores = defaultdict(int)
+
 	for neighbour in neighbours[0][1:]:
-		for item_index in range(len(X[neighbour])):
-			if X[neighbour][item_index] >= 1:
-				recommended_items.add(str(items[item_index]["_id"]))
+		for item_index, value in enumerate(X[neighbour]):
+			if value >= 1:
+				item_id = str(items[item_index]["_id"])
+				item_scores[item_id] += value 
+
+	# Sort items by score (higher = more recommended)
+	sorted_items = sorted(item_scores.items(), key=lambda x: x[1], reverse=True)
+	recommended_items = [item_id for item_id, _ in sorted_items]
 
 	return recommended_items
-

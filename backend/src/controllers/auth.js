@@ -52,7 +52,7 @@ const verify = async (req, res, next) => {
         user.pushNotification("You are successfully verified!")
         await user.incrementProgress("verified")
 
-        const referredBy = user.referredBy
+        const referredBy = await User.findById(user.referredBy).exec()
         if (referredBy) {
             const promocode = await Promocodes.generateRandomCode(
                 new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days from now
@@ -62,6 +62,9 @@ const verify = async (req, res, next) => {
             referredBy.pushNotification(
                 `You've earned a reward for referring someone! Use code ${promocode.promocode} at checkout.`,
             )
+
+            await referredBy.incrementProgress("referralRookie")
+            await referredBy.incrementProgress("influencer")
         }
         await UserReport.create({
             user: user._id,
@@ -130,8 +133,29 @@ const login = async (req, res, next) => {
     }
 }
 
+const forgotPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body
+        if (!email) return createResponse(res, StatusCodes.BAD_REQUEST, "email is required")
+
+        const user = await User.findOne({ email }).exec()
+        if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "Email not found")
+        if (!user.verified) return createResponse(res, StatusCodes.FORBIDDEN, "Email not verified")
+
+        const token = createToken(user)
+        sendMail(email, "Defendxstore password reset", "forgot-password", {
+            username: user.username,
+            url: `${process.env.FRONTEND_URL}/reset-password?token=${token}&username=${user.username}`,
+        })
+        return createResponse(res, StatusCodes.OK, "Email sent")
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     verify,
     initiateVerification,
     login,
+    forgotPassword,
 }

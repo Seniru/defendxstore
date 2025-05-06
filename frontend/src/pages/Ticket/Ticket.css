@@ -1,16 +1,36 @@
-.ticket-view-container {
-  display: flex;
-  padding: 30px;
-}
+.ticket-container {
+  .ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-.Edit-Delete {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
+    .open {
+      padding: 5px 10px;
+      border-radius: 999px;
+      background-color: #4cff4c;
+      font-size: 12px;
+      font-weight: 500;
+      margin-right: 15px;
+    }
 
-.ticket-type {
-  display: grid;
-  align-content: space-between;
-  margin-right: 30px;
+    .closed {
+      padding: 5px 10px;
+      border-radius: 999px;
+      background-color: #ff4c4c; /* soft red */
+      font-size: 12px;
+      font-weight: 500;
+      margin-right: 15px;
+    }
+  }
+
+  .filler-div {
+    margin-left: 150px;
+    margin-right: 150px;
+  }
+
+  .ticket-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 }

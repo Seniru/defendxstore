@@ -26,6 +26,9 @@ import Verify from "./pages/Verify"
 import FAQ from "./pages/FAQ"
 import DeliveryDashboard from "./pages/DeliveryDashboard"
 import PrivacyPolicy from "./pages/PrivacyPolicy"
+import SupportDashboard from "./pages/SupportDashboard"
+import ForgotPassword from "./pages/ForgotPassword"
+import ResetPassword from "./pages/ResetPassword"
 
 function App() {
   return (
@@ -38,12 +41,13 @@ function App() {
                 <Route index element={<Home />} />
                 <Route path="components" element={<Components />} />
                 <Route path="product" element={<Product />} />
+                <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="reset-password" element={<ResetPassword />} />
                 <Route path="faq" element={<FAQ />} />
                 <Route path="privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="forum">
                   <Route index element={<Forum />} />
                   <Route path="thread" element={<ForumThread />} />
-                  <Route path="thread/new" element={<CreateForum />} />
                 </Route>
                 <Route element={<PrivateRoute />}>
                   <Route path="profile" element={<Profile />} />
@@ -52,11 +56,19 @@ function App() {
                   <Route path="invoice" element={<Invoice />} />
                   <Route path="ticket" element={<Ticket />} />
                   <Route path="ticket/new" element={<CreateTicket />} />
+                  <Route path="forum">
+                    <Route path="thread/new" element={<CreateForum />} />
+                    <Route path="thread/edit" element={<CreateForum />} />
+                  </Route>
                   <Route path="support" element={<Support />} />
                   <Route path="verify" element={<Verify />} />
                   <Route path="*" element={<NotFound />} />
                 </Route>
                 <Route element={<PrivateRoute requiredRole="SUPPORT_AGENT" />}>
+                  <Route
+                    path="support/dashboard"
+                    element={<SupportDashboard />}
+                  />
                   <Route path="*" element={<NotFound />} />
                 </Route>
                 <Route element={<PrivateRoute requiredRole="DELIVERY_AGENT" />}>
@@ -75,6 +87,7 @@ function App() {
                 <Route path="login" element={<Login />} />
                 <Route path="signup" element={<Signup />} />
               </Route>
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
         </CartProvider>

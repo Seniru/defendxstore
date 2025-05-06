@@ -10,6 +10,9 @@ const User = require("../models/User")
 const logger = require("../utils/logger")
 const { sendMail } = require("../services/email")
 const UserReport = require("../models/reports/UserReport")
+const isValidPassword = require("../utils/isValidPassword")
+const ExcelJS = require("exceljs")
+const { addTable, createAttachment, columns } = require("../utils/spreadsheets")
 
 const permissions = {
     USER: 1 << 0,
@@ -18,8 +21,31 @@ const permissions = {
     ADMIN: 1 << 3,
 }
 
+const getAllUsersSpreadsheet = (res, users) => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet("Users")
+
+    worksheet.columns = columns.users
+
+    addTable(
+        worksheet,
+        ["Username", "Email", "Contact number", "Delivery address", "Verified", "Roles"],
+        users.map((user) => [
+            user.username,
+            user.email,
+            user.contactNumber.join(", "),
+            user.deliveryAddress,
+            user.verified ? "Yes" : "No",
+            user.role.join(", "),
+        ]),
+    )
+
+    return createAttachment(workbook, res)
+}
+
 const getAllUsers = async (req, res, next) => {
     try {
+        const { downloadSheet } = req.query
         const search = req.query.search || ""
         const type = req.query.type
 
@@ -54,6 +80,8 @@ const getAllUsers = async (req, res, next) => {
         users = users.map((user) => user.applyDerivations())
         // apply filters
         if (type) users = users.filter((user) => user.role.includes(type))
+
+        if (downloadSheet == "true") return getAllUsersSpreadsheet(res, users)
 
         return createResponse(res, StatusCodes.OK, { users })
     } catch (error) {
@@ -90,6 +118,15 @@ const createUser = async (req, res, next) => {
         // check if referredBy is in valid format if it exist
         if (referredBy && !mongoose.Types.ObjectId.isValid(referredBy))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid referredBy ID")
+
+        const [isPassValid, invalidReason] = isValidPassword(password)
+        if (!isPassValid)
+            return createResponse(res, StatusCodes.BAD_REQUEST, [
+                {
+                    field: "password",
+                    message: invalidReason,
+                },
+            ])
 
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
@@ -230,6 +267,9 @@ const changePassword = async (req, res, next) => {
 
         if (!password || password.toString() === "")
             return createResponse(res, StatusCodes.BAD_REQUEST, "You must provide the password")
+
+        const [isPassValid, invalidReason] = isValidPassword(password)
+        if (!isPassValid) return createResponse(res, StatusCodes.BAD_REQUEST, invalidReason)
 
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)

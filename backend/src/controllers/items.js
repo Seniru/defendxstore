@@ -7,12 +7,68 @@ const { StatusCodes } = require("http-status-codes")
 const { sendMail } = require("../services/email")
 const { roles } = require("../utils/getRoles")
 const Supply = require("../models/Supply")
+const ExcelJS = require("exceljs")
+
+const { columns, addTable, createAttachment } = require("../utils/spreadsheets")
+
 require("dotenv").config()
 
+const getAllItemsSpreadsheet = (res, items) => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet("Inventory")
+    worksheet.columns = columns.items
+    addTable(
+        worksheet,
+        [
+            "Item Name",
+            "Category",
+            "Description",
+            "Colors",
+            "Price (LKR)",
+            "Size",
+            "Quantity",
+            "Stock Status",
+        ],
+        items.map((product) => [
+            product.itemName,
+            product.category,
+            product.description || "",
+            Array.isArray(product.colors) ? product.colors.join(", ") : "",
+            product.price,
+            product.size,
+            product.quantity,
+            product.stock,
+        ]),
+    )
+
+    worksheet.eachRow((row, rowNumber) => {
+        if (rowNumber > 1) {
+            row.eachCell((cell, colNumber) => {
+                // Add color coding for stock status
+                if (colNumber === 8) {
+                    // Stock status column
+                    const stockStatus = cell.value
+                    if (stockStatus === "Out of Stock") {
+                        cell.font = { color: { argb: "FFFF0000" } } // Red
+                    } else if (stockStatus === "Running Low") {
+                        cell.font = { color: { argb: "FFFF9900" } } //yellow
+                    } else if (stockStatus === "In Stock") {
+                        cell.font = { color: { argb: "FF008000" } } //green
+                    }
+                }
+            })
+        }
+    })
+
+    return createAttachment(workbook, res)
+}
+
 // Get All Items
-const getAllItems = async (req, res) => {
+const getAllItems = async (req, res, next) => {
     try {
-        const items = await Item.find()
+        const { downloadSheet } = req.query
+        const items = await Item.find().sort({ _id: -1 }).exec()
+        if (downloadSheet == "true") return getAllItemsSpreadsheet(res, items)
         createResponse(res, StatusCodes.OK, items)
     } catch (error) {
         next(error)
@@ -41,11 +97,15 @@ const getTrendingItems = async (req, res, next) => {
         const response = await fetch(`${process.env.AI_SERVICES_URI}/trending/items`)
         if (!response.ok)
             return createResponse(res, response.status, response.body || response.statusText)
-        const result = await response.json()
-        const items = await Item.find({ _id: { $in: result.map((item) => item[0]) } })
-            .limit(8)
-            .exec()
-        return createResponse(res, StatusCodes.OK, items)
+
+        let result = await response.json()
+        result = result.slice(0, 8)
+
+        const items = await Item.find({ _id: { $in: result.map((item) => item[0]) } }).exec()
+        const itemMap = new Map(items.map((item) => [item._id.toString(), item]))
+        const sortedItems = result.map((item) => itemMap.get(item[0]))
+
+        return createResponse(res, StatusCodes.OK, sortedItems)
     } catch (error) {
         next(error)
     }
@@ -59,11 +119,15 @@ const getRecommendedItems = async (req, res, next) => {
         )
         if (!response.ok)
             return createResponse(res, response.status, response.body || response.statusText)
-        const result = await response.json()
-        const items = await Item.find({ _id: { $in: result } })
-            .limit(8)
-            .exec()
-        return createResponse(res, StatusCodes.OK, items)
+
+        let result = await response.json()
+        result = result.slice(0, 8)
+
+        const items = await Item.find({ _id: { $in: result } }).exec()
+        const itemMap = new Map(items.map((item) => [item._id.toString(), item]))
+        const sortedItems = result.map((item) => itemMap.get(item))
+
+        return createResponse(res, StatusCodes.OK, sortedItems)
     } catch (error) {
         next(error)
     }

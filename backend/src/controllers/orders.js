@@ -175,6 +175,16 @@ const createOrder = async (req, res, next) => {
             data: {},
         })
 
+        try {
+            for (let item of order.items) {
+                await user.incrementProgress("casualShopper")
+                if (item.product.itemName == "The Rose Collection - Embroidered")
+                    await user.incrementProgress("roseEnthusiast")
+            }
+        } catch (error) {
+            logger.error(error.toString())
+        }
+
         return createResponse(res, StatusCodes.CREATED, order)
     } catch (error) {
         next(error)
@@ -305,13 +315,15 @@ const updateOrderStatus = async (req, res, next) => {
                 break
         }
 
-        if (order.status == "delivered")
+        if (order.status == "delivered") {
             await Expense.create({
                 date: Date.now(),
                 amount: 200,
                 description: `Delivery of order #${order._id}`,
                 category: "Delivery cost",
             })
+            await orderUser.incrementProgress("firstPurchase")
+        }
 
         await OrderReport.create({
             user: user._id,

@@ -6,6 +6,8 @@ const Item = require("../models/Item")
 const createResponse = require("../utils/createResponse")
 const Supply = require("../models/Supply")
 const Expense = require("../models/Expense")
+const ExcelJS = require("exceljs")
+const { addTable, createAttachment, columns } = require("../utils/spreadsheets")
 
 // helper function
 
@@ -149,11 +151,65 @@ const getSales = async (req, res, next) => {
     }
 }
 
+const getMonthlySalesSpreadsheet = (res, days, data) => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet("Monthly sales")
+
+    worksheet.columns = columns.monthlySales
+
+    addTable(
+        worksheet,
+        ["Month", "Expected sales", "Revenue", "Cost", "Profit"],
+        days.map((day, index) => [
+            day.toLocaleDateString(),
+            "LKR " + data.expectedSalesData[index].toFixed(2),
+            "LKR " + data.salesData[index].toFixed(2),
+            "LKR " + data.costData[index].toFixed(2),
+            "LKR " + data.profitData[index].toFixed(2),
+        ]),
+    )
+
+    return createAttachment(workbook, res)
+}
+
+const getSuppliesReportSpreadsheet = (res, supplies) => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet("Supplies report")
+
+    worksheet.columns = columns.supplies
+
+    addTable(
+        worksheet,
+        [
+            "",
+            "Date",
+            "Item",
+            "Quantity",
+            "Estimated selling price",
+            "Estimated cost",
+            "Estimated profit",
+        ],
+        supplies.map((supply) => [
+            `Order #${supply._id}`,
+            supply.date.toLocaleString(),
+            supply.item.itemName,
+            supply.orderedQuantity,
+            "LKR " + supply.estimatedSellingPrice.toFixed(2),
+            "LKR " + supply.estimatedCost.toFixed(2),
+            "LKR " + supply.estimatedProfit.toFixed(2),
+        ]),
+    )
+
+    return createAttachment(workbook, res)
+}
+
 const getMonthlySales = async (req, res, next) => {
     try {
         const dateFrom = req.query.dateFrom ? new Date(req.query.dateFrom) : null
         const dateTo = req.query.dateTo ? new Date(req.query.dateTo) : null
         const metric = req.query.metric
+        const { downloadSheet } = req.query
+
         const period = "1m"
         const [query, frequency] = await validateAndGetQuery(res, dateFrom, dateTo, metric, period)
         const expensesQuery = {}
@@ -166,6 +222,9 @@ const getMonthlySales = async (req, res, next) => {
         const orders = await Order.find(query).sort({ orderdate: 1 }).exec()
         const expenses = await Expense.find(expensesQuery).sort({ date: 1 }).exec()
         const processed = await processSales(orders, frequency, metric, dateTo, null, expenses)
+
+        if (downloadSheet) return getMonthlySalesSpreadsheet(res, processed[0], processed[1])
+
         return createResponse(res, StatusCodes.OK, processed)
     } catch (error) {
         next(error)
@@ -240,7 +299,9 @@ const compareItems = async (req, res, next) => {
 
 const getSupplyMetrics = async (req, res, next) => {
     try {
+        const { downloadSheet } = req.query
         const supplies = await Supply.find({}).populate("item").sort({ date: -1 }).exec()
+        if (downloadSheet) return getSuppliesReportSpreadsheet(res, supplies)
         return createResponse(res, StatusCodes.OK, supplies)
     } catch (error) {
         next(error)
