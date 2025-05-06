@@ -6,10 +6,15 @@ import TicketRow from "../../components/TicketRow"
 import useFetch from "../../hooks/useFetch"
 import { Link } from "react-router-dom"
 import { useMemo, useRef, useState } from "react"
+import { faFileExcel } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { useAuth } from "../../contexts/AuthProvider"
+import { saveAs } from "file-saver"
 
 const { REACT_APP_API_URL } = process.env
 
 export default function TicketView({ refreshTickets, setRefreshTickets }) {
+  const { token } = useAuth()
   const [category, setCategory] = useState("all")
   const [query, setQuery] = useState("")
 
@@ -36,6 +41,29 @@ export default function TicketView({ refreshTickets, setRefreshTickets }) {
     refreshTickets,
   )
 
+  const exportTicketsExcel = async () => {
+    try {
+      const response = await fetch(
+        `${REACT_APP_API_URL}/api/tickets?downloadSheet=true`,
+        {
+          headers: {
+            "Content-Type":
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            Authorization: "Bearer " + token,
+          },
+        },
+      )
+
+      const blob = await response.blob()
+      saveAs(
+        blob,
+        `Tickets-Report-${new Date().toLocaleDateString().replace(/\//g, "-")}.xlsx`,
+      )
+    } catch (error) {
+      console.error("Error exporting to Excel:", error)
+    }
+  }
+
   return (
     <div className="content">
       <div className="support-top-action-bar">
@@ -52,16 +80,21 @@ export default function TicketView({ refreshTickets, setRefreshTickets }) {
             Go
           </Button>
         </div>
-        <Select
-          items={{
-            all: "All",
-            inquiry: "Inquiry",
-            payment: "Payment",
-            return: "Return Order",
-            complaints: "Complaints",
-          }}
-          onChange={(evt) => setCategory(evt.target.value)}
-        />
+        <div>
+          <Button kind="secondary" onClick={exportTicketsExcel}>
+            <FontAwesomeIcon icon={faFileExcel} /> Export to Excel
+          </Button>
+          <Select
+            items={{
+              all: "All",
+              inquiry: "Inquiry",
+              payment: "Payment",
+              return: "Return Order",
+              complaints: "Complaints",
+            }}
+            onChange={(evt) => setCategory(evt.target.value)}
+          />
+        </div>
       </div>
       <div>
         <h2>Open tickets</h2>

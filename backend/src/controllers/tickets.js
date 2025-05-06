@@ -3,11 +3,46 @@ const createResponse = require("../utils/createResponse")
 const Ticket = require("../models/Ticket")
 const User = require("../models/User")
 const SupportReport = require("../models/reports/SupportReport")
+const ExcelJS = require("exceljs")
+const { addTable, createAttachment, columns } = require("../utils/spreadsheets")
+
+const getAllTicketsSpreadsheet = async (res, tickets) => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet("Tickets")
+
+    worksheet.columns = columns.tickets
+
+    addTable(
+        worksheet,
+        [
+            "",
+            "Title",
+            "Username",
+            "Type",
+            "Status",
+            "User email",
+            "User contact numbers",
+            "Content",
+        ],
+        tickets.map((ticket) => [
+            ticket._id,
+            ticket.title,
+            ticket.user?.username || "Deleted account",
+            ticket.type,
+            ticket.ticketstatus,
+            ticket.user?.email || "",
+            (ticket.user?.contactNumber || []).join(", "),
+            ticket.content,
+        ]),
+    )
+
+    return createAttachment(workbook, res)
+}
 
 //get all tickets
 const getAllTickets = async (req, res, next) => {
     try {
-        const { status, q, category } = req.query
+        const { status, q, category, downloadSheet } = req.query
         const user = req.user
         const fromUser = req.query.fromUser || "all"
 
@@ -30,6 +65,9 @@ const getAllTickets = async (req, res, next) => {
         const tickets = await Ticket.find(query)
             .populate({ path: "user", select: "username email contactNumber" })
             .exec()
+
+        if (downloadSheet == "true") return getAllTicketsSpreadsheet(res, tickets)
+
         return createResponse(res, StatusCodes.OK, tickets)
     } catch (error) {
         next(error)

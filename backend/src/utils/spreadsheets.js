@@ -44,6 +44,16 @@ const columns = {
         { width: 25 },
         { width: 25 },
     ],
+    tickets: [
+        { width: 30 },
+        { width: 25 },
+        { width: 25 },
+        { width: 15 },
+        { width: 10 },
+        { width: 25 },
+        { width: 25 },
+        { width: 100 }
+    ]
 }
 
 const addTable = (worksheet, header, rows) => {
