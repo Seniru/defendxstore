@@ -3,10 +3,32 @@ const createResponse = require("../utils/createResponse")
 const UserReport = require("../models/reports/UserReport")
 const OrderReport = require("../models/reports/OrderReport")
 const SupportReport = require("../models/reports/SupportReport")
+const ExcelJS = require("exceljs")
+const { addTable, createAttachment, columns } = require("../utils/spreadsheets")
+
+const getReportSpreadsheet = (res, reports) => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet("Log report")
+
+    worksheet.columns = columns.usersLogs
+
+    addTable(
+        worksheet,
+        ["Timestamp", "Username", "Action", "Data"],
+        reports.map((log) => [
+            log.timestamp.toLocaleString(),
+            log.user?.username || "Deleted user",
+            log.action,
+            JSON.stringify(log.data),
+        ]),
+    )
+
+    return createAttachment(workbook, res)
+}
 
 const getUsersReport = async (req, res, next) => {
     try {
-        const { action, searchUser } = req.query
+        const { action, searchUser, downloadSheet } = req.query
         const fromDate = req.query.fromDate ? new Date(req.query.fromDate) : null
         const toDate = req.query.toDate ? new Date(req.query.toDate) : null
 
@@ -28,6 +50,8 @@ const getUsersReport = async (req, res, next) => {
         // filter users
         if (searchUser) report = report.filter((l) => l.user.username.match(searchUser))
 
+        if (downloadSheet) return getReportSpreadsheet(res, report)
+
         return createResponse(res, StatusCodes.OK, {
             report,
             actions: Object.values(UserReport.actions),
@@ -39,7 +63,7 @@ const getUsersReport = async (req, res, next) => {
 
 const getOrdersReport = async (req, res, next) => {
     try {
-        const { action, searchUser } = req.query
+        const { action, searchUser, downloadSheet } = req.query
         const fromDate = req.query.fromDate ? new Date(req.query.fromDate) : null
         const toDate = req.query.toDate ? new Date(req.query.toDate) : null
 
@@ -61,6 +85,8 @@ const getOrdersReport = async (req, res, next) => {
         // filter users
         if (searchUser) report = report.filter((l) => l.user.username.match(searchUser))
 
+        if (downloadSheet) return getReportSpreadsheet(res, report)
+
         return createResponse(res, StatusCodes.OK, {
             report,
             actions: Object.values(OrderReport.actions),
@@ -72,7 +98,7 @@ const getOrdersReport = async (req, res, next) => {
 
 const getSupportReport = async (req, res, next) => {
     try {
-        const { action, searchUser } = req.query
+        const { action, searchUser, downloadSheet } = req.query
         const fromDate = req.query.fromDate ? new Date(req.query.fromDate) : null
         const toDate = req.query.toDate ? new Date(req.query.toDate) : null
 
@@ -93,6 +119,8 @@ const getSupportReport = async (req, res, next) => {
 
         // filter users
         if (searchUser) report = report.filter((l) => l.user.username.match(searchUser))
+
+        if (downloadSheet) return getReportSpreadsheet(res, report)
 
         return createResponse(res, StatusCodes.OK, {
             report,

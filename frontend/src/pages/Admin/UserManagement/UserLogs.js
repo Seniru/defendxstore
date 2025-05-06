@@ -5,6 +5,11 @@ import Select from "../../../components/Select"
 import Table from "../../../components/Table"
 import useFetch from "../../../hooks/useFetch"
 import "./UserManagement.css"
+import Button from "../../../components/Button"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faFileExcel } from "@fortawesome/free-solid-svg-icons"
+import { useAuth } from "../../../contexts/AuthProvider"
+import { saveAs } from "file-saver"
 
 const { REACT_APP_API_URL } = process.env
 const now = Date.now()
@@ -105,6 +110,7 @@ function UserLog({ row }) {
 }
 
 export default function UserLogs({}) {
+  const { token } = useAuth()
   const [username, setUsername] = useState("")
   const [fromDate, setFromDate] = useState(null)
   const [toDate, setToDate] = useState(null)
@@ -140,9 +146,37 @@ export default function UserLogs({}) {
     })
   }
 
+  const exportToExcel = async () => {
+    try {
+      const response = await fetch(
+        `${REACT_APP_API_URL}/api/reports/users?downloadSheet=true`,
+        {
+          headers: {
+            "Content-Type":
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            Authorization: "Bearer " + token,
+          },
+        },
+      )
+
+      const blob = await response.blob()
+      saveAs(
+        blob,
+        `Users-Logs-Report-${new Date().toLocaleDateString().replace(/\//g, "-")}.xlsx`,
+      )
+    } catch (error) {
+      console.error("Error exporting to Excel:", error)
+    }
+  }
+
   return (
     <>
-      <h3>User logs</h3>
+      <h3 style={{ display: "flex", alignItems: "center" }}>
+        User logs
+        <Button kind="secondary" onClick={exportToExcel}>
+          <FontAwesomeIcon icon={faFileExcel} /> Export to Excel
+        </Button>
+      </h3>
       <hr />
       <br />
       <div className="logs-parameters">

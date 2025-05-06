@@ -4,6 +4,11 @@ import Table from "../../components/Table"
 import Input from "../../components/Input"
 import Select from "../../components/Select"
 import ProfileImage from "../../components/ProfileImage"
+import Button from "../../components/Button"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faFileExcel } from "@fortawesome/free-solid-svg-icons"
+import { saveAs } from "file-saver"
+import { useAuth } from "../../contexts/AuthProvider"
 
 const { REACT_APP_API_URL } = process.env
 const now = Date.now()
@@ -67,6 +72,7 @@ function OrderLog({ row }) {
   )
 }
 export default function SupportReport() {
+  const { token } = useAuth()
   const [username, setUsername] = useState("")
   const [fromDate, setFromDate] = useState(null)
   const [toDate, setToDate] = useState(null)
@@ -102,8 +108,36 @@ export default function SupportReport() {
     })
   }
 
+  const exportToExcel = async () => {
+    try {
+      const response = await fetch(
+        `${REACT_APP_API_URL}/api/reports/support?downloadSheet=true`,
+        {
+          headers: {
+            "Content-Type":
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            Authorization: "Bearer " + token,
+          },
+        },
+      )
+
+      const blob = await response.blob()
+      saveAs(
+        blob,
+        `Support-Logs-Report-${new Date().toLocaleDateString().replace(/\//g, "-")}.xlsx`,
+      )
+    } catch (error) {
+      console.error("Error exporting to Excel:", error)
+    }
+  }
+
   return (
     <div className="content">
+      <Button kind="secondary" onClick={exportToExcel}>
+        <FontAwesomeIcon icon={faFileExcel} /> Export to Excel
+      </Button>
+      <hr />
+
       <div className="logs-parameters">
         <div className="logs-parameter">
           <span>
