@@ -11,6 +11,8 @@ const logger = require("../utils/logger")
 const { sendMail } = require("../services/email")
 const UserReport = require("../models/reports/UserReport")
 const isValidPassword = require("../utils/isValidPassword")
+const ExcelJS = require("exceljs")
+const { addTable, createAttachment, columns } = require("../utils/spreadsheets")
 
 const permissions = {
     USER: 1 << 0,
@@ -19,8 +21,31 @@ const permissions = {
     ADMIN: 1 << 3,
 }
 
+const getAllUsersSpreadsheet = (res, users) => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet("Users")
+
+    worksheet.columns = columns.users
+
+    addTable(
+        worksheet,
+        ["Username", "Email", "Contact number", "Delivery address", "Verified", "Roles"],
+        users.map((user) => [
+            user.username,
+            user.email,
+            user.contactNumber.join(", "),
+            user.deliveryAddress,
+            user.verified ? "Yes" : "No",
+            user.role.join(", "),
+        ]),
+    )
+
+    return createAttachment(workbook, res)
+}
+
 const getAllUsers = async (req, res, next) => {
     try {
+        const { downloadSheet } = req.query
         const search = req.query.search || ""
         const type = req.query.type
 
@@ -55,6 +80,8 @@ const getAllUsers = async (req, res, next) => {
         users = users.map((user) => user.applyDerivations())
         // apply filters
         if (type) users = users.filter((user) => user.role.includes(type))
+
+        if (downloadSheet == "true") return getAllUsersSpreadsheet(res, users)
 
         return createResponse(res, StatusCodes.OK, { users })
     } catch (error) {

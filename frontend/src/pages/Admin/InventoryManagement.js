@@ -17,10 +17,10 @@ import {
   faBoxesStacked,
   faTriangleExclamation,
   faCircleExclamation,
+  faFileExcel,
 } from "@fortawesome/free-solid-svg-icons"
 import Menu from "../../components/Menu"
 import MessageBox from "../../components/MessageBox"
-import * as ExcelJS from "exceljs"
 import { saveAs } from "file-saver"
 import QRCode from "react-qr-code"
 
@@ -601,7 +601,7 @@ const InventoryManagement = () => {
               Promotion codes
             </Button>
             <Button kind="secondary" onClick={exportToExcel}>
-              Export to Excel
+              <FontAwesomeIcon icon={faFileExcel} /> Export to Excel
             </Button>
             <Select
               items={["All", "In Stock", "Running Low", "Out of Stock"]}

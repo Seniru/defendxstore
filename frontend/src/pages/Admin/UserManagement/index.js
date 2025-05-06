@@ -8,14 +8,17 @@ import "./UserManagement.css"
 import MessageBox from "../../../components/MessageBox"
 import Button from "../../../components/Button"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faFileAlt } from "@fortawesome/free-solid-svg-icons"
+import { faFileAlt, faFileExcel } from "@fortawesome/free-solid-svg-icons"
 import OverlayWindow from "../../../components/OverlayWindow"
 import UserLogs from "./UserLogs"
+import { useAuth } from "../../../contexts/AuthProvider"
+import { saveAs } from "file-saver"
 
 const { REACT_APP_API_URL } = process.env
 const now = Date.now()
 
 export default function UserManagement() {
+  const {token} = useAuth()
   const [refreshFlag, setRefreshFlag] = useState(true)
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState("")
@@ -48,6 +51,29 @@ export default function UserManagement() {
     }, 500)
   }
 
+  const exportUsersExcel = async () => {
+    try {
+      const response = await fetch(
+        `${REACT_APP_API_URL}/api/users?downloadSheet=true`,
+        {
+          headers: {
+            "Content-Type":
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            Authorization: "Bearer " + token,
+          },
+        },
+      )
+
+      const blob = await response.blob()
+      saveAs(
+        blob,
+        `Users-Report-${new Date().toLocaleDateString().replace(/\//g, "-")}.xlsx`,
+      )
+    } catch (error) {
+      console.error("Error exporting to Excel:", error)
+    }
+  }
+
   return (
     <>
       <OverlayWindow isOpen={isLogsMenuOpen} setIsOpen={setIsLogsMenuOpen}>
@@ -69,6 +95,10 @@ export default function UserManagement() {
             <Button kind="secondary" onClick={() => setIsLogsMenuOpen(true)}>
               <FontAwesomeIcon icon={faFileAlt} /> View logs
             </Button>
+            <Button kind="secondary" onClick={exportUsersExcel}>
+              <FontAwesomeIcon icon={faFileExcel} /> Export to Excel
+            </Button>
+
             <Select
               items={{
                 ALL: "All",

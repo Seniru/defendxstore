@@ -25,6 +25,14 @@ const columns = {
         { width: 10 },
         { width: 15 },
     ],
+    users: [
+        { width: 25 },
+        { width: 25 },
+        { width: 25 },
+        { width: 35 },
+        { width: 10 },
+        { width: 25 }
+    ]
 }
 
 const addTable = (worksheet, header, rows) => {
