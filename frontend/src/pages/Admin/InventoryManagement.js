@@ -24,6 +24,8 @@ import * as ExcelJS from "exceljs"
 import { saveAs } from "file-saver"
 import QRCode from "react-qr-code"
 
+const { REACT_APP_API_URL } = process.env
+
 const StockCard = ({ title, count, color, backgroundColor, icon }) => {
   return (
     <div className="stock-card" style={{ backgroundColor }}>
@@ -268,109 +270,18 @@ const InventoryManagement = () => {
 
   const exportToExcel = async () => {
     try {
-      const workbook = new ExcelJS.Workbook()
-      const worksheet = workbook.addWorksheet("Inventory")
+      const response = await fetch(
+        `${REACT_APP_API_URL}/api/items?downloadSheet=true`,
+        {
+          headers: {
+            "Content-Type":
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            Authorization: "Bearer " + token,
+          },
+        },
+      )
 
-      worksheet.columns = [
-        { header: "Item Name", key: "itemName", width: 25 },
-        { header: "Category", key: "category", width: 15 },
-        { header: "Description", key: "description", width: 30 },
-        { header: "Colors", key: "colors", width: 20 },
-        { header: "Price (LKR)", key: "price", width: 15 },
-        { header: "Size", key: "size", width: 10 },
-        { header: "Quantity", key: "quantity", width: 10 },
-        { header: "Stock Status", key: "stock", width: 15 },
-      ]
-
-      //header row  styling
-      const headerRow = worksheet.getRow(1)
-      headerRow.font = {
-        bold: true,
-        color: { argb: "FFFFFFFF" },
-        size: 12,
-      }
-      headerRow.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FF000000" },
-      }
-      headerRow.alignment = {
-        vertical: "middle",
-        horizontal: "center",
-      }
-      headerRow.height = 25
-
-      // Apply borders to header cells
-      headerRow.eachCell((cell) => {
-        cell.border = {
-          top: { style: "thin", color: { argb: "FF000000" } },
-          left: { style: "thin", color: { argb: "FF000000" } },
-          bottom: { style: "thin", color: { argb: "FF000000" } },
-          right: { style: "thin", color: { argb: "FF000000" } },
-        }
-      })
-
-      // Add data rows
-      filteredProducts.forEach((product) => {
-        worksheet.addRow({
-          itemName: product.itemName,
-          category: product.category,
-          description: product.description,
-          colors: Array.isArray(product.colors)
-            ? product.colors.join(", ")
-            : "",
-          price: product.price,
-          size: product.size,
-          quantity: product.quantity,
-          stock: product.stock,
-        })
-      })
-
-      worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber > 1) {
-          // Add two colors for data rows
-          row.fill = {
-            type: "pattern",
-            pattern: "solid",
-            fgColor: { argb: rowNumber % 2 === 0 ? "FFE6F0FF" : "FFFFFFFF" },
-          }
-
-          // Add borders to cells
-          row.eachCell((cell, colNumber) => {
-            cell.border = {
-              top: { style: "thin", color: { argb: "FFD3D3D3" } },
-              left: { style: "thin", color: { argb: "FFD3D3D3" } },
-              bottom: { style: "thin", color: { argb: "FFD3D3D3" } },
-              right: { style: "thin", color: { argb: "FFD3D3D3" } },
-            }
-
-            // Add color coding for stock status
-            if (colNumber === 8) {
-              // Stock status column
-              const stockStatus = cell.value
-              if (stockStatus === "Out of Stock") {
-                cell.font = { color: { argb: "FFFF0000" } } // Red
-              } else if (stockStatus === "Running Low") {
-                cell.font = { color: { argb: "FFFF9900" } } //yellow
-              } else if (stockStatus === "In Stock") {
-                cell.font = { color: { argb: "FF008000" } } //green
-              }
-            }
-
-            // Align  cells
-            cell.alignment = {
-              vertical: "middle",
-              horizontal: "center",
-              wrapText: true,
-            }
-          })
-        }
-      })
-
-      const buffer = await workbook.xlsx.writeBuffer()
-      const blob = new Blob([buffer], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      })
+      const blob = await response.blob()
       saveAs(
         blob,
         `Inventory_Report_${new Date().toLocaleDateString().replace(/\//g, "-")}.xlsx`,
