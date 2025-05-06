@@ -31,8 +31,9 @@ const columns = {
         { width: 25 },
         { width: 35 },
         { width: 10 },
-        { width: 25 }
-    ]
+        { width: 25 },
+    ],
+    usersLogs: [{ width: 25 }, { width: 25 }, { width: 25 }, { width: 30 }],
 }
 
 const addTable = (worksheet, header, rows) => {

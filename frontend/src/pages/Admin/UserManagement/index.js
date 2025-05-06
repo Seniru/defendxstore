@@ -18,7 +18,7 @@ const { REACT_APP_API_URL } = process.env
 const now = Date.now()
 
 export default function UserManagement() {
-  const {token} = useAuth()
+  const { token } = useAuth()
   const [refreshFlag, setRefreshFlag] = useState(true)
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState("")
