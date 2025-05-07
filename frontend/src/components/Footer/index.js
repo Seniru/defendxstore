@@ -17,7 +17,9 @@ export default function Footer() {
           <li>
             <Link to="/faq">FAQ</Link>
           </li>
-          <li>Privacy Policy</li>
+          <li>
+            <Link to="/privacy-policy">Privacy Policy</Link>
+          </li>
         </ul>
       </nav>
       <div className="footer-socials">

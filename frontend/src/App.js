@@ -25,6 +25,7 @@ import { CartProvider } from "./contexts/CartProvider"
 import Verify from "./pages/Verify"
 import FAQ from "./pages/FAQ"
 import DeliveryDashboard from "./pages/DeliveryDashboard"
+import PrivacyPolicy from "./pages/PrivacyPolicy"
 import SupportDashboard from "./pages/SupportDashboard"
 import ForgotPassword from "./pages/ForgotPassword"
 import ResetPassword from "./pages/ResetPassword"
@@ -43,6 +44,7 @@ function App() {
                 <Route path="forgot-password" element={<ForgotPassword />} />
                 <Route path="reset-password" element={<ResetPassword />} />
                 <Route path="faq" element={<FAQ />} />
+                <Route path="privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="forum">
                   <Route index element={<Forum />} />
                   <Route path="thread" element={<ForumThread />} />
