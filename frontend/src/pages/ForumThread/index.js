@@ -55,7 +55,8 @@ export default function ForumThread() {
     refreshFlag,
   )
 
-  const handleSubmitReply = async () => {
+  const handleSubmitReply = async (evt) => {
+    evt.preventDefault()
     const response = await api.post(
       `/api/forums/${id}/replies`,
       { content: reply },
@@ -163,25 +164,28 @@ export default function ForumThread() {
         <br />
         <hr />
         <h3>Answer</h3>
-        <TextEditor
-          rows={8}
-          cols={150}
-          setText={setReply}
-          text={reply}
-          extraTools={
-            <Button
-              kind="secondary"
-              onClick={() => setIsPreviewing(!isPreviewing)}
-            >
-              {isPreviewing ? "Hide Preview" : "Show Preview"}
-            </Button>
-          }
-          onChange={(evt) => setReply(evt.target.value)}
-        />
-        <br />
-        <Button kind="primary" onClick={handleSubmitReply}>
-          Submit
-        </Button>
+        <form onSubmit={handleSubmitReply}>
+          <TextEditor
+            rows={8}
+            cols={150}
+            setText={setReply}
+            text={reply}
+            minLength={10}
+            maxLength={2048}
+            extraTools={
+              <Button
+                kind="secondary"
+                onClick={() => setIsPreviewing(!isPreviewing)}
+              >
+                {isPreviewing ? "Hide Preview" : "Show Preview"}
+              </Button>
+            }
+            required
+            onChange={(evt) => setReply(evt.target.value)}
+          />
+          <br />
+          <Button kind="primary">Submit</Button>
+        </form>
         <br />
         {isPreviewing && (
           <>

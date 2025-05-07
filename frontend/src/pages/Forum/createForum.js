@@ -86,6 +86,7 @@ export default function CreateForum() {
           ref={titleRef}
           width={300}
           minLength={10}
+          maxLength={30}
           required
         />{" "}
         <br />
@@ -110,6 +111,8 @@ export default function CreateForum() {
         <TextEditor
           rows={8}
           cols={150}
+          minLength={10}
+          maxLength={2048}
           setText={setContent}
           text={content}
           extraTools={

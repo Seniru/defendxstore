@@ -26,6 +26,7 @@ export default function CreateTicketForm({
           defaultValue={title}
           ref={titleRef}
           minLength={10}
+          maxLength={50}
           required
         />{" "}
       </div>
@@ -55,6 +56,8 @@ export default function CreateTicketForm({
         <br />
         <textarea
           minLength={10}
+          maxLength={1024}
+          required
           ref={contentRef}
           rows={8}
           cols={100}
