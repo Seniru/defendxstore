@@ -33,10 +33,19 @@ const item = new Schema({
         type: Number,
         required: true,
     },
-    stock: {
+    /*stock: {
         type: String,
         required: true,
-    },
+    },*/
 })
+
+item.virtual("stock").get(function () {
+    if (this.quantity <= 0) return "Out of Stock"
+    if (this.quantity <= 10) return "Running Low"
+    return "In Stock"
+})
+
+item.set("toObject", { virtuals: true })
+item.set("toJSON", { virtuals: true })
 
 module.exports = mongoose.model("Item", item)

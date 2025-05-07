@@ -224,7 +224,7 @@ export default function Profile() {
         <div className="profile-content">
           <TabMenu>
             <TabItem name="Orders" element={<OrderMenu />} />
-            <TabItem name="Reviews" element={<Reviews />} />
+            {/* <TabItem name="Reviews" element={<Reviews />} /> */}
             <TabItem name="Perks" element={<Perks />} />
           </TabMenu>
         </div>

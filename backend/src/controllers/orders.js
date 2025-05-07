@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken")
 
 const Order = require("../models/Order")
 const User = require("../models/User")
+const Item = require("../models/Item")
 const PromoCode = require("../models/Promocodes")
 const logger = require("../utils/logger")
 const { sendMail } = require("../services/email")
@@ -219,6 +220,9 @@ const createOrder = async (req, res, next) => {
                 await user.incrementProgress("casualShopper")
                 if (item.product.itemName == "The Rose Collection - Embroidered")
                     await user.incrementProgress("roseEnthusiast")
+                await Item.findByIdAndUpdate(item.product._id, {
+                    $inc: { quantity: -1 },
+                }).exec()
             }
         } catch (error) {
             logger.error(error.toString())
