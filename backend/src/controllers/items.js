@@ -150,6 +150,7 @@ const createItem = async (req, res) => {
 const updateItem = async (req, res, next) => {
     const { id } = req.params
     const item = req.body
+    item.size = item.size.split(",")
     try {
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid id for item")

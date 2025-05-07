@@ -230,7 +230,7 @@ const InventoryManagement = () => {
           </div>
         </td>
         <td>{`LKR ${row.price}`}</td>
-        <td>{row.size}</td>
+        <td>{row.size.join(", ")}</td>
         <td>{row.quantity}</td>
         <td>
           <StockStatus stock={row.stock} />
