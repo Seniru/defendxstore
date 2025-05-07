@@ -41,6 +41,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   const logoutAction = () => {
+    window.location.href = "/"
     setToken("")
     setUser(null)
     localStorage.removeItem("token")
