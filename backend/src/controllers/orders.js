@@ -1,3 +1,5 @@
+require("dotenv").config()
+
 const { StatusCodes } = require("http-status-codes")
 const createResponse = require("../utils/createResponse")
 const jwt = require("jsonwebtoken")
@@ -9,10 +11,45 @@ const logger = require("../utils/logger")
 const { sendMail } = require("../services/email")
 const OrderReport = require("../models/reports/OrderReport")
 const Expense = require("../models/Expense")
+const ExcelJS = require("exceljs")
+const { addTable, createAttachment, columns } = require("../utils/spreadsheets")
+
+const getAllOrdersSpreadsheet = async (res, orders) => {
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet("Orders")
+
+    worksheet.columns = columns.orders
+
+    addTable(
+        worksheet,
+        [
+            "",
+            "Ordered date",
+            "Item count",
+            "Price",
+            "Delivery address",
+            "Username",
+            "Assigned agent",
+            "Invoice",
+        ],
+        orders.map((order) => [
+            order._id,
+            order.orderdate.toLocaleString(),
+            order.items.length,
+            order.price,
+            order.deliveryAddress,
+            order.user?.username || "Deleted account",
+            order.assignedAgent?.username,
+            `${process.env.FRONTEND_URL}/invoice?id=${order._id}`,
+        ]),
+    )
+
+    return createAttachment(workbook, res)
+}
 
 const getOrders = async (req, res, next) => {
     try {
-        const { status } = req.query
+        const { status, downloadSheet } = req.query
         if (status && !["pending", "on_the_way", "delivered"].includes(status))
             return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid status")
         const user = await User.findOne({ username: req.user.username }).exec()
@@ -48,6 +85,8 @@ const getOrders = async (req, res, next) => {
                 items: Object.values(groupedItems),
             }
         })
+
+        if (downloadSheet == "true") return getAllOrdersSpreadsheet(res, orders)
 
         return createResponse(res, StatusCodes.OK, orders)
     } catch (error) {
