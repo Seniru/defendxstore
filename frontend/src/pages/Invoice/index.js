@@ -54,9 +54,9 @@ export default function Invoice() {
                 className="color-square"
                 style={{ backgroundColor: item.color }}
               />,
-              `LKR ${item.price}`,
+              `LKR ${item.price?.toFixed(2)}`,
               item.quantity,
-              `LKR ${item.price * item.quantity}`,
+              `LKR ${(item.price * item.quantity).toFixed(2)}`,
             ]),
             [
               <>
@@ -72,7 +72,7 @@ export default function Invoice() {
 
               <>
                 <br />
-                <b>LKR {order?.body?.price}</b>
+                <b>LKR {order?.body?.price?.toFixed(2)}</b>
                 <br />
               </>,
             ],

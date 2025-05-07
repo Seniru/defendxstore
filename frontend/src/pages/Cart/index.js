@@ -58,9 +58,9 @@ export default function Cart() {
               className="color-square"
               style={{ backgroundColor: item.color }}
             ></div>,
-            item.price,
+            item.price.toFixed(2),
             item.quantity,
-            item.price * item.quantity,
+            (item.price * item.quantity).toFixed(2),
           ])}
         />
         <div className="container order-container">
@@ -70,20 +70,20 @@ export default function Cart() {
               <FontAwesomeIcon icon={faShirt} /> Items (
               {items.body?.totalItems || 0}){" "}
             </b>
-            <span>RS {items.body?.totalPrice || 0}</span>
+            <span>RS {(items.body?.totalPrice || 0).toFixed(2)}</span>
           </div>
           <br />
           <div className="checkout-row">
             <b>
               <FontAwesomeIcon icon={faTruckFast} /> Shipping
             </b>
-            <span>RS 200</span>
+            <span>RS 200.00</span>
           </div>
           <br />
           <hr />
           <div className="checkout-row">
             <h2>Total</h2>
-            <span>RS {(items.body?.totalPrice || 0) + 200}</span>
+            <span>RS {((items.body?.totalPrice || 0) + 200).toFixed(2)}</span>
           </div>
           <div className="checkOutButton">
             <Link to="/checkout">

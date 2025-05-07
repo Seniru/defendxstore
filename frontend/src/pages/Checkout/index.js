@@ -224,7 +224,7 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                <span>LKR {item.price * item.quantity}</span>
+                <span>LKR {(item.price * item.quantity).toFixed(2)}</span>
               </div>
             ))}
 
@@ -232,7 +232,7 @@ export default function Checkout() {
               <h5>
                 <FontAwesomeIcon icon={faTruck} /> Shipping
               </h5>
-              <span>LKR 200</span>
+              <span>LKR 200.00</span>
             </div>
             <hr />
           </div>
@@ -256,7 +256,7 @@ export default function Checkout() {
 
           <div className="checkout-row">
             <h2>Total</h2>
-            <span>LKR {total}</span>
+            <span>LKR {total.toFixed(2)}</span>
           </div>
         </div>
       </form>

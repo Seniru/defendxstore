@@ -323,7 +323,7 @@ export default function Order({
                       <b>{item.itemName}</b> ({item.size})
                     </div>
                     <div>
-                      LKR {item.price}{" "}
+                      LKR {item.price?.toFixed(2)}{" "}
                       <span className="secondary-text"> x {item.quantity}</span>
                     </div>
                   </div>
@@ -333,7 +333,7 @@ export default function Order({
             <br />
             <hr />
             <div>
-              Total: <b>LKR {order.price}</b>
+              Total: <b>LKR {order.price.toFixed(2)}</b>
             </div>
             <br />
             <div className="order-footer">
