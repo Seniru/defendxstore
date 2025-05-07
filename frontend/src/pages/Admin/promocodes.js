@@ -10,6 +10,8 @@ import api from "../../utils/api"
 import { useRef, useState } from "react"
 import { useAuth } from "../../contexts/AuthProvider"
 
+import "./promocodes.css"
+
 const { REACT_APP_API_URL } = process.env
 
 function PromoCodeRow({ row, index }) {
@@ -140,22 +142,29 @@ export default function PromoCodes() {
         <div className="promocodes-actions">
           <SearchBar placeholder={"Promocodes"} />
         </div>
-
-        <Table
-          headers={["Promocode", "Valid until", "Discount", "Created for", ""]}
-          rows={[{}, ...(codes?.body || [])].map((code) => ({
-            code: code.promocode,
-            validUntil: code.validuntil,
-            discount: code.discount,
-            createdFor: code.createdFor,
-            isError,
-            setIsError,
-            setMessage,
-            refreshList,
-            setRefreshList,
-          }))}
-          renderRowWith={PromoCodeRow}
-        />
+        <div className="promocodes-table">
+          <Table
+            headers={[
+              "Promocode",
+              "Valid until",
+              "Discount",
+              "Created for",
+              "",
+            ]}
+            rows={[{}, ...(codes?.body || [])].map((code) => ({
+              code: code.promocode,
+              validUntil: code.validuntil,
+              discount: code.discount,
+              createdFor: code.createdFor,
+              isError,
+              setIsError,
+              setMessage,
+              refreshList,
+              setRefreshList,
+            }))}
+            renderRowWith={PromoCodeRow}
+          />
+        </div>
       </div>
     </>
   )

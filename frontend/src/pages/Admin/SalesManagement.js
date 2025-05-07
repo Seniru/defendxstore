@@ -129,15 +129,17 @@ export default function SalesManagement() {
       >
         <h3>Expenses</h3>
         <hr />
-        <Table
-          headers={["Date", "Amount", "Category", "Description"]}
-          rows={(expenses?.body || []).map((expense) => [
-            expense.date.split("T")[0],
-            "LKR " + expense.amount.toFixed(2),
-            expense.category,
-            expense.description,
-          ])}
-        />
+        <div className="expenses-table">
+          <Table
+            headers={["Date", "Amount", "Category", "Description"]}
+            rows={(expenses?.body || []).map((expense) => [
+              expense.date.split("T")[0],
+              "LKR " + expense.amount.toFixed(2),
+              expense.category,
+              expense.description,
+            ])}
+          />
+        </div>
       </OverlayWindow>
       <MessageBox isError={isError} message={message} setMessage={setMessage} />
       <div className="content">
