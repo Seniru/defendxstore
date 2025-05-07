@@ -105,7 +105,7 @@ export default function DeliveryDashboard({}) {
               />
             }
           />
-          <TabItem name="Reviews" element={<Reviews />} />
+          {/* <TabItem name="Reviews" element={<Reviews />} /> */}
           <TabItem name="Report" element={<OrderReport />} />
         </TabMenu>
       </div>

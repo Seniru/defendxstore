@@ -776,21 +776,6 @@ const InventoryManagement = () => {
                     required
                   />
                 </label>
-                {(formMode === "add" || formMode === "edit") && (
-                  <label>
-                    Stock Status:*
-                    <select
-                      name="stock"
-                      value={newProduct.stock}
-                      onChange={handleInputChange}
-                      required
-                    >
-                      <option value="In Stock">In Stock</option>
-                      <option value="Running Low">Running Low</option>
-                      <option value="Out of Stock">Out of Stock</option>
-                    </select>
-                  </label>
-                )}
                 <div className="form-actions">
                   <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting
