@@ -41,6 +41,7 @@ export default function TextEditor({ text, setText, extraTools, ...props }) {
       <div className="text-editor-toolbox">
         <Button
           kind="secondary"
+          type="button"
           title="Bold"
           onClick={() => insertAtCursor("**", "**")}
         >
@@ -48,6 +49,7 @@ export default function TextEditor({ text, setText, extraTools, ...props }) {
         </Button>
         <Button
           kind="secondary"
+          type="button"
           title="Italic"
           onClick={() => insertAtCursor("_", "_")}
         >
@@ -55,6 +57,7 @@ export default function TextEditor({ text, setText, extraTools, ...props }) {
         </Button>
         <Button
           kind="secondary"
+          type="button"
           title="Inline Code"
           onClick={() => insertAtCursor("`", "`")}
         >
@@ -62,6 +65,7 @@ export default function TextEditor({ text, setText, extraTools, ...props }) {
         </Button>
         <Button
           kind="secondary"
+          type="button"
           title="Heading"
           onClick={() => insertAtCursor("### ", "")}
         >
@@ -69,6 +73,7 @@ export default function TextEditor({ text, setText, extraTools, ...props }) {
         </Button>
         <Button
           kind="secondary"
+          type="button"
           title="Image"
           onClick={() => insertAtCursor("![alt text](image-url)")}
         >
@@ -76,6 +81,7 @@ export default function TextEditor({ text, setText, extraTools, ...props }) {
         </Button>
         <Button
           kind="secondary"
+          type="button"
           title="Link"
           onClick={() => insertAtCursor("[text](url)")}
         >
@@ -83,6 +89,7 @@ export default function TextEditor({ text, setText, extraTools, ...props }) {
         </Button>
         <Button
           kind="secondary"
+          type="button"
           title="Bullet List"
           onClick={() => insertAtCursor("- item")}
         >
@@ -90,6 +97,7 @@ export default function TextEditor({ text, setText, extraTools, ...props }) {
         </Button>
         <Button
           kind="secondary"
+          type="button"
           title="Numbered List"
           onClick={() => insertAtCursor("1. item")}
         >
@@ -97,6 +105,7 @@ export default function TextEditor({ text, setText, extraTools, ...props }) {
         </Button>
         <Button
           kind="secondary"
+          type="button"
           title="Quote"
           onClick={() => insertAtCursor("> ", "")}
         >
@@ -104,6 +113,7 @@ export default function TextEditor({ text, setText, extraTools, ...props }) {
         </Button>
         <Button
           kind="secondary"
+          type="button"
           title="Table"
           onClick={() =>
             insertAtCursor(
@@ -115,6 +125,7 @@ export default function TextEditor({ text, setText, extraTools, ...props }) {
         </Button>
         <Button
           kind="secondary"
+          type="button"
           title="Horizontal Rule"
           onClick={() => insertAtCursor("\n---\n")}
         >
