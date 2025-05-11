@@ -10,6 +10,7 @@ This app is created using the **MERN** stack.
 ## Requirements
 
 - Node.js
+- Python (if you are running ai services)
 - mongod (and optionally mongosh), if running the database instances locally.
 
 ## Setting up
@@ -24,7 +25,7 @@ git clone https://github.com/Seniru/defendxstore
 cd defendxstore
 ```
 
-Follow instructions provided in [backend](./backend/README.md) and [frontend](./frontend/README.md) to setup each of those components.
+Follow instructions provided in [backend](./backend/README.md), [frontend](./frontend/README.md) and [ai-services](./ai-services/README.md) to setup each of those components.
 
 ## Contributing
 

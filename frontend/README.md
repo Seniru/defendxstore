@@ -18,9 +18,11 @@ Then create the `.env` file in this directory with the following content
 
 ```bash
 REACT_APP_API_URL=http://localhost:5000
+REACT_APP_OPEN_ROUTE_SERVICE_API_KEY=key
 ```
 
 - `REACT_APP_API_URL`: API backend's URL. Use the given value if you are using the default configuration values in the backend.
+- `REACT_APP_OPEN_ROUTE_SERVICE_API_KEY`: API key for open route service. Obtain yours from [https://api.openrouteservice.org/](https://api.openrouteservice.org/)
 
 
 ## Available Scripts

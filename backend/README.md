@@ -104,12 +104,16 @@ ENVIRONMENT=development
 EMAIL_ADDRESS=user@email.com
 EMAIL_PASSWORD=pass
 EMAIL_SERVICE=gmail
+FRONTEND_URL=http://localhost:3000
+AI_SERVICES_URI=http://localhost:8000
 ```
 
 - `MONGO_URI`: The MongoDB connection URL. Use the one given in the above example if you are running the database in the **local** environment.
 If you are using MongoDB with **MongoDB Atlas** use the provided by them instead.
 
 - `SERVER_PORT` and `JWT_SECRET` can be modified.
+
+- `EMAIL_PASSWORD`: If you are using `gmail` as the `EMAIL_SERVICE` you might have to generate an app password instead of using your actual password.
 
 ## Available scripts
 
