@@ -5,6 +5,7 @@ const User = require("../models/User")
 const SupportReport = require("../models/reports/SupportReport")
 const ExcelJS = require("exceljs")
 const { addTable, createAttachment, columns } = require("../utils/spreadsheets")
+const logger = require("../utils/logger")
 
 const getAllTicketsSpreadsheet = async (res, tickets) => {
     const workbook = new ExcelJS.Workbook()
@@ -59,6 +60,12 @@ const getAllTickets = async (req, res, next) => {
                 StatusCodes.FORBIDDEN,
                 "You are not authorized to view all tickets",
             )
+        if (fromUser != "all" && !user.roles.includes("SUPPORT_AGENT") && fromUser != user.username)
+            return createResponse(
+                res,
+                StatusCodes.FORBIDDEN,
+                "You are not authorized to view this user's tickets",
+            )
 
         if (fromUser != "all") query.user = (await User.findOne({ username: fromUser }).exec())._id
 
@@ -77,6 +84,14 @@ const getAllTickets = async (req, res, next) => {
 const createTickets = async (req, res, next) => {
     try {
         const { title, content, type } = req.body
+
+        if (!title || !content || !type)
+            return createResponse(
+                res,
+                StatusCodes.BAD_REQUEST,
+                "title, content and type are required",
+            )
+
         const user = await User.findOne({ username: req.user.username }).exec()
 
         const ticket = new Ticket({
@@ -99,6 +114,9 @@ const createTickets = async (req, res, next) => {
 
         return createResponse(res, StatusCodes.CREATED, ticket)
     } catch (error) {
+        if (error.name === "ValidationError") {
+            return createResponse(res, StatusCodes.BAD_REQUEST, error.message)
+        }
         next(error)
     }
 }
@@ -109,6 +127,8 @@ const getTicket = async (req, res, next) => {
         const ticket = await Ticket.findById(ticketId)
             .populate({ path: "user", select: "username email contactNumber" })
             .exec()
+
+        if (!ticket) return createResponse(res, StatusCodes.NOT_FOUND, "Ticket not found")
         return createResponse(res, StatusCodes.OK, ticket)
     } catch (error) {
         next(error)
@@ -118,11 +138,18 @@ const getTicket = async (req, res, next) => {
 const editTicket = async (req, res, next) => {
     try {
         const { title, content, type } = req.body
+        if (!title || !content || !type)
+            return createResponse(
+                res,
+                StatusCodes.BAD_REQUEST,
+                "title, content and type are required",
+            )
         const user = await User.findOne({ username: req.user.username }).exec()
         const { ticketId } = req.params
         const ticket = await Ticket.findOneAndUpdate(
             { _id: ticketId },
             { title, content, type },
+            { runValidators: true, new: true },
         ).exec()
         if (!ticket) return createResponse(res, StatusCodes.NOT_FOUND, "Ticket not found")
 
@@ -133,6 +160,9 @@ const editTicket = async (req, res, next) => {
         })
         return createResponse(res, StatusCodes.OK, ticket)
     } catch (error) {
+        if (error.name === "ValidationError") {
+            return createResponse(res, StatusCodes.BAD_REQUEST, error.message)
+        }
         next(error)
     }
 }
@@ -143,6 +173,8 @@ const deleteTicket = async (req, res, next) => {
         const { ticketId } = req.params
         const ticket = await Ticket.findOneAndDelete({ _id: ticketId }).exec()
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
+        if (!ticket) return createResponse(res, StatusCodes.NOT_FOUND, "Ticket not found")
+
         await SupportReport.create({
             user: user._id,
             action: SupportReport.actions.deleteTicket,
