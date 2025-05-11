@@ -69,6 +69,7 @@ const prepareData = async () => {
     for (let deliveryAgent of deliveryAgents) await User.create(deliveryAgent)
     for (let supportAgent of supportAgents) await User.create(supportAgent)
 }
+
 describe("Users", () => {
     before(async () => {
         await User.deleteMany({})
