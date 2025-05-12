@@ -14,6 +14,7 @@ const OrderReport = require("../models/reports/OrderReport")
 const Expense = require("../models/Expense")
 const ExcelJS = require("exceljs")
 const { addTable, createAttachment, columns } = require("../utils/spreadsheets")
+const { default: mongoose } = require("mongoose")
 
 const getAllOrdersSpreadsheet = async (res, orders) => {
     const workbook = new ExcelJS.Workbook()
@@ -157,6 +158,9 @@ const sendInvoiceToEmail = async (user, data) => {
 const createOrder = async (req, res, next) => {
     try {
         const { deliveryAddress, promocode } = req.body
+        if (!deliveryAddress)
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Delivery address is required")
+
         const user = await User.findOne({ username: req.user.username })
             .populate({ path: "cart.product" })
             .exec()
@@ -225,6 +229,8 @@ const createOrder = async (req, res, next) => {
                 }).exec()
             }
         } catch (error) {
+            if (error.name === "ValidationError")
+                return createResponse(res, StatusCodes.BAD_REQUEST, error.message)
             logger.error(error.toString())
         }
 
@@ -238,6 +244,9 @@ const getOrder = async (req, res, next) => {
     try {
         const { id } = req.params
         const user = req.user
+
+        if (!mongoose.isValidObjectId(id))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid order ID")
 
         const order = await Order.findOne({ _id: id })
             .populate("items.product")
@@ -280,21 +289,29 @@ const getOrder = async (req, res, next) => {
 const deleteOrder = async (req, res, next) => {
     try {
         const { id } = req.params
+        if (!mongoose.isValidObjectId(id))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid order ID")
+
         const reqUser = req.user
-        const user = await User.findOne({ username: req.user.username }).exec()
-        const order = await Order.findOneAndDelete({ _id: id }).exec()
+        const user = await User.findOne({ username: reqUser.username }).exec()
+        const order = await Order.findById(id).populate("user").exec()
         if (!order) return createResponse(res, StatusCodes.NOT_FOUND, "Order not found")
-        if (
-            !(reqUser.roles.includes("ADMIN") || reqUser.roles.includes("DELIVERY_AGENT")) &&
-            user.username !== order.username
-        )
+
+        const isAdminOrAgent =
+            reqUser.roles.includes("ADMIN") || reqUser.roles.includes("DELIVERY_AGENT")
+        const isOwner = user.username === order.user.username
+
+        if (!isAdminOrAgent && !isOwner)
             return createResponse(res, StatusCodes.FORBIDDEN, "You cannot delete this order")
+
+        await Order.findByIdAndDelete(id)
 
         await OrderReport.create({
             user: user._id,
             action: OrderReport.actions.deleteOrder,
             data: { orderId: order._id },
         })
+
         return createResponse(res, StatusCodes.OK, "Order deleted")
     } catch (error) {
         next(error)
@@ -304,6 +321,9 @@ const deleteOrder = async (req, res, next) => {
 const acquireDelivery = async (req, res, next) => {
     try {
         const { id } = req.params
+        if (!mongoose.isValidObjectId(id))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid order ID")
+
         const user = await User.findOne({ username: req.user.username }).exec()
         const order = await Order.findOne({ _id: id }).exec()
         if (!order) return createResponse(res, StatusCodes.NOT_FOUND, "Order not found")
@@ -340,6 +360,9 @@ const updateOrderStatus = async (req, res, next) => {
 
         const user = await User.findOne({ username: req.user.username }).exec()
         const order = await Order.findOne({ _id: id }).exec()
+
+        if (!order) return createResponse(res, StatusCodes.NOT_FOUND, "Order not found")
+
         if (!order.assignedAgent || !order.assignedAgent.equals(user._id))
             return createResponse(res, StatusCodes.FORBIDDEN, "This order is not assigned to you")
 
