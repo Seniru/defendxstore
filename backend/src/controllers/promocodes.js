@@ -16,30 +16,50 @@ const getAllPromocodes = async (req, res, next) => {
 }
 
 const createPromocodes = async (req, res, next) => {
-    const promocodes = req.body
-    const newPromocode = new Promocodes(promocodes)
     try {
+        const promocodes = req.body
+        const newPromocode = new Promocodes(promocodes)
         await newPromocode.save()
         return createResponse(res, StatusCodes.CREATED, newPromocode)
     } catch (error) {
+        if (error.name === "ValidationError") {
+            return createResponse(res, StatusCodes.BAD_REQUEST, error.message)
+        }
+        if (error.code === 11000) {
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Promocode already exists")
+        }
         next(error)
     }
 }
 
 const updatePromocodes = async (req, res, next) => {
-    const { promocode } = req.params
-    const { validuntil, discount } = req.body
     try {
+        const { promocode } = req.params
+        const { validuntil, discount } = req.body
+
+        if (!validuntil || !discount)
+            return createResponse(
+                res,
+                StatusCodes.BAD_REQUEST,
+                "Valid until and discount are required",
+            )
+
         const updatedPromocodes = await Promocodes.findOneAndUpdate(
             { promocode },
             { validuntil, discount },
-            { new: true },
+            { new: true, runValidators: true },
         ).exec()
+
         if (!updatedPromocodes) {
             return createResponse(res, StatusCodes.NOT_FOUND, "Promocode not found")
         }
         return createResponse(res, StatusCodes.OK, updatedPromocodes)
     } catch (error) {
+        if (error instanceof mongoose.Error.ValidationError)
+            return createResponse(res, StatusCodes.BAD_REQUEST, error.message)
+        if (error instanceof mongoose.Error.CastError)
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid promocode format")
+
         next(error)
     }
 }

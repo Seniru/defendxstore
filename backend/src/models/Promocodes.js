@@ -5,6 +5,7 @@ const PromocodeSchema = new mongoose.Schema({
         required: true,
         minlength: 3,
         maxlength: 20,
+        unique: true,
     },
     validuntil: {
         type: Date,
@@ -13,6 +14,8 @@ const PromocodeSchema = new mongoose.Schema({
     discount: {
         type: Number,
         required: true,
+        min: 0,
+        max: 100,
     },
     createdFor: {
         type: mongoose.Types.ObjectId,
