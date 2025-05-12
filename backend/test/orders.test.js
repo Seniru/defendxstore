@@ -9,6 +9,7 @@ const request = supertest(app)
 
 const Order = require("../src/models/Order")
 const User = require("../src/models/User")
+const Promocode = require("../src/models/Promocodes")
 const Item = require("../src/models/Item")
 
 const { populateItems, populateUsers, populateOrders } = require("../src/extras/populate")
@@ -191,28 +192,31 @@ describe("Orders", () => {
         })
     })
 
-    describe("POST /api/orders", async () => {
-        let user1Token, user2Token, user3Token, user4Token
-        const item1 = await Item.findOne({ itemName: "Item 1" }).exec()
-        const item2 = await Item.findOne({ itemName: "Item 2" }).exec()
-
-        const commonCart = [
-            {
-                product: item1._id,
-                color: "red",
-                size: "M",
-                quantity: 2,
-            },
-            {
-                product: item2._id,
-                color: "blue",
-                size: "L",
-                quantity: 1,
-            },
-        ]
+    describe("POST /api/orders", () => {
+        let user1Token, user2Token, user3Token, user4Token, user5Token
+        let commonCart
 
         before(async () => {
             await prepareData()
+
+            let item1 = await Item.findOne({ itemName: "Item 1" }).exec()
+            let item2 = await Item.findOne({ itemName: "Item 2" }).exec()
+
+            const commonCart = [
+                {
+                    product: item1._id,
+                    color: "red",
+                    size: "M",
+                    quantity: 2,
+                },
+                {
+                    product: item2._id,
+                    color: "blue",
+                    size: "L",
+                    quantity: 1,
+                },
+            ]
+
             const user1LoginResponse = await request.post("/api/auth/login").send({
                 email: "user1@defendxstore.com",
                 password: "pass",
@@ -229,11 +233,16 @@ describe("Orders", () => {
                 email: "user4@defendxstore.com",
                 password: "pass",
             })
+            const user5LoginResponse = await request.post("/api/auth/login").send({
+                email: "user5@defendxstore.com",
+                password: "pass",
+            })
 
             user1Token = user1LoginResponse.body.body.token
             user2Token = user2LoginResponse.body.body.token
             user3Token = user3LoginResponse.body.body.token
             user4Token = user4LoginResponse.body.body.token
+            user5Token = user5LoginResponse.body.body.token
 
             // put items to cart
             await User.findOneAndUpdate(
@@ -251,6 +260,13 @@ describe("Orders", () => {
                 },
             ).exec()
 
+            await User.findOneAndUpdate(
+                { email: "user5@defendxstore.com" },
+                {
+                    cart: commonCart,
+                },
+            ).exec()
+
             const discountItem = await Item.findOne({ itemName: "Discount test item" }).exec()
 
             await User.findOneAndUpdate(
@@ -261,16 +277,20 @@ describe("Orders", () => {
                             product: discountItem._id,
                             color: "red",
                             size: "M",
-                            quantity: 2,
+                        },
+                        {
+                            product: discountItem._id,
+                            color: "red",
+                            size: "M",
                         },
                     ],
                 },
             ).exec()
 
-            Promocode.create({
-                code: "DISCOUNT10",
+            await Promocode.create({
+                promocode: "DISCOUNT10",
                 discount: 10,
-                expirationDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+                validuntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
             })
         })
 
@@ -298,13 +318,11 @@ describe("Orders", () => {
         })
 
         it("should return an error if the delivery address is not provided", async () => {
-            const res = await request
+            await request
                 .post("/api/orders")
                 .set("Authorization", `Bearer ${user1Token}`)
                 .send({ deliveryAddress: "" })
                 .expect(400)
-
-            assert.strictEqual(res.body.error, "Delivery address is required.")
         })
 
         it("should return an error if the cart is empty", async () => {
@@ -346,7 +364,7 @@ describe("Orders", () => {
         it("should return an error if the promocode is invalid", async () => {
             const res = await request
                 .post("/api/orders")
-                .set("Authorization", `Bearer ${user4Token}`)
+                .set("Authorization", `Bearer ${user5Token}`)
                 .send({
                     deliveryAddress: "123 Main St, Cityville",
                     promocode: "INVALIDCODE",

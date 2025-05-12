@@ -309,97 +309,97 @@ describe("Items", () => {
                 .set("Authorization", `Bearer ${adminToken}`)
                 .expect(400)
         })
+    })
 
-        describe("POST /api/items/:id/restock", () => {
-            let itemId, user1Token, adminToken
+    describe("POST /api/items/:id/restock", () => {
+        let itemId, user1Token, adminToken
 
-            const restockData = {
-                amount: 100,
-            }
+        const restockData = {
+            amount: 100,
+        }
 
-            before(async () => {
-                await prepareData()
-                itemId = (await Item.findOne({}))._id
-                const user1LoginResponse = await request.post("/api/auth/login").send({
-                    email: "user1@example.com",
-                    password: "Testpassword@123",
-                })
-                const adminLoginResponse = await request.post("/api/auth/login").send({
-                    email: "admin@example.com",
-                    password: "Adminpassword@123",
-                })
-                user1Token = user1LoginResponse.body.body.token
-                adminToken = adminLoginResponse.body.body.token
+        before(async () => {
+            await prepareData()
+            itemId = (await Item.findOne({}))._id
+            const user1LoginResponse = await request.post("/api/auth/login").send({
+                email: "user1@example.com",
+                password: "Testpassword@123",
             })
-
-            after(async () => {
-                await User.deleteMany({})
-                await Item.deleteMany({})
+            const adminLoginResponse = await request.post("/api/auth/login").send({
+                email: "admin@example.com",
+                password: "Adminpassword@123",
             })
+            user1Token = user1LoginResponse.body.body.token
+            adminToken = adminLoginResponse.body.body.token
+        })
 
-            it("should restock an item", async () => {
-                await request
-                    .post(`/api/items/${itemId}/restock`)
-                    .set("Authorization", `Bearer ${adminToken}`)
-                    .send(restockData)
-                    .expect(200)
+        after(async () => {
+            await User.deleteMany({})
+            await Item.deleteMany({})
+        })
 
-                const updatedItem = await Item.findById(itemId)
+        it("should restock an item", async () => {
+            await request
+                .post(`/api/items/${itemId}/restock`)
+                .set("Authorization", `Bearer ${adminToken}`)
+                .send(restockData)
+                .expect(200)
 
-                assert.strictEqual(updatedItem.quantity, 100)
-            })
+            const updatedItem = await Item.findById(itemId)
 
-            it("should return 403 if user is not admin", async () => {
-                await request
-                    .post(`/api/items/${itemId}/restock`)
-                    .set("Authorization", `Bearer ${user1Token}`)
-                    .send(restockData)
-                    .expect(403)
-            })
+            assert.strictEqual(updatedItem.quantity, 100)
+        })
 
-            it("should return 401 if user is not logged in", async () => {
-                await request.post(`/api/items/${itemId}/restock`).send(restockData).expect(401)
-            })
+        it("should return 403 if user is not admin", async () => {
+            await request
+                .post(`/api/items/${itemId}/restock`)
+                .set("Authorization", `Bearer ${user1Token}`)
+                .send(restockData)
+                .expect(403)
+        })
 
-            it("should return 404 if item not found", async () => {
-                await request
-                    .post("/api/items/123456789012345678901234/restock")
-                    .set("Authorization", `Bearer ${adminToken}`)
-                    .send(restockData)
-                    .expect(404)
-            })
+        it("should return 401 if user is not logged in", async () => {
+            await request.post(`/api/items/${itemId}/restock`).send(restockData).expect(401)
+        })
 
-            it("should return 400 if id is invalid", async () => {
-                await request
-                    .post("/api/items/invalidId/restock")
-                    .set("Authorization", `Bearer ${adminToken}`)
-                    .send(restockData)
-                    .expect(400)
-            })
+        it("should return 404 if item not found", async () => {
+            await request
+                .post("/api/items/123456789012345678901234/restock")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .send(restockData)
+                .expect(404)
+        })
 
-            it("should return 400 if quantity is not provided", async () => {
-                await request
-                    .post(`/api/items/${itemId}/restock`)
-                    .set("Authorization", `Bearer ${adminToken}`)
-                    .send({})
-                    .expect(400)
-            })
+        it("should return 400 if id is invalid", async () => {
+            await request
+                .post("/api/items/invalidId/restock")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .send(restockData)
+                .expect(400)
+        })
 
-            it("should return 400 if quantity is not a number", async () => {
-                await request
-                    .post(`/api/items/${itemId}/restock`)
-                    .set("Authorization", `Bearer ${adminToken}`)
-                    .send({ quantity: "invalid" })
-                    .expect(400)
-            })
+        it("should return 400 if quantity is not provided", async () => {
+            await request
+                .post(`/api/items/${itemId}/restock`)
+                .set("Authorization", `Bearer ${adminToken}`)
+                .send({})
+                .expect(400)
+        })
 
-            it("should return 400 if quantity is less than 0", async () => {
-                await request
-                    .post(`/api/items/${itemId}/restock`)
-                    .set("Authorization", `Bearer ${adminToken}`)
-                    .send({ quantity: -10 })
-                    .expect(400)
-            })
+        it("should return 400 if quantity is not a number", async () => {
+            await request
+                .post(`/api/items/${itemId}/restock`)
+                .set("Authorization", `Bearer ${adminToken}`)
+                .send({ quantity: "invalid" })
+                .expect(400)
+        })
+
+        it("should return 400 if quantity is less than 0", async () => {
+            await request
+                .post(`/api/items/${itemId}/restock`)
+                .set("Authorization", `Bearer ${adminToken}`)
+                .send({ quantity: -10 })
+                .expect(400)
         })
     })
 })
