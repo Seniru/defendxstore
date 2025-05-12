@@ -134,14 +134,18 @@ const getRecommendedItems = async (req, res, next) => {
 }
 
 // Create Item
-const createItem = async (req, res) => {
-    const item = req.body
-    item.size = item.size.split(",")
-    const newItem = new Item(item)
+const createItem = async (req, res, next) => {
     try {
+        const item = req.body
+        if (!item.itemName || !item.category || !item.price || !item.quantity || !item.colors)
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Missing required fields")
+        item.size = item.size.split(",")
+        const newItem = new Item(item)
         await newItem.save()
         return createResponse(res, StatusCodes.CREATED, newItem)
     } catch (error) {
+        if (error instanceof mongoose.Error.ValidationError)
+            return createResponse(res, StatusCodes.BAD_REQUEST, error.message)
         next(error)
     }
 }
@@ -161,7 +165,10 @@ const updateItem = async (req, res, next) => {
             return createResponse(res, StatusCodes.NOT_FOUND, "Item not found")
         }
 
-        const updatedItem = await Item.findByIdAndUpdate(id, item, { new: true })
+        const updatedItem = await Item.findByIdAndUpdate(id, item, {
+            new: true,
+            runValidators: true,
+        })
 
         if (oldItem.stock !== "Out of Stock" && updatedItem.stock === "Out of Stock") {
             // Find all admin users
@@ -194,6 +201,8 @@ const updateItem = async (req, res, next) => {
 
         return createResponse(res, StatusCodes.OK, updatedItem)
     } catch (error) {
+        if (error instanceof mongoose.Error.ValidationError)
+            return createResponse(res, StatusCodes.BAD_REQUEST, error.message)
         next(error)
     }
 }
@@ -202,6 +211,16 @@ const restockItem = async (req, res, next) => {
     try {
         const { id } = req.params
         const { amount } = req.body
+
+        if (!mongoose.Types.ObjectId.isValid(id))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid id for item")
+
+        if (!amount && amount !== 0)
+            return createResponse(res, StatusCodes.BAD_REQUEST, "amount is not provided")
+        if (amount < 0)
+            return createResponse(res, StatusCodes.BAD_REQUEST, "amount cannot be negative")
+        if (amount % 1 !== 0)
+            return createResponse(res, StatusCodes.BAD_REQUEST, "amount must be an integer")
 
         if (!amount) return createResponse(res, StatusCodes.BAD_REQUEST, "amount is not provided")
 
