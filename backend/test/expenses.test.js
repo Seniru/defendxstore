@@ -119,7 +119,6 @@ describe("Expenses", () => {
                 .get("/api/sales/expenses")
                 .set("Authorization", `Bearer ${user1Token}`)
                 .expect(403)
-
         })
     })
 
@@ -202,6 +201,5 @@ describe("Expenses", () => {
                 .send(newExpense)
                 .expect(403)
         })
-
     })
 })
