@@ -7,6 +7,14 @@ const User = require("../models/User")
 const createThread = async (req, res, next) => {
     try {
         const { title, content, category } = req.body
+
+        if (!title || !content || !category)
+            return createResponse(
+                res,
+                StatusCodes.BAD_REQUEST,
+                "Missing title, content or category",
+            )
+
         const user = await User.findOne({ username: req.user.username }).exec()
         const thread = new ForumThread({
             title,
@@ -23,6 +31,8 @@ const createThread = async (req, res, next) => {
 
         return createResponse(res, StatusCodes.CREATED, thread)
     } catch (error) {
+        if (error.name === "ValidationError")
+            return createResponse(res, StatusCodes.BAD_REQUEST, error.message)
         next(error)
     }
 }
@@ -64,13 +74,33 @@ const editThread = async (req, res, next) => {
     try {
         const { threadId } = req.params
         const { title, content, category } = req.body
-        const thread = await ForumThread.findOneAndUpdate(
+        if (!title || !content || !category)
+            return createResponse(
+                res,
+                StatusCodes.BAD_REQUEST,
+                "Missing title, content or category",
+            )
+
+        const user = await User.findOne({ username: req.user.username }).exec()
+        const thread = await ForumThread.findById(threadId).exec()
+        if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
+        if (thread.createdUser.toString() != user._id.toString())
+            return createResponse(
+                res,
+                StatusCodes.FORBIDDEN,
+                "You are not allowed to edit this thread",
+            )
+
+        await ForumThread.findOneAndUpdate(
             { _id: threadId },
             { title, content, category, editedDate: Date.now() },
+            { new: true, runValidators: true },
         ).exec()
-        if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
+
         return createResponse(res, StatusCodes.OK, "Thread updated")
     } catch (error) {
+        if (error.name === "ValidationError")
+            return createResponse(res, StatusCodes.BAD_REQUEST, error.message)
         next(error)
     }
 }
@@ -78,8 +108,17 @@ const editThread = async (req, res, next) => {
 const deleteThread = async (req, res, next) => {
     try {
         const { threadId } = req.params
-        const forumThread = await ForumThread.findOneAndDelete({ _id: threadId }).exec()
-        if (!forumThread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
+        const user = await User.findOne({ username: req.user.username }).exec()
+        const thread = await ForumThread.findById(threadId).exec()
+        if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
+        if (thread.createdUser.toString() != user._id.toString())
+            return createResponse(
+                res,
+                StatusCodes.FORBIDDEN,
+                "You are not allowed to delete this thread",
+            )
+
+        await ForumThread.findOneAndDelete({ _id: threadId }).exec()
         return createResponse(res, StatusCodes.OK, "Thread deleted")
     } catch (error) {
         next(error)
@@ -100,14 +139,22 @@ const createReply = async (req, res, next) => {
             createdUser: user._id,
         })
 
-        await ForumThread.findByIdAndUpdate(threadId, {
-            $push: { replies: reply._id },
-        }).exec()
+        const thread = await ForumThread.findByIdAndUpdate(
+            threadId,
+            {
+                $push: { replies: reply._id },
+            },
+            { runValidators: true },
+        ).exec()
+
+        if (!thread) return createResponse(res, StatusCodes.NOT_FOUND, "Thread not found")
 
         await user.incrementProgress("communityHelper")
 
         return createResponse(res, StatusCodes.CREATED, reply)
     } catch (error) {
+        if (error.name === "ValidationError")
+            return createResponse(res, StatusCodes.BAD_REQUEST, error.message)
         next(error)
     }
 }
