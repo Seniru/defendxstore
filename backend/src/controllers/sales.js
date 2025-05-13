@@ -238,6 +238,10 @@ const compareItems = async (req, res, next) => {
         const metric = req.query.metric
         const period = "7d"
 
+        if (!metric) return createResponse(res, StatusCodes.BAD_REQUEST, "No metric provided")
+        if (!["sales", "revenue", "expenses", "expected_sales"].includes(metric))
+            return createResponse(res, StatusCodes.BAD_REQUEST, "Invalid metric")
+
         const itemNames = req.query.items?.split(",")?.filter((item) => item)
         if (!itemNames || itemNames.length == 0)
             return createResponse(res, StatusCodes.BAD_REQUEST, "No items provided")
