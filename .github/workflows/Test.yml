@@ -62,3 +62,9 @@ jobs:
       run: |
         cd ../backend
         npm run coverage:linux
+
+    - name: Upload to Coveralls
+      uses: coverallsapp/github-action@v2
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        base-path: backend
