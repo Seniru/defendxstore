@@ -15,8 +15,8 @@ app = FastAPI()
 def startup_db_client():
     env = os.environ.get("NODE_ENV")
     print(f"Environment: {env}")
-    mongo_uri = "mongodb://localhost/defendx_test" if env == "test" else config["MONGO_URI"]
-    db_name = config["DB_NAME"]
+    mongo_uri = "mongodb://localhost/defendx_test" if env == "test" else config.get("MONGO_URI") or os.environ.get("MONGO_URI")
+    db_name = config.get("DB_NAME") or os.environ.get("DB_NAME")
 
     app.mongodb_client = MongoClient(mongo_uri)
     app.database = app.mongodb_client[db_name]
