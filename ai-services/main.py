@@ -1,4 +1,5 @@
 import json
+import os
 
 from fastapi import FastAPI
 from dotenv import dotenv_values
@@ -12,9 +13,15 @@ app = FastAPI()
 
 @app.on_event("startup")
 def startup_db_client():
-    app.mongodb_client = MongoClient(config["MONGO_URI"])
-    app.database = app.mongodb_client[config["DB_NAME"]]
-    print("Connected to the MongoDB database!")
+    env = os.environ.get("NODE_ENV")
+    print(f"Environment: {env}")
+    mongo_uri = "mongodb://localhost/defendx_test" if env == "test" else config["MONGO_URI"]
+    db_name = config["DB_NAME"]
+
+    app.mongodb_client = MongoClient(mongo_uri)
+    app.database = app.mongodb_client[db_name]
+    print(f"Connected to MongoDB database: {db_name}")
+
 
 @app.on_event("shutdown")
 def shutdown_db_client():

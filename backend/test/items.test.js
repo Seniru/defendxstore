@@ -9,7 +9,7 @@ const request = supertest(app)
 
 const Item = require("../src/models/Item")
 const User = require("../src/models/User")
-const { populateItems } = require("../src/extras/populate")
+const { populateItems, populateUsers, populateOrders } = require("../src/extras/populate")
 
 const salt = bcrypt.genSaltSync(10)
 
@@ -70,6 +70,55 @@ describe("Items", () => {
             //assert.deepEqual(res.body.body, {})
             assert.strictEqual(res.body.body.length, 10)
             assert.strictEqual(res.body.body[0].itemName, "Item 10")
+        })
+    })
+
+    describe("GET /api/items/trending", () => {
+        before(async () => {
+            await prepareData()
+        })
+
+        after(async () => {
+            await User.deleteMany({})
+            await Item.deleteMany({})
+        })
+
+        it("should return trending items", async () => {
+            const res = await request.get("/api/items/trending").expect(200)
+            assert.ok(res.body.body.length >= 0)
+        })
+    })
+
+    describe("GET /api/items/recommended", () => {
+        let user1Token
+        before(async () => {
+            await prepareData()
+            await populateItems()
+            await populateUsers()
+            await populateOrders()
+            const user1LoginResponse = await request.post("/api/auth/login").send({
+                email: "user1@example.com",
+                password: "Testpassword@123",
+            })
+            user1Token = user1LoginResponse.body.body.token
+        })
+
+        after(async () => {
+            await User.deleteMany({})
+            await Item.deleteMany({})
+        })
+
+        it("should return recommended items for the user", async () => {
+            const res = await request
+                .get("/api/items/recommended")
+                .set("Authorization", `Bearer ${user1Token}`)
+                .expect(200)
+
+            assert.ok(res.body.body.length >= 0)
+        })
+
+        it("should return 401 if user is not logged in", async () => {
+            await request.get("/api/items/recommended").expect(401)
         })
     })
 
