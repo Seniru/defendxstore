@@ -9,8 +9,10 @@
   "scripts": {
     "test": "node -e \"process.env.NODE_ENV='test'; require('child_process').execSync('mocha --exit', { stdio: 'inherit' });\"",
     "test:windows": "cmd /c .\\test\\test-windows.bat",
+    "test:linux": "./test/test-linux.sh",
     "coverage": "nyc --reporter=lcov --reporter=text --reporter=text-summary npm test",
     "coverage:windows": "nyc --reporter=lcov --reporter=text --reporter=text-summary npm run test:windows",
+    "coverage:linux": "nyc --reporter=lcov --reporter=text --reporter=text-summary npm run test:linux",
     "start": "node -e \"process.env.NODE_ENV='dev'; require('child_process').execSync('node src/app.js', { stdio: 'inherit' });\"",
     "prettify": "npx prettier --write \"{src,test}/**/*.{js,jsx,ts,tsx,css,scss,html}\"",
     "check": "npx prettier --check \"{src,test}/**/*.{js,jsx,ts,tsx,css,scss,html}\"",
