@@ -49,6 +49,7 @@ jobs:
         echo "SERVER_PORT=5000" >> $GITHUB_ENV
         echo "JWT_SECRET=jwtsecret" >> $GITHUB_ENV
         echo "ENVIRONMENT=test" >> $GITHUB_ENV
+        echo "NODE_ENV=test" >> $GITHUB_ENV
         echo "EMAIL_SERVICE=gmail" >> $GITHUB_ENV
         echo "EMAIL_ADDRESS=test@defendxstore.com" >> $GITHUB_ENV
         echo "EMAIL_PASSWORD=pass" >> $GITHUB_ENV

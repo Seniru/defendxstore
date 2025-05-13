@@ -11,10 +11,11 @@ config = dotenv_values(".env")
 
 app = FastAPI()
 
+env = os.environ.get("NODE_ENV")
+print(f"Environment: {env}")
+
 @app.on_event("startup")
 def startup_db_client():
-    env = os.environ.get("NODE_ENV")
-    print(f"Environment: {env}")
     mongo_uri = "mongodb://localhost/defendx_test" if env == "test" else config.get("MONGO_URI") or os.environ.get("MONGO_URI")
     db_name = config.get("DB_NAME") or os.environ.get("DB_NAME")
 
