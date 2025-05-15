@@ -80,6 +80,7 @@ const verify = async (req, res, next) => {
 const initiateVerification = async (req, res, next) => {
     try {
         const email = req.user.email
+        if (!email) return createResponse(res, StatusCodes.BAD_REQUEST, "email is required")
         const user = await User.findOne({ email }).exec()
         if (!user) return createResponse(res, StatusCodes.NOT_FOUND, "User not found")
         if (user.verified) return createResponse(res, StatusCodes.BAD_REQUEST, "Already verified")

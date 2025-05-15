@@ -260,7 +260,6 @@ describe("Reports", () => {
 
             assert.strictEqual(res.body.body.report.length, 3)
             assert.ok(Array.isArray(res.body.body.actions))
-
         })
 
         it("should return 401 for unauthorized access", async () => {
@@ -346,7 +345,6 @@ describe("Reports", () => {
 
             assert.strictEqual(res.body.body.report.length, 3)
             assert.ok(Array.isArray(res.body.body.actions))
-
         })
 
         it("should return 401 for unauthorized access", async () => {
@@ -360,5 +358,4 @@ describe("Reports", () => {
                 .expect(403)
         })
     })
-
 })
