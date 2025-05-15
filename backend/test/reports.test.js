@@ -187,6 +187,22 @@ describe("Reports", () => {
                 .set("Authorization", `Bearer ${user1Token}`)
                 .expect(403)
         })
+
+        it("should return an excel attachment if downloadSheet is true", async () => {
+            const res = await request
+                .get("/api/reports/users?downloadSheet=true")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(200)
+
+            assert.strictEqual(
+                res.headers["content-type"],
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+            assert.strictEqual(
+                res.headers["content-disposition"],
+                'attachment; filename="output.xlsx"',
+            )
+        })
     })
 
     describe("GET /api/reports/orders", () => {
@@ -272,6 +288,22 @@ describe("Reports", () => {
                 .set("Authorization", `Bearer ${user1Token}`)
                 .expect(403)
         })
+
+        it("should return an excel attachment if downloadSheet is true", async () => {
+            const res = await request
+                .get("/api/reports/orders?downloadSheet=true")
+                .set("Authorization", `Bearer ${agentToken}`)
+                .expect(200)
+
+            assert.strictEqual(
+                res.headers["content-type"],
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+            assert.strictEqual(
+                res.headers["content-disposition"],
+                'attachment; filename="output.xlsx"',
+            )
+        })
     })
 
     describe("GET /api/reports/support", () => {
@@ -356,6 +388,22 @@ describe("Reports", () => {
                 .get("/api/reports/support")
                 .set("Authorization", `Bearer ${user1Token}`)
                 .expect(403)
+        })
+
+        it("should return an excel attachment if downloadSheet is true", async () => {
+            const res = await request
+                .get("/api/reports/support?downloadSheet=true")
+                .set("Authorization", `Bearer ${agentToken}`)
+                .expect(200)
+
+            assert.strictEqual(
+                res.headers["content-type"],
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+            assert.strictEqual(
+                res.headers["content-disposition"],
+                'attachment; filename="output.xlsx"',
+            )
         })
     })
 })

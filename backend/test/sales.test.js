@@ -495,5 +495,21 @@ describe("Sales", () => {
                 .set("Authorization", `Bearer ${user1Token}`)
                 .expect(403)
         })
+
+        it("should return an excel attachment if downloadSheet is true", async () => {
+            const res = await request
+                .get("/api/sales/supplyMetrics?downloadSheet=true")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(200)
+
+            assert.strictEqual(
+                res.headers["content-type"],
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+            assert.strictEqual(
+                res.headers["content-disposition"],
+                'attachment; filename="output.xlsx"',
+            )
+        })
     })
 })

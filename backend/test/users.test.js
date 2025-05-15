@@ -250,6 +250,22 @@ describe("Users", () => {
                 })
                 .catch(done)
         })
+
+        it("should return an excel attachment if downloadSheet is true", async () => {
+            const res = await request
+                .get("/api/users?downloadSheet=true")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(200)
+
+            assert.strictEqual(
+                res.headers["content-type"],
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+            assert.strictEqual(
+                res.headers["content-disposition"],
+                'attachment; filename="output.xlsx"',
+            )
+        })
     })
 
     describe("POST /api/users/", () => {

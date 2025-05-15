@@ -71,6 +71,19 @@ describe("Items", () => {
             assert.strictEqual(res.body.body.length, 10)
             assert.strictEqual(res.body.body[0].itemName, "Item 10")
         })
+
+        it("should return an excel attachment if downloadSheet is true", async () => {
+            const res = await request.get("/api/items?downloadSheet=true").expect(200)
+
+            assert.strictEqual(
+                res.headers["content-type"],
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+            assert.strictEqual(
+                res.headers["content-disposition"],
+                'attachment; filename="output.xlsx"',
+            )
+        })
     })
 
     describe("GET /api/items/trending", () => {

@@ -178,6 +178,22 @@ describe("Tickets", () => {
                 assert.strictEqual(res.body.body[i].type, "Bug")
             }
         })
+
+        it("should return an excel attachment if downloadSheet is true", async () => {
+            const res = await request
+                .get("/api/tickets?downloadSheet=true")
+                .set("Authorization", `Bearer ${agentToken}`)
+                .expect(200)
+
+            assert.strictEqual(
+                res.headers["content-type"],
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+            assert.strictEqual(
+                res.headers["content-disposition"],
+                'attachment; filename="output.xlsx"',
+            )
+        })
     })
 
     describe("POST /api/tickets", () => {

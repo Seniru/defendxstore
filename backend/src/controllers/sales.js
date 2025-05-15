@@ -192,7 +192,7 @@ const getSuppliesReportSpreadsheet = (res, supplies) => {
         supplies.map((supply) => [
             `Order #${supply._id}`,
             supply.date.toLocaleString(),
-            supply.item.itemName,
+            supply.item?.itemName || "",
             supply.orderedQuantity,
             "LKR " + supply.estimatedSellingPrice.toFixed(2),
             "LKR " + supply.estimatedCost.toFixed(2),
