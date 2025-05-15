@@ -14,14 +14,14 @@ const salt = bcrypt.genSaltSync(10)
 
 const adminData = {
     username: "admin",
-    password: bcrypt.hashSync("adminpassword", salt),
+    password: bcrypt.hashSync("Adminpassword@123", salt),
     email: "admin@example.com",
     role: 1 << 3,
 }
 
 const profileImageUserData = {
     username: "userwithimage",
-    password: bcrypt.hashSync("testpassword", salt),
+    password: bcrypt.hashSync("Testpassword@123", salt),
     email: "imageuser@example.com",
     role: 1 << 0,
     profileImage: "data:image/png;base64,abc",
@@ -29,7 +29,7 @@ const profileImageUserData = {
 
 const contactUserData = {
     username: "userwithcontact",
-    password: bcrypt.hashSync("testpassword", salt),
+    password: bcrypt.hashSync("Testpassword@123", salt),
     email: "contactuser@example.com",
     role: 1 << 0,
     deliveryAddress: "Test Address",
@@ -42,19 +42,19 @@ let deliveryAgents = []
 for (let i = 0; i < 5; i++) {
     users.push({
         username: `user${i}`,
-        password: bcrypt.hashSync("testpassword", salt),
+        password: bcrypt.hashSync("Testpassword@123", salt),
         email: `user${i}@example.com`,
         role: 1 << 0,
     })
     deliveryAgents.push({
         username: `delivery${i}`,
-        password: bcrypt.hashSync("testpassword", salt),
+        password: bcrypt.hashSync("Testpassword@123", salt),
         email: `delivery${i}@example.com`,
         role: 1 << 1,
     })
     supportAgents.push({
         username: `support${i}`,
-        password: bcrypt.hashSync("testpassword", salt),
+        password: bcrypt.hashSync("Testpassword@123", salt),
         email: `support${i}@example.com`,
         role: 1 << 2,
     })
@@ -69,6 +69,7 @@ const prepareData = async () => {
     for (let deliveryAgent of deliveryAgents) await User.create(deliveryAgent)
     for (let supportAgent of supportAgents) await User.create(supportAgent)
 }
+
 describe("Users", () => {
     before(async () => {
         await User.deleteMany({})
@@ -86,12 +87,12 @@ describe("Users", () => {
             // log in as a user
             const loginResponse = await request.post("/api/auth/login").send({
                 email: "user3@example.com",
-                password: "testpassword",
+                password: "Testpassword@123",
             })
             // log in as administrator to view details
             const adminLoginResponse = await request.post("/api/auth/login").send({
                 email: "admin@example.com",
-                password: "adminpassword",
+                password: "Adminpassword@123",
             })
             adminToken = adminLoginResponse.body.body.token
             userToken = loginResponse.body.body.token
@@ -249,6 +250,22 @@ describe("Users", () => {
                 })
                 .catch(done)
         })
+
+        it("should return an excel attachment if downloadSheet is true", async () => {
+            const res = await request
+                .get("/api/users?downloadSheet=true")
+                .set("Authorization", `Bearer ${adminToken}`)
+                .expect(200)
+
+            assert.strictEqual(
+                res.headers["content-type"],
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+            assert.strictEqual(
+                res.headers["content-disposition"],
+                'attachment; filename="output.xlsx"',
+            )
+        })
     })
 
     describe("POST /api/users/", () => {
@@ -263,7 +280,7 @@ describe("Users", () => {
         it("should create a new user successfully", (done) => {
             const userData = {
                 username: "testuser",
-                password: "testpassword",
+                password: "Testpassword@123",
                 email: "testuser@example.com",
                 profileImage: "data:image/png;base64,abc",
                 deliveryAddress: "Test Address",
@@ -303,7 +320,7 @@ describe("Users", () => {
         it("should return 400 for invalid email format", (done) => {
             const userData = {
                 username: "testuser",
-                password: "validpassword",
+                password: "Validpassword@123",
                 email: "invalidemail",
                 profileImage: "data:image/png;base64,abc",
                 deliveryAddress: "Some address",
@@ -326,7 +343,7 @@ describe("Users", () => {
         it("should return 400 for missing required fields", (done) => {
             const userData = {
                 username: "userwithoutemail",
-                password: "validpassword",
+                password: "Validpassword@123",
                 // Missing email field
             }
 
@@ -346,7 +363,7 @@ describe("Users", () => {
         it("should create a user without optional fields", (done) => {
             const userData = {
                 username: "testuser2",
-                password: "validpassword",
+                password: "Validpassword@123",
                 email: "testuser3@example.com",
                 // Optional fields are omitted (e.g., deliveryAddress, contactNumbers)
             }
@@ -365,7 +382,7 @@ describe("Users", () => {
         it("should return 409 if the username is already taken", (done) => {
             const userData = {
                 username: "testuser",
-                password: "validpassword",
+                password: "Validpassword@123",
                 email: "valid@example.com",
             }
 
@@ -385,7 +402,7 @@ describe("Users", () => {
         it("should return 409 if the email is already taken", (done) => {
             const userData = {
                 username: "duplicateuser",
-                password: "validpassword",
+                password: "Validpassword@123",
                 email: "testuser@example.com", // This email is already taken from the setup
                 profileImage: "data:image/png;base64,abc",
                 deliveryAddress: "Some address",
@@ -408,7 +425,7 @@ describe("Users", () => {
         it("should return 400 if image size is greater than 2MB", (done) => {
             const userData = {
                 username: "testuser",
-                password: "testpassword",
+                password: "Testpassword@123",
                 email: "testuser4@gmail.com",
                 profileImage: "data:image/png;base64,abc" + "a".repeat(2 * 1024 * 1024 + 1), // 2MB + 1 byte
             }
@@ -432,7 +449,7 @@ describe("Users", () => {
         it("should return 400 if image format is invalid", (done) => {
             const userData = {
                 username: "invalidimageuser",
-                password: "testpassword",
+                password: "Testpassword@123",
                 email: "invalidimageuser@example.com",
                 profileImage: "invalidimage",
             }
@@ -459,12 +476,12 @@ describe("Users", () => {
             // log in as a user3
             const loginUser3Response = await request.post("/api/auth/login").send({
                 email: "user3@example.com",
-                password: "testpassword",
+                password: "Testpassword@123",
             })
             // log in as administrator to view details
             const adminLoginResponse = await request.post("/api/auth/login").send({
                 email: "admin@example.com",
-                password: "adminpassword",
+                password: "Adminpassword@123",
             })
             adminToken = adminLoginResponse.body.body.token
             user3Token = loginUser3Response.body.body.token
@@ -548,16 +565,16 @@ describe("Users", () => {
             await prepareData()
             const loginUser3Response = await request.post("/api/auth/login").send({
                 email: "user3@example.com",
-                password: "testpassword",
+                password: "Testpassword@123",
             })
             const loginUser4Response = await request.post("/api/auth/login").send({
                 email: "user4@example.com",
-                password: "testpassword",
+                password: "Testpassword@123",
             })
             // log in as administrator to view details
             const adminLoginResponse = await request.post("/api/auth/login").send({
                 email: "admin@example.com",
-                password: "adminpassword",
+                password: "Adminpassword@123",
             })
             adminToken = adminLoginResponse.body.body.token
             user3Token = loginUser3Response.body.body.token
@@ -634,16 +651,16 @@ describe("Users", () => {
             await prepareData()
             const loginUser3Response = await request.post("/api/auth/login").send({
                 email: "user3@example.com",
-                password: "testpassword",
+                password: "Testpassword@123",
             })
             const loginUser4Response = await request.post("/api/auth/login").send({
                 email: "user4@example.com",
-                password: "testpassword",
+                password: "Testpassword@123",
             })
             // log in as administrator to view details
             const adminLoginResponse = await request.post("/api/auth/login").send({
                 email: "admin@example.com",
-                password: "adminpassword",
+                password: "Adminpassword@123",
             })
             adminToken = adminLoginResponse.body.body.token
             user3Token = loginUser3Response.body.body.token
@@ -657,7 +674,7 @@ describe("Users", () => {
         it("should successfully change the password", (done) => {
             request
                 .put("/api/users/user4/password")
-                .send({ password: "newpassword" })
+                .send({ password: "Newpassword@123" })
                 .set("Authorization", `Bearer ${user4Token}`)
                 .expect(200)
                 .then((res) => {
@@ -666,7 +683,7 @@ describe("Users", () => {
                     return User.findOne({ username: "user4" }, "+password")
                 })
                 .then((user) => {
-                    assert.ok(bcrypt.compareSync("newpassword", user.password))
+                    assert.ok(bcrypt.compareSync("Newpassword@123", user.password))
                     done()
                 })
                 .catch(done)
@@ -688,7 +705,7 @@ describe("Users", () => {
         it("should allow administrators to change passwords of any user", (done) => {
             request
                 .put("/api/users/user3/password")
-                .send({ password: "newpassword" })
+                .send({ password: "Newpassword@123" })
                 .set("Authorization", `Bearer ${adminToken}`)
                 .expect(200)
                 .then((res) => {
@@ -697,7 +714,7 @@ describe("Users", () => {
                     return User.findOne({ username: "user3" }, "+password")
                 })
                 .then((user) => {
-                    assert.ok(bcrypt.compareSync("newpassword", user.password))
+                    assert.ok(bcrypt.compareSync("Newpassword@123", user.password))
                     done()
                 })
                 .catch(done)
@@ -706,7 +723,7 @@ describe("Users", () => {
         it("should return 404 for non-existent users", (done) => {
             request
                 .put("/api/users/nonexistentuser/password")
-                .send({ password: "newpassword" })
+                .send({ password: "Newpassword@123" })
                 .set("Authorization", `Bearer ${adminToken}`)
                 .expect(404)
                 .then((res) => {
@@ -723,13 +740,13 @@ describe("Users", () => {
             await User.insertMany([
                 {
                     username: "testuser",
-                    password: "testpassword",
+                    password: "Testpassword@123",
                     email: "testuser@example.com",
                     profileImage: "data:image/png;base64,abc",
                 },
                 {
                     username: "testuser2",
-                    password: "testpassword",
+                    password: "Testpassword@123",
                     email: "testuser2@example.com",
                 },
             ])
@@ -776,16 +793,16 @@ describe("Users", () => {
             await prepareData()
             const loginUser3Response = await request.post("/api/auth/login").send({
                 email: "user3@example.com",
-                password: "testpassword",
+                password: "Testpassword@123",
             })
             const loginUser4Response = await request.post("/api/auth/login").send({
                 email: "user4@example.com",
-                password: "testpassword",
+                password: "Testpassword@123",
             })
             // log in as administrator to view details
             const adminLoginResponse = await request.post("/api/auth/login").send({
                 email: "admin@example.com",
-                password: "adminpassword",
+                password: "Adminpassword@123",
             })
             adminToken = adminLoginResponse.body.body.token
             user3Token = loginUser3Response.body.body.token
@@ -909,16 +926,16 @@ describe("Users", () => {
             await prepareData()
             const loginUser3Response = await request.post("/api/auth/login").send({
                 email: "user3@example.com",
-                password: "testpassword",
+                password: "Testpassword@123",
             })
             const loginUser4Response = await request.post("/api/auth/login").send({
                 email: "user4@example.com",
-                password: "testpassword",
+                password: "Testpassword@123",
             })
             // log in as administrator to view details
             const adminLoginResponse = await request.post("/api/auth/login").send({
                 email: "admin@example.com",
-                password: "adminpassword",
+                password: "Adminpassword@123",
             })
             adminToken = adminLoginResponse.body.body.token
             user3Token = loginUser3Response.body.body.token
@@ -1012,12 +1029,12 @@ describe("Users", () => {
             await prepareData()
             const loginUser3Response = await request.post("/api/auth/login").send({
                 email: "user3@example.com",
-                password: "testpassword",
+                password: "Testpassword@123",
             })
             // log in as administrator to view details
             const adminLoginResponse = await request.post("/api/auth/login").send({
                 email: "admin@example.com",
-                password: "adminpassword",
+                password: "Adminpassword@123",
             })
             adminToken = adminLoginResponse.body.body.token
             user3Token = loginUser3Response.body.body.token
@@ -1107,16 +1124,16 @@ describe("Users", () => {
             await prepareData()
             const loginUser3Response = await request.post("/api/auth/login").send({
                 email: "user3@example.com",
-                password: "testpassword",
+                password: "Testpassword@123",
             })
             const loginUser4Response = await request.post("/api/auth/login").send({
                 email: "user4@example.com",
-                password: "testpassword",
+                password: "Testpassword@123",
             })
             // log in as administrator to view details
             const adminLoginResponse = await request.post("/api/auth/login").send({
                 email: "admin@example.com",
-                password: "adminpassword",
+                password: "Adminpassword@123",
             })
             adminToken = adminLoginResponse.body.body.token
             user3Token = loginUser3Response.body.body.token

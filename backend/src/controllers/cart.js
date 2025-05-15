@@ -46,11 +46,11 @@ const getCart = async (req, res, next) => {
 const addItem = async (req, res, next) => {
     try {
         const { productId, size, color, quantity } = req.body
-        if (!productId || !size || !color)
+        if (!productId || !size || !color || !quantity)
             return createResponse(
                 res,
                 StatusCodes.BAD_REQUEST,
-                "You need to specify productId, size and color",
+                "You need to specify productId, size, quantity and color",
             )
 
         if (!mongoose.Types.ObjectId.isValid(productId))

@@ -194,3 +194,10 @@ const populate = async () => {
 }
 
 populate()
+
+module.exports = {
+    populateUsers,
+    populateItems,
+    populateOrders,
+    populate,
+}

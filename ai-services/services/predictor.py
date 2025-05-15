@@ -21,6 +21,9 @@ def get_item_predictions(request: Request, frequency, fromDate, toDate, item):
     price_segments = { }
     orders = db.orders.find({}).sort("orderdate", 1).to_list()
 
+    if (len(orders) == 0):
+        return []
+    
     current_date = orders[0]["orderdate"].replace(hour=0, minute=0, second=0, microsecond=0)
     current_date_timestamp = current_date.timestamp()
     upper_bound = current_date + timedelta(days=frequency)

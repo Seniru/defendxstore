@@ -20,33 +20,48 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
+    
+    - name: Set up Python
+      run: |
+        cd ../ai-services
+        python3 -m venv .venv
+        source .venv/bin/activate
+        pip install -r requirements.txt
+
+    - name: Set up Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         cache-dependency-path: '**/package-lock.json'
 
-
     - name: Start MongoDB
       uses: supercharge/mongodb-github-action@1.12.0
       with:
         mongodb-version: '8.0'
 
-    - name: Install dependencies
+    - name: Install Node.js dependencies
       run: npm ci
+
     - name: Set environment variables
       run: |
         echo "MONGO_URI=mongodb://localhost:27017/defendxstore" >> $GITHUB_ENV
         echo "SERVER_PORT=5000" >> $GITHUB_ENV
         echo "JWT_SECRET=jwtsecret" >> $GITHUB_ENV
         echo "ENVIRONMENT=test" >> $GITHUB_ENV
+        echo "NODE_ENV=test" >> $GITHUB_ENV
         echo "EMAIL_SERVICE=gmail" >> $GITHUB_ENV
         echo "EMAIL_ADDRESS=test@defendxstore.com" >> $GITHUB_ENV
         echo "EMAIL_PASSWORD=pass" >> $GITHUB_ENV
-        
+        echo "DB_NAME=test" >> $GITHUB_ENV
+        echo "FRONTEND_URL=http://localhost:3000" >> $GITHUB_ENV
+        echo "AI_SERVICES_URI=http://localhost:8000" >> $GITHUB_ENV
+
+
     - name: Run coverage test
-      run: npm run coverage
+      run: |
+        cd ../backend
+        npm run coverage:linux
 
     - name: Upload to Coveralls
       uses: coverallsapp/github-action@v2

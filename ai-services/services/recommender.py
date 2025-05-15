@@ -18,6 +18,9 @@ def get_recommended_items(request: Request, user_id):
 
 	X = np.zeros([ len(users), len(items) ])
 
+	if len(users) == 0 or len(items) == 0:
+		return []
+
 	for order in orders:
 		user_index = users_index.get(str(order["user"]))
 		if user_index is None: continue

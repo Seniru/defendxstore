@@ -26,16 +26,6 @@ const getPerks = async (req, res, next) => {
     }
 }
 
-const testPerks = async (req, res, next) => {
-    try {
-        const user = await User.findOne({ username: req.user.username }).exec()
-        await user.incrementProgress("test")
-        return createResponse(res, StatusCodes.OK, "OK")
-    } catch (error) {
-        next(error)
-    }
-}
-
 const claimPerk = async (req, res, next) => {
     try {
         const { perk } = req.params
@@ -58,4 +48,4 @@ const claimPerk = async (req, res, next) => {
     }
 }
 
-module.exports = { getPerks, testPerks, claimPerk }
+module.exports = { getPerks, claimPerk }

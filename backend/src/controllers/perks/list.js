@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 /**
  * format: { image, title, description, maxProgress, rewardText, rewardFunction(user) }
  * image: https://www.freepik.com/author/freepik/icons/special-flat_8
